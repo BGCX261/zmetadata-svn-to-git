@@ -1,0 +1,17 @@
+var WFS_CAPABILITIES_EXTENSION = "version=1.0.0&request=getcapabilities&service=WFS"
+var WMS_CAPABILITIES_EXTENSION = "version=1.0.0&request=getcapabilities&service=WMS"
+var WFS_DESCRIBEFEATURETYPE_EXTENSION = "version=1.0.0&request=DescribeFeatureType&service=WFS"
+var WFS_GETFEAURE_EXTENSION = "version=1.0.0&service=WFS&request=GetFeature"
+var WMS_GETMAP_EXTENSION = "version=1.0.0&request=GetMap&service=WMS&styles=&format=image/png"
+var WMS_GETFEATURE_INFO = "version=1.0.0&request=GetFeatureInfo&format=jpeg&info_format=text/html"
+
+/*http://sauber:9080/geoserver/wms?
+bbox=-130,24,-66,50&
+styles=population&
+format=jpeg&info_format=text/plain&
+request=GetFeatureInfo&
+layers=states&
+query_layers=states&
+width=550&
+height=250&
+x=170&y=160*/

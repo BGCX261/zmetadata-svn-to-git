@@ -1,0 +1,87 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+<body>
+
+<div metal:fill-slot="main">	
+	<style>
+		.format{width:190px;}
+		.required{color:red;}
+	</style>
+	<script src="utils.js"> </script>	
+	
+	<div tal:define="global thePath here/absolute_url"></div>
+	<div tal:define="global metadata here/getMetadataTypes"></div>
+	<div id="thePath" value="" tal:attributes="value here/absolute_url"></div>
+	
+	<script>
+		var path = document.getElementById('thePath').getAttribute('value')	
+
+		function create()
+		{
+			metaType = getSelectedValue("cbxType");
+			title = document.getElementById("tbxTitle").value;
+			if(title.length == 0)
+			{
+				alert("Please give a valid title");
+				return;
+			}
+			
+			createFromTemplate();			
+		}
+			
+		function createFromTemplate(res)
+		{
+			if(res == undefined)
+			{
+				var params = "title="+title+"&type="+metaType;
+				getPostContent(path +"/createNewFromTemplate",params,createFromTemplate);
+			}
+			else
+			{
+				if(res.substring(0,7) == "http://")
+				{
+					window.location = res;
+				}
+				else
+				{
+					alert("There was a problem creating document " + title);
+				}
+			}			
+		}
+		
+		function resetTitle()
+		{
+			document.getElementById("tbxTitle").value = "";
+		}
+						
+	</script>
+	
+	<div tal:define="global title here/title"></div>
+	<div>
+		<table>
+			<tr>
+				<td>Title</td>
+				<td><input id="tbxTitle" class="format" type="text" value=""></td>
+			</tr>
+			<tr>
+				<td>Metadata Type</td>
+				<td>
+					<select class="format" id="cbxType">
+						<span tal:repeat="meta metadata">
+							<option tal:content="meta"></option>						
+						</span>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td><input type="button" value="Create" onclick="create();"></td>
+			</tr>
+		</table>
+		
+	</div>     
+</div>
+
+</body>
+</html>

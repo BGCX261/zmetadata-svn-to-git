@@ -1,0 +1,438 @@
+var httpRequestDict = {}
+
+function callMethod(url, callback)
+{
+  callbackMethod = callback;
+  getContentDynamic(url,callMethodHandler,'callMethod');
+}
+
+function callMethodHandler()
+{
+  if (httpRequestDict['callMethod'].readyState == 4)
+  {      
+     var res = httpRequestDict['callMethod'].responseText;         
+     callbackMethod(res);         
+  }  
+}
+
+function getContentDynamic(url,handlerFunction,key)
+{
+    // branch for native XMLHttpRequest object
+    if (window.XMLHttpRequest)
+	{
+        httpRequestDict[key] = new XMLHttpRequest();         
+        httpRequestDict[key].onreadystatechange = handlerFunction;
+        httpRequestDict[key].open("GET", url, true);
+        httpRequestDict[key].send(null);
+    // branch for IE/Windows ActiveX version
+    }
+	else if (window.ActiveXObject)
+	{
+        isIE = true;
+        httpRequestDict[key] = new ActiveXObject("Microsoft.XMLHTTP");
+        if (httpRequestDict[key]) 
+		{
+            httpRequestDict[key].onreadystatechange = handlerFunction;
+            httpRequestDict[key].open("GET", url, true);
+            httpRequestDict[key].send();
+        }
+    }
+}
+
+/*
+   Function: populateCombobox
+	Populates a combobox with a list of values
+
+   Parameters:
+     cbxName - The id of the combobox elements
+	 valuesArray - a list of values to use for population
+
+   Returns:
+     Nothing
+
+	See Also:
+	<deleteOptions>
+*/
+function populateCombobox(cbxName,valuesArray,initialValue)
+{
+	deleteOptions(cbxName)
+	var cbxElm = document.getElementById(cbxName)	
+    //create new option elements
+    if (initialValue != undefined)
+    {        
+    	var opElm = document.createElement("option")	
+    	opElm.innerText = initialValue
+    	opElm.text = initialValue
+    	cbxElm.appendChild(opElm)
+	}
+	for (var x=0;x<valuesArray.length;x++)
+	{
+		var opElm = document.createElement("option")	
+		opElm.innerText = valuesArray[x]
+		opElm.text = valuesArray[x]				
+		cbxElm.appendChild(opElm)
+	}
+}
+
+/*
+   Function: isValidNumeric   
+	 Checks whether a value is a valid numeric value
+
+   Parameters:
+     numStr: the value to check for validity
+
+   Returns:
+     Boolean: true if the value is a valid numeric value  		 
+*/
+function isValidNumeric(numStr)
+//This function checks that the string passed is a valid numeric value
+{		
+	var nanCheck = parseFloat(numStr)
+	
+	if (isNaN(nanCheck))
+	{		
+		return false;
+	}
+
+	ss = parseFloat(numStr)
+	if (ss.toString() != numStr)
+	{		
+		return false;
+	}
+	return true;	
+}
+
+function addOption(cbxName,value)
+{
+	var cbxElm = document.getElementById(cbxName)
+	var opElm = document.createElement("option")
+	opElm.innerText = value
+	cbxElm.appendChild(opElm)
+}
+
+/*
+   Function: deleteOptions
+	Deletes all the values from a combobox
+
+   Parameters:
+     elmId - The id of the combobox elements
+
+   Returns:
+     Nothing
+*/
+function deleteOptions(elmId)
+{
+	var elm = document.getElementById(elmId)
+	elmLength = elm.options.length
+	elm.options.length = 0
+}
+
+function getCBXOptions(cbxName)
+//return a list of values
+{
+	var aList = new Array()
+	cbx = document.getElementById(cbxName)
+	cOptions = cbx.options
+
+	for (var x=0;x<cOptions.length;x++)
+	{
+		opt = cOptions[x].innerHTML
+		aList[x] = opt
+	}
+	return aList
+}
+
+function deleteOption(cbxName,index)
+// deletes the option from the cbx id given, index is zero based
+{
+	var aList = new Array()
+	cbx = document.getElementById(cbxName)
+	cOptions = cbx.options
+
+	cOptions.remove(index)
+}
+
+
+/*
+   Function: createDOM
+	Creates a xml dom object from an xml string
+
+   Parameters:
+     xmlStr - xml string to create dom from
+
+   Returns:
+     xmlDoc - a xml dom instance
+*/
+function createDOM(xmlStr)
+{
+    re = /#/g
+	re2 = /&/g
+	xmlStr = xmlStr.replace(re,"")
+	xmlStr = xmlStr.replace(re2,"And")
+
+	var index2 = xmlStr.indexOf('<?xml')
+	if (index2 != -1)
+	{
+	   var index = xmlStr.indexOf('>')
+       xmlStr = xmlStr.slice(index+1,xmlStr.length)
+	}
+
+	var xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+	xmlDoc.loadXML(xmlStr);
+	return xmlDoc;
+}
+/*
+	@summary: returns a list of selected values from the given cbx id
+*/
+function getSelectedValues(cbxId)
+{
+	var resList = new Array()
+	var elm = document.getElementById(cbxId)
+	var optionsElms = elm.options
+	for (var x=0;x<optionsElms.length;x++)
+	{
+		if (optionsElms.item(x).selected)
+		{
+			var tmpOpVal = optionsElms.item(x).innerText
+			resList[x] = tmpOpVal 
+		}
+	}
+	return resList
+}
+
+/*
+   Function: getSelectedValue
+	Returns the selected value from aa combobox
+
+   Parameters:
+     selectBoxId - the id of the combobox
+
+   Returns:
+     selectedValue - The selected value in the combobox
+*/
+
+function getSelectedIndex(cbxName)
+{
+	var elm = document.getElementById(selectBoxId)
+	var sIndex = elm.selectedIndex
+	return sIndex
+}
+
+function getSelectedValue(selectBoxId)
+{
+	var elm = document.getElementById(selectBoxId)
+	var sIndex = elm.selectedIndex
+	if (sIndex == -1)
+	{
+		return ""
+	}
+	var selectedValue = elm.options[sIndex].innerText
+	if (selectedValue == undefined)
+	{
+		selectedValue = elm.options[sIndex].text
+	}
+	return selectedValue;
+}
+
+/*
+   Function: getIndex
+	Gets the index in a list of a given item
+
+   Parameters:
+     theItem - the items index to find
+	 theList - the list to search for the item
+
+   Returns:
+     The index of the given item in the list
+*/
+function getIndex(theItem,theList)
+{
+	for (var x=0;x<theList.length ;x++ )
+	{
+		if (theItem == theList[x])
+		{
+			return x
+		}
+	}
+	return -1
+}
+
+/*
+   Function: setSelectedIndex
+	Set the selected value for a given combobox id
+
+   Parameters:
+     selectBoxId - the id of the combobox to set value on
+	 index - the index value of the entries in the combobox to set active/selected
+
+   Returns:
+     Nothing
+*/
+function setSelectedIndex(selectBoxId,index)
+{
+	var elm = document.getElementById(selectBoxId)
+	elm.options[index].setAttribute('selected','true')
+}
+
+/*
+   Function: setSelectedValue
+	Sets the value of a combobox
+
+   Parameters:
+     cbxId - the id of the combobox
+	 value - the value to be set in the combobox
+
+   Returns:
+     Nothing
+*/
+function setSelectedValue(cbxId,value)
+{
+	var elm = document.getElementById(cbxId)
+	var ops = elm.options
+
+	for (var x=0;x<ops.length ;x++)
+	{
+		if (ops[x].innerText == value)
+		{
+			ops[x].setAttribute('selected','true')
+		}
+	}
+}
+
+/*
+   Function: incrementDate
+	Increments a jsScript date objects time
+
+   Parameters:
+     dateObj - a javascript date object
+	 timeInc - a milisecond value (int) to be added to the date obj
+
+   Returns:
+     newDate - the incremented date object
+*/
+function incrementDate(dateObj,timeInc)
+{
+	// dateObj is a javascript date object to be incremented
+// timeInc is a time unit in seconds to be added to the dateObj
+// Return value is a new date Obj that has been incremented
+	var addVal = timeInc * 1000
+	var newDate = new Date(dateObj.getTime() + addVal)
+	alert(newDate.toLocaleString())
+	return newDate
+}
+
+/*
+   Function: inList
+	Checks whether a value is in a list
+
+   Parameters:
+     item - the item in the list to search for
+	 list - the list to search through
+
+   Returns:
+     Boolean - whether the item is in the list
+*/
+function inList(item,list)
+{
+	//checks if item is in the list
+	for (var q=0;q<list.length;q++)
+	{
+		if (item == list[q])
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+/*
+   Function: strip
+	strips the leading and trailing spaces from a string
+
+   Parameters:
+     theString - the string object to be stripped
+
+   Returns:
+     The stripped string object
+*/
+function strip(theString)
+{
+	for (var x=0;x<30;x++)
+	{
+		if(theString.lastIndexOf(' ') == theString.length -1)
+		{
+			theString = theString.slice(0,-1)
+		}
+		else{
+			break;
+		}
+	}
+	return theString
+}
+
+function DateOneLargerThanDate2(dString1,dString2)
+{
+	//dString to be in the format yyyy-mm-dd hh:mm:ss
+	var parts1 = dString1.split(' ')
+	var timeParts1 = parts1[1].split(':')
+	var dateParts1 = parts1[0].split('-')
+
+	var parts2 = dString2.split(' ')
+	var timeParts2 = parts2[1].split(':')
+	var dateParts2 = parts2[0].split('-')
+
+	var date1 = new Date(dateParts1[0],dateParts1[1],dateParts1[2],timeParts1[0],timeParts1[1],timeParts1[2])
+	var date2 = new Date(dateParts2[0],dateParts2[1],dateParts2[2],timeParts2[0],timeParts2[1],timeParts2[2])
+
+	if (date1.getTime() > date2.getTime())
+	{
+		return true
+	}
+	return false;
+}
+
+function getPostContent(url,params,handler)
+{	
+	if (window.XMLHttpRequest)
+	{
+        req = new XMLHttpRequest();        
+    }
+	else if (window.ActiveXObject)
+	{
+        isIE = true;
+        req = new ActiveXObject("Microsoft.XMLHTTP");        
+    }	
+	req.open('POST', url, true);
+	req.onreadystatechange = handler		
+	req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+	req.send(params);	
+} 
+
+/*
+@summary: does a request to a given url to get its contents
+@param url: the url to open
+@param handlerFunction: the function to handle the url content
+*/
+function getContent(url,handlerFunction)
+{
+    // branch for native XMLHttpRequest object
+    if (window.XMLHttpRequest)
+	{
+        req = new XMLHttpRequest();
+        req.onreadystatechange = handlerFunction;
+        req.open("GET", url, true);
+        req.send(null);
+    // branch for IE/Windows ActiveX version
+    }
+	else if (window.ActiveXObject)
+	{
+        isIE = true;
+        req = new ActiveXObject("Microsoft.XMLHTTP");
+        if (req) 
+		{
+            req.onreadystatechange = handlerFunction;
+            req.open("GET", url, true);
+            req.send();
+        }
+    }
+}

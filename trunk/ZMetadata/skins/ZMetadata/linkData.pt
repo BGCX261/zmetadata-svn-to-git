@@ -1,0 +1,173 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+<body>
+<div metal:fill-slot="main">
+<script type="text/javascript" charset="utf-8">
+	var setItemValue = function (fieldName, uid, url, desc) {
+		jq('#'+fieldName).val(uid);
+		jq('#'+fieldName+'-label').val(desc);
+		jq('#'+fieldName+'-view').attr('href', url);
+		jq('#'+fieldName+'-view').text('View');
+	}
+</script>
+
+
+	<h3>
+		Link to Data.
+	</h3>
+	
+	<p>
+		Select a Data document to link to.
+	</p>
+	
+	<style type="text/css" media="screen">
+		input {
+			border: 1px solid #d0ccc9;
+			background: #fff;
+			color: #5f95ef;
+			font-size: 11px;
+			font-weight: 700;
+			padding-bottom: 2px;
+		}
+		#query {
+			font-weight: normal;
+			color: #565656;
+			border: 1px solid #9c9c9c;
+			width: 250px;
+			padding: 2px;
+			margin-bottom: 5px;
+			text-align: left;
+		}
+		#query.active{
+			background: #ddeff6;
+			border: 1px solid #0099d4;
+		}
+		
+		
+		
+	</style>
+	
+	
+	<form tal:attributes="action string:metadata_tool/linkDataSave" method="post" accept-charset="utf-8">
+		<input type="hidden" name="UID" tal:attributes="value context/UID" id="UID"/>
+		<table border="0" tal:define="portalTypes python: ['Document', 'Link', 'Layer', 'File', 'Folder', 'Image'];
+                                      relatedItems python: [item for item in context.getRelatedItems() if item.portal_type in ['Document', 'Link', 'Layer', 'File', 'Folder', 'Image']];">
+			<label for="results-per-query">
+				Results per query
+			</label>
+			<select name="results-per-query" id="results-per-query" size="1">
+				<option value="20">20</option>
+				<option value="50">50</option>
+				<option value="100">100</option>
+				<option value="200">200</option>
+			</select>
+			
+			<fieldset>
+				<legend>
+					Search for content types
+				</legend>
+				<tal:portalType tal:repeat="portalType portalTypes">
+					<input checked type="checkbox" class="portalTypes" tal:attributes="value portalType" name="portalTypes"/>
+					<label for="" tal:content="portalType">
+						XXXXX
+					</label>
+					<br/>
+				</tal:portalType>
+			</fieldset>
+			<label for="search-query">
+				Search for:
+			</label>
+			<form action="" method="get" accept-charset="utf-8">
+				<input type="text" name="query" value="search" id="query"> <input type="submit" value="Search" id="searchButton">
+			</form>
+			<div id="orig-related-items">
+				<h4>
+					Linked items:
+				</h4>
+				<p tal:condition="relatedItems">
+					<a href="javascript: jq('.relatedItem').attr('checked', false)">
+						Remove Data Link(s)
+					</a>
+				</p>
+				<tal:related repeat="relatedItem relatedItems">
+					<input checked type="radio" name="relatedItem" tal:attributes="value relatedItem/UID" class="relatedItem">
+					<a target="preview" tal:attributes="href relatedItem/absolute_url">
+						<img tal:attributes="src python:context.portal_types.getTypeInfo(relatedItem.portal_type).getIcon()"/>
+						<tal:title replace="relatedItem/title_or_id"/>
+					</a>
+				</tal:related>
+			</div>
+			<fieldset id="search-results-fields" style="background-color: #FFFEF1;">
+				<legend>
+					Search Results (Click to preview)
+				</legend>
+				<div id="search-results">
+					
+				</div>
+			</fieldset>
+			
+		</table>
+		<p>
+			<input class="context" type="submit" name="form_submit" value="Save">
+			<input class="standalone" type="submit" name="form.button.cancel" value="Cancel">
+		</p>
+	</form>
+	
+	<script type="text/javascript" charset="utf-8">
+		var searchBox = jq("#query");
+		
+		searchBox.focus(function(e){
+			jq(this).addClass("active");
+		});
+		searchBox.blur(function(e){
+			jq(this).removeClass("active");
+		});
+		
+		//Searchbox2 show/hide default text if needed
+		searchBox.focus(function(){
+			if(jq(this).attr("value") == 'search') jq(this).attr("value", "");
+		});
+
+
+		searchBox.blur(function(){
+			if(jq(this).attr("value") == "") jq(this).attr("value", 'search');
+		});
+		
+		
+		jq('#searchButton').click( function(e) {
+				e.preventDefault();
+				
+				var result = '';
+				jq(".portalTypes").each( function() { if (this.checked) {result += jq(this).val() + ',';}});
+				result = result.split(',');
+				
+				var query = jq('#query').val();
+				if (query == 'search') {
+					query = '';
+				}
+				
+				var searchResults = jq('#search-results');
+				
+				jq(searchResults).hide('slow');
+				jq(searchResults).load(
+					'dataSearch', {resultsPerQuery: jq('#results-per-query').val(), 
+					                portalTypes: result,
+					                SearchableText: query}, 
+					function(responseText, textStatus, XMLHttpRequest) { 
+						jq(searchResults).show('slow');
+						//if (jq(searchResults).text().strip() == '') {
+						//	
+						//	jq(searchResults).text("Sorry, nothing found!");
+						//	
+						//}
+					}
+				);
+			});
+	</script>
+	
+	
+</div>
+</body>
+</html>

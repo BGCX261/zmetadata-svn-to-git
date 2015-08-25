@@ -1,0 +1,72 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+<body>
+
+<div metal:fill-slot="main">
+	
+	<style>
+		.divMainContainer{visibility:visible; border:thin solid gray;}
+		.divMainContainerNoBorder{visibility:visible;height:100px;position:relative;}		
+		.customSelect{width:300px;}
+		.customText{width:300px;}		
+		.defaultDivVisible{clear:both;border:thin solid gray;top:4px; left:0px;visibility:visible;display:block;position:absolute;}		
+		.defaultDivVisibleNoBorder{clear:both;top:4px; left:0px;visibility:visible;display:block;position:absolute;}		
+		.error{color:red;}
+		.searchField{width:150px;}
+		.cBorder{border:thin solid gray;}
+	</style>
+    
+    <script src="utils.js"> </script>	
+	<div id="thePath" value="" tal:attributes="value here/absolute_url"></div>
+	<!-- <span tal:define="global hasAllFields here/hasGenericCoreFields"></span>  -->
+	<span tal:define="global validationRes here/getValidationResults"></span>
+	<div tal:define="global aliasses here/metadata_tool/getFieldAliases"></div>
+	<div tal:define="global dropdowns here/metadata_tool/getFieldValues"></div>
+	<div tal:define="global dateFields here/metadata_tool/getDateFields"></div>
+	
+	<div tal:define="global fields here/metadata_tool/getGenericCoreFieldsOrder"></div>	
+	<span tal:define="global fieldsDict here/getGenericCoreFields"></span>
+	<h3 tal:content="python: context.metadatatype + ' Core Editor'"></h3>
+	
+	<span tal:condition="python: not validationRes[0]">
+		<b>Document is not valid</b>
+		<p tal:content="python: validationRes[1]"></p>
+	</span>
+	
+	<span tal:condition="python: validationRes[0]">	
+		<form id="core_fields_form" method="post" action="" tal:attributes="action string:${here/absolute_url}">
+			<table id="theTable">						
+				<span tal:repeat="theField fields">
+					<span tal:condition="python: theField in fieldsDict.keys()">
+						<tr>		
+							<td tal:content="python: aliasses[theField][0]"></td>						
+							<td>
+								<span tal:attributes="name theField;id theField; title python: aliasses[theField][1];" tal:content="python: fieldsDict[theField] ">
+								</span>
+							</td>
+						</tr>	
+					</span>						
+				</span>		
+			</table>
+			<br>									
+		</form>
+		<input type="button" value="Print" onclick="print()">
+	</span>
+	
+	<script>  
+    var path = document.getElementById('thePath').getAttribute('value')		    
+    
+    function print()
+    {
+        var win = window.open(path + "/metadata_print_core_fields","Print_Core_Fields","")
+        theHTML = document.getElementById("theTable").innerHTML        
+    }    
+    
+  </script> 
+		
+</div>
+
+</body>
+</html>

@@ -1,0 +1,63 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+<body>
+
+<div metal:fill-slot="main">
+    <script src="utils.js"> </script>		
+	
+	<div tal:define="global type here/transport"></div>
+	<div tal:define="global url here/url"></div>
+	<div tal:define="global thePath here/absolute_url"></div>
+	<div id="thePath" value="" tal:attributes="value here/absolute_url"></div>
+	
+	<div>		
+		<table>
+			<tr>
+				<th>Type</th>
+				<td tal:content="type"></td>
+			</tr>
+			<tr>
+				<th>URL</th>
+				<td tal:content="url"></td>
+			</tr>
+		</table>		
+		<br><br>
+		<input type="button" value="Harvest Now" onclick="harvest()">
+	</div>
+	
+	<script>
+		var path = document.getElementById('thePath').getAttribute('value')	
+		
+		function harvest(res)
+		{
+			if(res == undefined)
+			{
+				//var params = "title="+title+"&type="+metaType;
+				getPostContent(path +"/harvest","",harvest);
+				alert("Thank you. You will receive an email with the results of the harvest.\nPlease keep in mind, that depending on speed, this operation can take a while. Incase it takes longer than 2 hours for a result email to reach you, contact the system administrator.");
+			}
+			else
+			{
+				//if(res == "-1")
+				//{
+				//	alert("Harvest Successful");
+				//}
+				//else if(parseInt(res) > 0)
+				//{
+				//	alert("Harvest Successful, but there were some error logs generated.");
+				//}
+				//else
+				//{
+				//	alert("Problem occured during harvesting.\n Please see logs")					
+				//}
+			}	
+		}
+		
+	</script>
+	
+</div>
+
+</body>
+</html>

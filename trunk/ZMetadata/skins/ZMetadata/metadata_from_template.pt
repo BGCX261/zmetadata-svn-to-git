@@ -1,0 +1,54 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+<body>
+
+<div metal:fill-slot="main">	
+	<style>
+		.format{width:190px;}
+		.required{color:red;}
+	</style>
+	<script src="utils.js"> </script>	
+	
+	<div tal:define="global thePath here/absolute_url"></div>
+	<div tal:define="global metadata here/getMetadataTypes"></div>
+	<div id="thePath" value="" tal:attributes="value here/absolute_url"></div>
+	<div tal:define="global callingId python: request.id"></div>
+	
+	<script>
+		var path = document.getElementById('thePath').getAttribute('value')
+	</script>
+	
+	<div tal:define="global title here/title"></div>
+	<div>
+		<form method="post" action="" tal:attributes="action string:${here/absolute_url}">
+		<table>
+			<input type="hidden" name="tbxParentUrl" value="" tal:attributes="value callingId">
+			<tr>
+				<td>Title</td>
+				<td><input id="tbxTitle" name="tbxTitle" class="format" type="text" value=""></td>
+			</tr>
+			<tr>
+				<td>Metadata Type</td>
+				<td>
+					<select class="format" id="cbxType" name="cbxType">
+						<span tal:repeat="meta metadata">
+							<option tal:content="meta" tal:attributes="value meta"></option>						
+						</span>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<input type="submit" value="Create"  name="createNewFromTemplate:method">
+				</td>
+			</tr>
+		</table>
+		</form>
+		
+	</div>     
+</div>
+
+</body>
+</html>

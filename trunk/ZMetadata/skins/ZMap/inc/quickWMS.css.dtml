@@ -1,0 +1,8 @@
+
+.selectionLayer {border-style:dashed;border-width:3px;border-color:red;}
+.zoomSelectionLayer {border-style:solid;border-width:2px;border-color:#5A8CB5;}
+.defaultLayer {position:absolute}
+.statusLayer{ cursor:hour}
+.statusText { font-weight: bold; color:#2F455D; font-family: ARIAL; font-size: 8pt;}
+.cancelText { font-weight: bold; color:#2F455D; font-family: ARIAL; font-size: 8pt; cursor:hand}
+.text { color:black; font-family: ARIAL; font-size: 8pt;}

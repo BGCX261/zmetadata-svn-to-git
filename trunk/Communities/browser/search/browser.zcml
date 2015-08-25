@@ -1,0 +1,50 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:browser="http://namespaces.zope.org/browser"
+           xmlns:five="http://namespaces.zope.org/five"
+           xmlns:zcml="http://namespaces.zope.org/zcml"
+           xmlns:i18n="http://namespaces.zope.org/i18n"
+           xmlns:plone="http://namespaces.plone.org/plone"
+           i18n_domain="Communities">
+
+ 
+  <browser:page
+     for="Products.Communities.content.interfaces.ICommunitySearch"
+     name="community-search"
+     class="Products.Communities.browser.search.ViewCommunitySearch.ViewCommunitySearch"
+     template="templates/community-search.pt"
+     permission="zope2.View"
+     />
+
+  <browser:page
+     for="Products.Communities.content.interfaces.ICommunitySearch"
+     name="community-metadata-search"
+     class="Products.Communities.browser.search.ViewCommunityMetadataSearch.ViewCommunityMetadataSearch"
+     template="templates/community-metadata-search.pt"
+     permission="zope2.View"
+     />
+
+  <browser:page
+     for="Products.Communities.content.interfaces.ICommunitySearch"
+     name="community-data-search"
+     class="Products.Communities.browser.search.ViewCommunityDataSearch.ViewCommunityDataSearch"
+     template="templates/community-data-search.pt"
+     permission="zope2.View"
+     />
+
+  <browser:page
+     for="Products.Communities.content.interfaces.ICommunitySearch"
+     name="community-search-results"
+     class="Products.Communities.browser.search.ViewCommunitySearchResults.ViewCommunitySearchResults"
+     template="templates/community-search-results.pt"
+     permission="zope2.View"
+     />
+
+
+
+ 
+
+  
+<!-- ##code-section BROWSER #fill in your manual code here -->
+<!-- ##/code-section BROWSER -->
+
+</configure>

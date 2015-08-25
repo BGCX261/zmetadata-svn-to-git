@@ -1,0 +1,55 @@
+<html>
+    <body>       
+			<style>
+			td{
+				text-align:left;
+			}
+
+			.tdBorder{
+				border:thin solid silver;				
+			}
+
+			.tdBorderGreen{
+				border:thin solid silver;	
+				color:green;
+			}
+
+			.tdNotRunning{
+				border:thin solid red;
+				color: red;
+			}
+
+			.tableBorder{
+				border:thin solid gray;
+			}
+			</style>						
+			<div tal:define="global abURL python: context.absolute_url()"></div>
+			<TABLE>
+				<TR>
+					<TD class="tdBorder">Title</TD>
+					<TD class="tdBorder" tal:content="here/title">&nbsp;&nbsp;</TD>
+				</TR>
+				<TR>
+					<TD class="tdBorder">Abstract</TD>
+					<TD class="tdBorder" tal:content="here/abstract">&nbsp;&nbsp;</TD>							
+				</TR>
+				<TR>
+					<TD class="tdBorder">Keywords</TD>
+					<TD class="tdBorder" tal:content="here/keywords">&nbsp;&nbsp;</TD>							
+				</TR>
+				<TR>
+					<TD class="tdBorder">Bounding Box</TD>
+					<TD class="tdBorder" tal:content="here/wmsBoundingBox">&nbsp;&nbsp;</TD>							
+				</TR>
+				<TR>							
+					<TD class="tdBorder">Spatial Reference System</TD>
+					<TD class="tdBorder" tal:content="here/wmsSRS">&nbsp;&nbsp;</TD>
+				</TR>
+				<TR>
+					<TD class="tdBorder">Geometry Type</TD>
+					<TD class="tdBorder" tal:content="here/geometryType">&nbsp;&nbsp;</TD>
+				</TR>				
+			</TABLE>       
+    </body>
+</html>
+

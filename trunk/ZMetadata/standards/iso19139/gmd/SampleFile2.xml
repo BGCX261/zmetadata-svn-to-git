@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Created with Liquid XML Studio 6.1.15.0 - FREE Community Edition (http://www.liquid-technologies.com) -->
+<tnsb:EX_VerticalExtent xmlns:tns="http://www.opengis.net/gml" xmlns:tnsa="http://www.w3.org/1999/xlink" xmlns:tnsb="http://www.isotc211.org/2005/gmd" xmlns:tnsc="http://www.isotc211.org/2005/gco" xmlns:tnsd="http://www.isotc211.org/2005/gss" xmlns:tnse="http://www.isotc211.org/2005/gts" xmlns:tnsf="http://www.isotc211.org/2005/gsr" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.isotc211.org/2005/gmd C:\Plone3_Instance4080\Products\ZMetadata\standards\iso19139\gmd\gmd.xsd" id="AAAAA">
+  <tnsb:minimumValue tnsc:nilReason="" />
+  <tnsb:maximumValue tnsc:nilReason="http://www.liquid-technologies.com" />
+  <tnsb:verticalCRS tnsa:type="simple" tnsa:arcrole="http://www.liquid-technologies.com" tnsa:title="string" tnsa:actuate="other" uuidref="string" />
+</tnsb:EX_VerticalExtent>

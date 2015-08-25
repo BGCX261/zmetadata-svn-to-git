@@ -1,0 +1,102 @@
+<div style="border:thin solid gray;">
+	<table width="100%">
+		<tr>
+			<td>
+				<table>
+					<tr>
+						<th align="left">Type</th><td tal:content="python: context.getMetadatatype()"></td>			
+					</tr>
+				    <tr>
+						<th align="left"><a href="" tal:attributes="href python: context.absolute_url() + '/view_metadata'">Title</a></th><td tal:content="here/title"></td>			
+					</tr>
+					<tr>
+						<th align="left">Metadata Title</th><td tal:content="python: context.mTitle"></td>			
+					</tr>
+					<tr>
+						<th align="left">Date</th><td tal:content="python: context.mDate"></td>
+					</tr>
+					<tr>
+						<th align="left">Organization</th><td tal:content="python: context.mOrganization"></td>
+					</tr>
+					<tr>
+						<th align="left">Abstract</th><td tal:content="python: context.mAbstract"></td>
+					</tr>
+					<tr>
+						<th align="left">Keywords</th><td tal:content="python: context.mKeywords"></td>
+					</tr>
+					<tr tal:condition="python: len(context.mBounds) == 4">
+						<th align="left">Bounds</th><td tal:content="python: context.mBounds"></td>
+					</tr>
+                                        <tr tal:condition="python: len(context.mBounds) != 4">                                                <th align="left">Bounds</th><td>Invalid Bounds</td>                
+                                        </tr>
+					
+					<span tal:condition="python: context.mOnlineResource">
+						<tr>
+							<th align="left">Online Resource</th>
+							<td>
+							<span tal:repeat="resource here/mOnlineResource">
+								<a href="" tal:attributes="href resource"><b tal:content="resource"></b></a> <br>
+							</span>
+							</td>
+						</tr>
+					</span>
+					<tr>
+						<th align="left">Scale</th><td tal:content="python: context.mScale"></td>
+					</tr>
+					<tr tal:define="custodian python:context.metadata_tool.getMetadataCustodian(context)">
+						<tal:hasCustodian condition="custodian">
+							<th align="left">Custodian</th>
+							<td>
+								<a tal:attributes="href python: context.absolute_url()" tal:content="custodian/title_or_id">
+								</a>
+							</td>
+						</tal:hasCustodian>
+						<tal:hasNoCustodian condition="not: custodian">
+							<th align="left">Custodian</th>
+							<td>No Parent Custodian found</td>
+						</tal:hasNoCustodian>
+					</tr>
+					<tr tal:condition="python:hasattr(here, 'mOwner')">
+						<th align="left">Contact Person</th><td tal:content="python: context.mOwner"></td>
+					</tr>
+					<tal:contact define="creator context/Creator;author python:here.portal_membership.getMemberInfo(creator)">
+						<span tal:condition="python:context.portal_membership.getHomeFolder(creator)">
+							<tr>
+								<th align="left">Portal Contact</th>
+								<td>
+									<a tal:attributes="href python:context.portal_membership.getHomeFolder(creator).absolute_url()"
+									   tal:content="python:author and author['fullname'] or creator"
+									             tal:omit-tag="not:author">
+									            Bob Dobalina
+									          </a>
+								</td>
+							</tr>
+						</span>
+					</tal:contact>
+					
+					<tr>
+						<td>
+							<a href="" tal:attributes="href python: context.absolute_url() + '/view_metadata_summary'">View</a>
+							<a tal:condition="python: here.metadata_tool.hasPermission(context, 'Modify portal content')" tal:attributes="href python: context.absolute_url() + '/edit_metadata'">Edit</a>
+							<a href="" tal:attributes="href python: context.absolute_url() + '/downloadXML'">Download</a>
+						</td>
+					</tr>
+				</table>
+			</td>			
+			<td align="right">
+				<span tal:condition="here/hasValidBounds">
+					<a href="" tal:attributes="href python: context.absolute_url() + '/view_metadata'">
+						<img src="" tal:attributes="src python: context.absolute_url() + '/getMapSmall'" width="200" height="180"/>
+					</a>
+				</span>
+				<span tal:condition="not: python: context.hasValidBounds()">					
+					<img src="no_image.jpg" width="200" height="180"> 								
+				</span>
+			</td>
+			
+		</tr>
+	</table>	
+</div>
+
+
+	

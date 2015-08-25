@@ -1,0 +1,945 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+<body>
+
+<div metal:fill-slot="main">
+	<link rel="stylesheet" type="text/css" href="calendar-win2k-1.css"/>
+	<script language="Javascript" tal:attributes="src string:${portal_url}/inc/WMSbrowsers.js"></script>
+    <script language="Javascript" tal:attributes="src string:${portal_url}/inc/WMSlayer.js"></script>
+    <script language="Javascript" tal:attributes="src string:${portal_url}/inc/WMSmap.js"></script>
+    <script language="Javascript" tal:attributes="src string:${portal_url}/inc/WMStools.js"></script>
+    <script language="Javascript" tal:attributes="src string:${portal_url}/inc/WMSquick.js"></script>
+    <script type="text/javascript" tal:attributes="src string:${portal_url}/calendar.js"></script>
+    <script type="text/javascript" tal:attributes="src string:${portal_url}/calendar-en.js"></script>
+    <script type="text/javascript" tal:attributes="src string:${portal_url}/calendar-setup.js"></script>
+    <script language="Javascript" tal:attributes="src string:${portal_url}/utils.js"></script>
+    
+    <script tal:content="python: 'var mapServer = \'' + context.metadata_tool.getMapserverUrl() + '\''"></script>
+	<script tal:content="python: 'var mapLayers = \'' + context.metadata_tool.getMapLayers() + '\''"></script>
+	<script tal:content="python: 'var mapExtent = new Array('+context.metadata_tool.getMapExtent()[0]+',' +context.metadata_tool.getMapExtent()[1]+ ',' +context.metadata_tool.getMapExtent()[2]+ ',' +context.metadata_tool.getMapExtent()[3]+ ')'"></script>
+    
+    <script>
+    
+    // ========== Adding Map Stuff===START=======
+	var spatialOperations = new Array("Contains","Equals","Intersects","Touches","Within","Outside");
+  	var provinceList = new Array("- Any -", "- User defined -", "Eastern Cape","Free State"  , "Gauteng" , "KwaZulu-Natal" , "Mpumalanga" , "Northern Cape" , "Limpopo", "North West", "Western Cape" );
+	var provinceMap = {};
+	provinceMap["Eastern Cape"] = "22.7357425689697,-34.2138671875,30.1947231292725,-30.001802444458";
+	provinceMap["Free State"] = "24.3466167449951,-30.6940822601318,29.7851333618164,-26.668737411499";
+	provinceMap["Gauteng"] = "27.4252166748047,-26.9238319396973,29.0984230041504,-25.1096076965332";
+	provinceMap["KwaZulu-Natal"] = "28.873477935791,-31.0826320648193,32.9449844360352,-26.8044166564941";
+	provinceMap["Mpumalanga"] = "28.2434768676758,-27.5061531066895,32.0335960388184,-23.981237411499";
+	provinceMap["Northern Cape"] = "16.4519023895264,-32.944995880127,25.5493335723877,-24.7658576965332";
+	provinceMap["Limpopo"] = "26.4075374603271,-25.4227924346924,31.8838424682617,-22.1250267028809";
+	provinceMap["North West"] = "22.6290264129639,-28.1132221221924,28.2983531951904,-24.6366271972656";
+	provinceMap["Western Cape"] = "17.7573566436768,-34.8341751098633,24.222412109375,-30.4302577972412" ;
+  
+	/*
+	 * Helper javascript function for addremove widget;
+	 */
+
+
+	// add input from an inputbox
+	function addremove_addNewItem(field) {
+
+	  	var inputBox   = document.getElementById(field + "_new");
+	  	var targetList = document.getElementById(field + "_selected");
+
+	 	if(_addremove_addToList(targetList, inputBox.value, inputBox.value)) {
+	  		_addremove_updateSubmitField(field);
+			inputBox.value = "";
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	// add the selected item from the "from" box to the "to" box
+	function addremove_addItem(field) {
+
+		var sourceList = document.getElementById(field + "_unselected");
+		var targetList = document.getElementById(field + "_selected");
+
+		var idx = sourceList.selectedIndex;
+
+		if(_addremove_moveItem(sourceList, idx, targetList)) {
+			_addremove_updateSubmitField(field);
+			return true;
+		} else {
+			return false;
+		}
+
+	}
+
+	// remove the selected item from to "to" box and put it in the "from" box
+	function addremove_removeItem(field) {
+
+		var sourceList = document.getElementById(field + "_selected");
+		var targetList = document.getElementById(field + "_unselected");
+
+		var idx = sourceList.selectedIndex;
+
+		if(_addremove_moveItem(sourceList, idx, targetList)) {
+			_addremove_updateSubmitField(field);
+			return true;
+		} else {
+			return false;
+		}
+
+	}
+
+	/*
+	 * Helper functions
+	 */
+
+	// Move an item from one list to another
+	function _addremove_moveItem(sourceList, idx, targetList) {
+
+	  var success = false;
+
+	  if(idx >= 0) {
+		success = _addremove_addToList(targetList, 
+										sourceList[idx].text, 
+	  								    sourceList[idx].value)
+	  	if(success)
+		  sourceList[idx] = null;
+	  } else {
+	    alert(string_addremove_moveItem);
+	  }
+
+	  return success;
+	}
+
+	// add a new item to the given list
+	function _addremove_addToList(targetList, newText, newValue) {
+
+	  	// ensure we don't have it already
+	  	for(var i = 0; i < targetList.length; ++i) {
+	    	if(targetList[i].text == _trimString(newText) || 
+	    	        targetList[i].value == _trimString(newValue))
+	      	    return false;
+	  	}
+
+	  	newIdx = targetList.length;
+
+	  	targetList[newIdx]       = new Option(_trimString(newText));
+	  	targetList[newIdx].value = _trimString(newValue);
+
+		_addremove_sortListBox(targetList);
+
+	  	return true;
+	}
+
+	// update the hidden field we use to actually submit the values as a pipe-
+	//  separated list
+	function _addremove_updateSubmitField(field) {
+
+		var submitContainer  = document.getElementById(field + "_container");
+		var selectedList = document.getElementById(field + "_selected");
+
+		// get rid of the hidden fields we have now
+		while(submitContainer.hasChildNodes()) {
+	        var node = submitContainer.childNodes[0];
+	        var removed = submitContainer.removeChild(node);
+		}
+
+	    // Then add them
+		for(var i = 0; i < selectedList.length; ++i) {
+		    var value = selectedList[i].value;
+		    var node = document.createElement('input');
+		    node.type = "hidden";
+		    node.name = field + ":list";
+			node.value = value;
+			submitContainer.appendChild(node);
+		}
+
+	}
+
+	// Sort the submit box
+	function _addremove_sortListBox(list) {
+
+		options = Array();
+
+		if(list.options == null)
+			return;
+
+		for(var i = 0; i < list.options.length; ++i) {
+			options[options.length] = new Option(list.options[i].text, 
+												 list.options[i].value, 
+												 list.options[i].defaultSelected, 
+												 list.options[i].selected);
+		}
+
+		if(options.length == 0)
+			return;
+
+		options = options.sort( 
+			function(a, b) { 
+				if((a.text+"") < (b.text+"")) return -1;
+				if((a.text+"") > (b.text+"")) return  1;
+				return 0;
+				} 
+			);
+
+		for(var i = 0; i < options.length; ++i) {
+			list.options[i] = new Option(options[i].text, 
+										 options[i].value, 
+										 options[i].defaultSelected, 
+										 options[i].selected);
+		}
+	}
+
+	function _printTree(node, str) {
+	    str += node.nodeName + ' -> ' + node.nodeValue + '\n'
+	    if (node.hasChildNodes()) {
+	        for(var i = 0; i < node.childNodes; ++i)
+	            str += _printTree(node.childNodes[i], str)
+	    }
+	    return str
+	}
+
+	function _trimString(str) { 
+	    // skip leading and trailing whitespace 
+	    // and return everything in between 
+	    var ret = str.replace(/^\s+/, ""); 
+	    ret = ret.replace(/\s+$/, ""); 
+	    ret = ret.replace(/\s+/g, " "); 
+	    return ret; 
+	}
+	
+
+
+
+  	function onExtentChange()
+    {
+		setSelectedValue("cbxRegion","- User defined -");
+    }
+    
+    function setSearchBBox(x1,y1,x2,y2)
+    {
+        document.getElementById("common_Bounds_West").value = x1;
+        document.getElementById("common_Bounds_South").value = y1;
+        document.getElementById("common_Bounds_East").value = x2;
+        document.getElementById("common_Bounds_North").value = y2;
+		setSelectedValue("cbxRegion","- User defined -");	
+    }
+    
+    function writeMaps()
+    {
+    	var map = new quickWMS(mapExtent[0],mapExtent[1],mapExtent[2],mapExtent[3]);	
+    	map.addLayer(mapServer, mapLayers, "1.0.0");    	
+    	map.writeDOM("myMap", 0, 0, 330, 180, "background-color:white;border-style:solid;border-width:1px;border-color:black;");
+    	map.toolbar = new toolBar(map);
+    	map.toolbar.writeDOM(0,0,true);
+    	map.initialize() 
+    	map.refresh();	
+    }
+    
+    function onRegionChange()
+	{
+		var region = getSelectedValue("cbxRegion")
+		if (region == "- Any -")
+		{
+			clearExtent();
+			return;
+		}
+		if (region == "- User defined -")
+		{
+			return;
+		}
+		var extentString = provinceMap[region];
+		var extent = extentString.split(",");
+		setExtent(extent);		
+	}    
+	
+	function clearExtent()
+	{
+		document.getElementById("common_Bounds_West").value = "";
+		document.getElementById("common_Bounds_South").value = "";
+		document.getElementById("common_Bounds_East").value = "";
+		document.getElementById("common_Bounds_North").value = "";
+	}
+	
+	function setExtent(extent)
+	{
+		document.getElementById("common_Bounds_West").value = extent[0];
+		document.getElementById("common_Bounds_South").value = extent[1];
+		document.getElementById("common_Bounds_East").value = extent[2];
+		document.getElementById("common_Bounds_North").value = extent[3];
+	}
+	
+	function setupCalender(fieldName, dateFormat)
+		{			
+			if (dateFormat != undefined)
+			{
+				var format = dateFormat;
+			}
+			else
+			{
+				var format = "%Y-%m-%d";
+			}
+			Calendar.setup({inputField:fieldName,ifFormat:format,showsTime:false,button:"btn"+fieldName,singleClick:true,step:1});
+		}
+	
+	// ========== Adding Map Stuff===END=======    
+    </script>
+    
+    	
+	<div tal:define="global thePath here/absolute_url"></div>
+	<div id="thePath" value="" tal:attributes="value here/absolute_url"></div>
+	
+	<div tal:define="global data options/data"></div>	
+	<div tal:define="global standards python: data.keys()"></div>	
+	<div tal:define="global aliasses here/metadata_tool/getFieldAliases"></div>
+	<div tal:define="global dropdowns here/metadata_tool/getFieldValues"></div>
+	<div tal:define="global dateFields here/metadata_tool/getDateFields"></div>
+	
+	<h3>
+		Search For Data on <tal:location replace="here/aq_parent/title_or_id"/>
+	</h3>
+	
+	<p>
+		<a tal:attributes="href string:getCommunityMetadataSearchView">Click here if you want the Metadata Search perspective.</a>
+	</p>
+	<p>or Pick another community search page: <select name="jumpToCommunity" id="jumpToCommunity" onchange="javascript: void(jump=document.getElementById('jumpToCommunity'));void(window.location=jump.value+'/search/getCommunityDataSearchView')" size="1">
+		<option value="">--Select another community search page--</option>
+
+		<tal:communities repeat="community here/portal_communitytool/getMyCommunities">
+		
+			<option tal:condition="python: community.id != here.aq_parent.id" 
+				tal:attributes="value community/absolute_url" 
+				tal:content="community/title_or_id">option1</option>
+		
+		</tal:communities>
+		
+	</select></p>
+	
+	<span tal:condition="python: options.has_key('errors')">
+		<span tal:define="global errorList options/errors">
+			<br>
+			<table>
+				<span tal:repeat="error errorList">
+					<tr>
+						<td class="error" tal:content="python: error.keys()[0]"></td>
+						<td class="error" tal:content="python: error.values()[0]"></td>
+					</tr>
+				</span>
+			</table>		
+			<br>
+		</span>
+		<!-- -render errors here-->
+	</span>
+	
+	
+	
+		
+	<script type="text/javascript">
+		jq(document).ready(function(){
+			jq(".menu > li, .menu > li > a").click(function(e){
+				switch(e.target.id){
+					case "what-tab": case "what":
+						//change status & style menu
+						jq("#what").addClass("active");
+						jq("#where").removeClass("active");
+						jq("#when").removeClass("active");
+						//display selected division, hide others
+						jq("div.what").fadeIn();
+						jq("div.where").css("display", "none");
+						jq("div.when").css("display", "none");
+					break;
+					case "where-tab": case "where":
+						//change status & style menu
+						jq("#what").removeClass("active");
+						jq("#where").addClass("active");
+						jq("#when").removeClass("active");
+						//display selected division, hide others
+						jq("div.where").fadeIn();
+						jq("div.what").css("display", "none");
+						jq("div.when").css("display", "none");
+					break;
+					case "when-tab": case "when":
+						//change status & style menu
+						jq("#what").removeClass("active");
+						jq("#where").removeClass("active");
+						jq("#when").addClass("active");
+						//display selected division, hide others
+						jq("div.when").fadeIn();
+						jq("div.what").css("display", "none");
+						jq("div.where").css("display", "none");
+					break;
+				}
+				//alert(e.target.id);
+				return false;
+			});
+			
+			jq("#what").addClass("active");
+			jq("#where").removeClass("active");
+			jq("#when").removeClass("active");
+			//display selected division, hide others
+			jq("div.what").fadeIn();
+			jq("div.where").css("display", "none");
+			jq("div.when").css("display", "none");
+
+		});
+
+		</script>
+	
+	<form method="post" action="" tal:attributes="action string:${here/absolute_url}">
+			<div id="container">
+				<ul class="menu">
+					<li id="what" class="active">
+						<p id="what-tab">
+							Common Metadata Fields
+						</p>
+					</li>
+					<li id="where">
+						<p id="where-tab">
+							Spatial Fields
+						</p>
+					</li>
+					<li id="when">
+						<p id="when-tab">
+							Metadata Standards
+						</p>
+					</li>
+				</ul>
+				<span class="clear"></span>
+				<!-- HERE BEGINS COMMON FIELDS -->
+				<div class="content what" style="">
+					<h2 style="margin:20px 0px;">Common Metadata Fields</h2>
+					<div id="div_common">
+						<!-- COMMON render common fields-->
+						<span tal:condition="python: data.has_key('COMMON')">
+						<table>
+							<span tal:repeat="reportField python: data['COMMON']">
+								<tr tal:condition="python: reportField['name'] != 'common_Bounds'" tal:define="fieldValue python: request.form.setdefault(reportField['name'], reportField['default'])">						
+									<td tal:content="python:reportField['label']"> </td>
+									<td>							
+									<span tal:condition="python: reportField['type'] == 'KeywordWidget'">						
+										<select class="customSelect" id="cbxOntology" name="cbxOntology" onchange="populateKeywords(this.id)">
+											<option></option>
+											<span tal:repeat="ont python: reportField['vocabulary'].keys()">
+												<option tal:content="ont" value="" tal:attributes="id ont; value python: '|'.join(reportField['vocabulary'][ont])"></option>
+											</span>								
+										</select>
+
+										
+										
+										
+										
+										
+										<div class="field ArchetypesAddRemoveWidget  kssattr-atfieldname-keywords" id="archetypes-fieldname-keywords">
+											<span></span>
+											<div class="fieldErrorBox"></div>
+												<table cellpadding="2" cellspacing="2">
+													<tbody><tr>
+														<!-- From box --> 
+														<td valign="top" style="min-width:10em">
+															<div class="formHelp">
+																Available:
+															</div>
+															<select id="common_Keywords_unselected" name="common_Keywords_unselected" size="7" ondblclick="addremove_addItem('common_Keywords')" style="min-width:10em">
+										                </select>
+
+										            </td>
+										            <!-- Buttons -->
+										            <td valign="middle" align="center">
+										                <input type="button" value="Add &gt;" style="width: 100%;" onclick="addremove_addItem('common_Keywords')"><br>
+										                <input type="button" value="&lt; Remove" style="width: 100%; margin: 0" onclick="addremove_removeItem('common_Keywords')">
+										            </td>
+										            <!-- To box -->
+										            <td valign="top" style="min-width:10em">
+
+										                <div class="formHelp">
+										                    Selected:
+										                </div>
+										                <select id="common_Keywords_selected" name="common_Keywords_selected" size="7" ondblclick="addremove_removeItem('common_Keywords')" style="min-width:10em">
+										                  <!--option value="Ant">Ant</option>
+										                  <option value="Fly">Fly</option>
+										                  <option value="Mosquito">Mosquito</option-->
+										                </select>
+
+										            </td>
+										            </tr>
+
+										            <!-- Add button -->
+										            <tr>
+										            <td align="right" valign="top" colspan="2">
+										                <div style="margin-top: 1em; margin-right: 1em">
+										                    <span class="formHelp">New Value: </span>
+										                    <input type="text" id="common_Keywords_new">
+										                </div>
+										            </td>
+										            <td align="center" valign="middle">
+										                <div style="margin-top: 1em">
+										                    <input type="button" value="&gt; Add New Value" style="width: 100%; margin: 0" onclick="addremove_addNewItem('common_Keywords')">
+										                </div>
+										            </td>
+										            </tr>
+
+										            </tbody></table>
+
+										            <!-- Observe the magic -->
+										            <div id="common_Keywords_container">
+										                
+										            </div>
+
+
+
+										        </div>
+										
+										
+										
+										
+										
+										
+										
+
+										<!--select class="customSelect" id="common_Keywords_Filter" name="common_Keywords_Filter" style="height:70px;" multiple >
+											<option></option>								
+										</select>
+										<select class="customSelect" id="common_Keywords" name="common_Keywords" style="height:70px;" multiple tal:attributes="name python:reportField['name']; id python:reportField['name']">
+																			
+										</select-->
+									</span>						
+
+									<span tal:condition="python: reportField['type'] == 'StringWidget' and reportField['name'] != 'common_Bounds'">						
+										<input class="customText" type="text" name="" value="" id="" tal:attributes="name python:reportField['name']; value fieldValue; id python:reportField['name']">
+									</span>
+									<span tal:condition="python: reportField['type'] == 'SelectionWidget'">						
+										<select class="customSelect" id="" name="" tal:attributes="name python:reportField['name']; id python:reportField['name']">
+											<option></option>
+											<span tal:repeat="vocab python: reportField['vocabulary'].values()">
+												<option tal:content="vocab"></option>
+											</span>								
+										</select>
+									</span>
+									<span tal:condition="python: reportField['type'] == 'CalendarWidget'">										
+										<input type="text" class="searchField" value="" id="" name="" tal:attributes="name python: reportField['name'];id python: reportField['name']; value fieldValue">
+										<button type="reset" id="" tal:attributes="id python: 'btn'+reportField['name']">...</button>																		
+										<script tal:content="python: '''setupCalender(\''''+reportField['name']+'''\' , \''''+dateFields[reportField['name']]+'''\')''' ">									
+										</script>
+									</span>
+									</td>
+								</tr>
+							</span>	
+						</table>
+						</span>
+					</div>
+				</div>
+				<!-- HERE ENDS COMMON FIELDS -->
+				<!-- HERE BEGINS SPATIAL FIELDS -->
+				<div class="content where" style="">
+					<h2 style="margin:20px 0px;">Spatial Fields</h2>
+					<div id="div_common">
+						<!-- COMMON render common fields-->
+						<span tal:condition="python: data.has_key('COMMON')">
+						<table>
+							<span tal:repeat="reportField python: data['COMMON']">
+								<tr tal:condition="python: reportField['name'] == 'common_Bounds'" tal:define="fieldValue python: request.form.setdefault(reportField['name'], reportField['default'])">						
+									<td tal:content="python:reportField['label']"> </td>
+									<td>							
+									<span>						
+										<input class="customText" type="hidden" name="" value="" id="" tal:attributes="name python:reportField['name']; value fieldValue; id python:reportField['name']">
+										<table class="cBorder">								
+											<tr>									
+												<span tal:condition="python: 'common_Bounds_North' in request.form.keys()">										
+													<td>&nbsp;</td>
+													<td align="center">North <input type="text" class="coord" id="common_Bounds_North" name="common_Bounds_North" onchange="javascript: onExtentChange();" tal:attributes="value python: request.form['common_Bounds_North']"></td>
+													<td>&nbsp;</td>																	
+												</span>
+												<span tal:condition="not: python: 'common_Bounds_North' in request.form.keys()">
+													<td>&nbsp;</td>
+													<td align="center">North <input type="text" class="coord" id="common_Bounds_North" name="common_Bounds_North" onchange="javascript: onExtentChange();"></td>
+													<td>&nbsp;</td>							
+												</span>									
+											</tr>
+											<tr>
+												<td align="right" valign="bottom">West</td>
+												<td rowspan="2">
+									                <div style="position:relative;width:330px;height:180px;">
+									                    <script>
+									                        writeMaps()
+									                    </script>
+									                </div>
+									            </td>
+												<td valign="bottom">East</td>
+											</tr>
+											<tr>									
+												<span tal:condition="python: 'common_Bounds_West' in request.form.keys()">
+													<td valign="top"><input type="text" class="coord" id="common_Bounds_West" name="common_Bounds_West" onchange="javascript: onExtentChange()" tal:attributes="value python: request.form['common_Bounds_West']"></td>							
+												</span>
+												<span tal:condition="not: python: 'common_Bounds_West' in request.form.keys()">
+													<td valign="top"><input type="text" class="coord" id="common_Bounds_West" name="common_Bounds_West" onchange="javascript: onExtentChange()"></td>							
+												</span>										
+
+												<span tal:condition="python: 'common_Bounds_East' in request.form.keys()">
+													<td align="left" valign="top"><input type="text" class="coord" id="common_Bounds_East" name="common_Bounds_East" onchange="javascript: onExtentChange()" tal:attributes="value python: request.form['common_Bounds_East']"></td>							
+												</span>
+												<span tal:condition="not: python: 'common_Bounds_East' in request.form.keys()">
+													<td align="left" valign="top"><input type="text" class="coord" id="common_Bounds_East" name="common_Bounds_East" onchange="javascript: onExtentChange()"></td>							
+												</span>		
+											</tr>
+											<tr>									
+												<span tal:condition="python: 'common_Bounds_South' in request.form.keys()">
+													<td>&nbsp;</td>
+													<td align="center">South <input type="text" class="coord" id="common_Bounds_South" name="common_Bounds_South" onchange="javascript: onExtentChange()" tal:attributes="value python: request.form['common_Bounds_South']"></td>
+													<td>&nbsp;</td>																	
+												</span>
+												<span tal:condition="not: python: 'common_Bounds_South' in request.form.keys()">
+													<td>&nbsp;</td>
+													<td align="center">South <input type="text" class="coord" id="common_Bounds_South" name="common_Bounds_South" onchange="javascript: onExtentChange()"></td>
+													<td>&nbsp;</td>							
+												</span>
+											</tr>
+											<tr>
+												<td>Spatial Type</td>
+												<td><select id="cbxSpatialType" class="searchField"></select></td>
+											</tr>
+											<tr>
+												<td>Region</td>
+												<td><select id="cbxRegion" class="searchField" onchange="onRegionChange()"></select></td>
+											</tr>		
+										</table>
+									</span>
+									<span tal:condition="python: reportField['type'] == 'StringWidget' and reportField['name'] != 'common_Bounds'">						
+										<input class="customText" type="text" name="" value="" id="" tal:attributes="name python:reportField['name']; value fieldValue; id python:reportField['name']">
+									</span>
+									</td>
+								</tr>
+							</span>
+						</table>
+						</span>
+					</div>
+				</div>
+			<div class="content when" style="">
+				<h2 style="margin:20px 0px;">Metadata Standards</h2>
+				
+				
+				<table>
+					<tr>
+					<span tal:repeat="std options/standards">
+						<td>
+							<input type="checkbox" value="" id="" name="" checked tal:attributes="name python: 'chb_Standard_' + std; id python: 'chb_Standard_' + std; value python: 'chb_Standard_' + std; ">
+							<input type="button" value="" onclick=""  tal:attributes="value std; onclick python:  'showStandard(\'div_' + std.lower() + '\')'  ;">
+						</td>
+					</span>
+					</tr>
+				</table>
+
+
+				<div id="standardsContainer" class="divMainContainerNoBorder">
+					<div id="div_dublincore" class="defaultDivHiddenNoBorder">
+						<!-- -DC  render the fields for the Dublin Core Standard -->
+						<span tal:condition="python: data.has_key('DublinCore')">
+						<table>
+							<span tal:repeat="reportField python: data['DublinCore']">
+								<tr tal:define="fieldValue python: request.form.setdefault(reportField['name'], reportField['default'])">							
+									<td tal:content="python: aliasses[reportField['name']][0]"> </td>
+									<td>								
+									<span tal:condition="python: (reportField['name'] not in dropdowns.keys() and reportField['name'] not in dateFields.keys())">						
+										<input class="customText" type="text" name="" value="" id="" tal:attributes="name python:reportField['name']; value fieldValue; id python:reportField['name']">
+									</span>							
+
+									<span tal:condition="python: reportField['name'] in dropdowns.keys()">
+										<select class="customSelect" id="" name="" tal:attributes="name python:reportField['name']; id python:reportField['name']">
+											<option></option>
+											<span tal:repeat="vocab python: dropdowns[reportField['name']]">
+												<option tal:content="vocab"></option>
+											</span>								
+										</select>							
+									</span>							
+
+									<span tal:condition="python: reportField['name'] in dateFields.keys()">
+										<input type="text" class="searchField" value="" id="" name="" tal:attributes="name python: reportField['name'];id python: reportField['name']; value fieldValue">
+										<button type="reset" id="" tal:attributes="id python: 'btn'+reportField['name']">...</button>
+										<script tal:content="python: '''setupCalender(\''''+reportField['name']+'''\' , \''''+dateFields[reportField['name']]+'''\')''' ">									
+										</script>
+									</span>
+
+									</td>
+								</tr>
+							</span>	
+						</table>	
+						</span>					
+					</div>
+
+					<div id="div_eml" class="defaultDivHiddenNoBorder">
+						<span tal:condition="python: data.has_key('EML')">
+						<table>
+							<span tal:repeat="reportField python: data['EML']">
+								<tr tal:define="fieldValue python: request.form.setdefault(reportField['name'], reportField['default'])">							
+									<td tal:content="python: aliasses[reportField['name']][0]"> </td>
+									<td>						
+									<span tal:condition="python: (reportField['name'] not in dropdowns.keys() and reportField['name'] not in dateFields.keys())">						
+										<input class="customText" type="text" name="" value="" id="" tal:attributes="name python:reportField['name']; value fieldValue; id python:reportField['name']">
+									</span>							
+
+									<span tal:condition="python: reportField['name'] in dropdowns.keys()">
+										<select class="customSelect" id="" name="" tal:attributes="name python:reportField['name']; id python:reportField['name']">
+											<option></option>
+											<span tal:repeat="vocab python: dropdowns[reportField['name']]">
+												<option tal:content="vocab"></option>
+											</span>								
+										</select>							
+									</span>							
+
+									<span tal:condition="python: reportField['name'] in dateFields.keys()">
+										<input type="text" class="searchField" value="" id="" name="" tal:attributes="name python: reportField['name'];id python: reportField['name']; value fieldValue">
+										<button type="reset" id="" tal:attributes="id python: 'btn'+reportField['name']">...</button>
+										<script tal:content="python: '''setupCalender(\''''+reportField['name']+'''\' , \''''+dateFields[reportField['name']]+'''\')''' ">									
+										</script>
+									</span>
+									</td>
+								</tr>
+							</span>	
+						</table>	
+						</span>	
+					</div>		
+
+					<div id="div_sans1878" class="defaultDivHiddenNoBorder">
+						<span tal:condition="python: data.has_key('SANS1878')">
+						<table>
+							<span tal:repeat="reportField python: data['SANS1878']">
+								<tr tal:define="fieldValue python: request.form.setdefault(reportField['name'], reportField['default'])">							
+									<td tal:content="python: aliasses[reportField['name']][0]"> </td>
+									<td>						
+									<span tal:condition="python: (reportField['name'] not in dropdowns.keys() and reportField['name'] not in dateFields.keys())">						
+										<input class="customText" type="text" name="" value="" id="" tal:attributes="name python:reportField['name']; value fieldValue; id python:reportField['name']">
+									</span>							
+
+									<span tal:condition="python: reportField['name'] in dropdowns.keys()">
+										<select class="customSelect" id="" name="" tal:attributes="name python:reportField['name']; id python:reportField['name']">
+											<option></option>
+											<span tal:repeat="vocab python: dropdowns[reportField['name']]">
+												<option tal:content="vocab"></option>
+											</span>								
+										</select>							
+									</span>							
+
+									<span tal:condition="python: reportField['name'] in dateFields.keys()">
+										<input type="text" class="searchField" value="" id="" name="" tal:attributes="name python: reportField['name'];id python: reportField['name']; value fieldValue">
+										<button type="reset" id="" tal:attributes="id python: 'btn'+reportField['name']">...</button>
+										<script tal:content="python: '''setupCalender(\''''+reportField['name']+'''\' , \''''+dateFields[reportField['name']]+'''\')''' ">									
+										</script>
+									</span>
+									</td>
+								</tr>
+							</span>	
+						</table>	
+						</span>	
+					</div>
+
+					<div id="div_iso19115" class="defaultDivHiddenNoBorder">
+						<span tal:condition="python: data.has_key('ISO19115')">
+						<table>
+							<span tal:repeat="reportField python: data['ISO19115']">
+								<tr tal:define="fieldValue python: request.form.setdefault(reportField['name'], reportField['default'])">							
+									<td tal:content="python: aliasses[reportField['name']][0]"> </td>
+									<td>						
+									<span tal:condition="python: (reportField['name'] not in dropdowns.keys() and reportField['name'] not in dateFields.keys())">						
+										<input class="customText" type="text" name="" value="" id="" tal:attributes="name python:reportField['name']; value fieldValue; id python:reportField['name']">
+									</span>							
+
+									<span tal:condition="python: reportField['name'] in dropdowns.keys()">
+										<select class="customSelect" id="" name="" tal:attributes="name python:reportField['name']; id python:reportField['name']">
+											<option></option>
+											<span tal:repeat="vocab python: dropdowns[reportField['name']]">
+												<option tal:content="vocab"></option>
+											</span>								
+										</select>							
+									</span>							
+
+									<span tal:condition="python: reportField['name'] in dateFields.keys()">
+										<input type="text" class="searchField" value="" id="" name="" tal:attributes="name python: reportField['name'];id python: reportField['name']; value fieldValue">
+										<button type="reset" id="" tal:attributes="id python: 'btn'+reportField['name']">...</button>
+										<script tal:content="python: '''setupCalender(\''''+reportField['name']+'''\' , \''''+dateFields[reportField['name']]+'''\')''' ">									
+										</script>
+									</span>
+									</td>
+								</tr>
+							</span>						
+						</table>	
+						</span>	
+					</div>
+
+					<div id="div_iso19115p2" class="defaultDivHiddenNoBorder">				
+						<span tal:condition="python: data.has_key('ISO19115p2')">
+						<table>
+							<span tal:repeat="reportField python: data['ISO19115p2']">
+								<tr tal:define="fieldValue python: request.form.setdefault(reportField['name'], reportField['default'])">							
+									<td tal:content="python: aliasses[reportField['name']][0]"> </td>
+									<td>						
+									<span tal:condition="python: (reportField['name'] not in dropdowns.keys() and reportField['name'] not in dateFields.keys())">						
+										<input class="customText" type="text" name="" value="" id="" tal:attributes="name python:reportField['name']; value fieldValue; id python:reportField['name']">
+									</span>							
+
+									<span tal:condition="python: reportField['name'] in dropdowns.keys()">
+										<select class="customSelect" id="" name="" tal:attributes="name python:reportField['name']; id python:reportField['name']">
+											<option></option>
+											<span tal:repeat="vocab python: dropdowns[reportField['name']]">
+												<option tal:content="vocab"></option>
+											</span>								
+										</select>
+									</span>
+
+									<span tal:condition="python: reportField['name'] in dateFields.keys()">
+										<input type="text" class="searchField" value="" id="" name="" tal:attributes="name python: reportField['name'];id python: reportField['name']; value fieldValue">
+										<button type="reset" id="" tal:attributes="id python: 'btn'+reportField['name']">...</button>
+										<script tal:content="python: '''setupCalender(\''''+reportField['name']+'''\' , \''''+dateFields[reportField['name']]+'''\')''' ">
+										</script>
+									</span>
+									</td>
+								</tr>
+							</span>	
+						</table>
+						</span>
+					</div>
+
+					<div style="background-color: white;" id="div_iso19139" class="defaultDivHiddenNoBorder">
+						<span tal:condition="python: data.has_key('ISO19139')">
+						<table>
+							<span tal:repeat="reportField python: data['ISO19139']">
+								<tr tal:define="fieldValue python: request.form.setdefault(reportField['name'], reportField['default'])">
+									<td tal:content="python: aliasses[reportField['name']][0]"> </td>
+									<td>
+									<span tal:condition="python: (reportField['name'] not in dropdowns.keys() and reportField['name'] not in dateFields.keys())">
+										<input class="customText" type="text" name="" value="" id="" tal:attributes="name python:reportField['name']; value fieldValue; id python:reportField['name']">
+									</span>
+
+									<span tal:condition="python: reportField['name'] in dropdowns.keys()">
+										<select class="customSelect" id="" name="" tal:attributes="name python:reportField['name']; id python:reportField['name']">
+											<option></option>
+											<span tal:repeat="vocab python: dropdowns[reportField['name']]">
+												<option tal:content="vocab"></option>
+											</span>
+										</select>
+									</span>
+
+									<span tal:condition="python: reportField['name'] in dateFields.keys()">
+										<input type="text" class="searchField" value="" id="" name="" tal:attributes="name python: reportField['name'];id python: reportField['name']; value fieldValue">
+										<button type="reset" id="" tal:attributes="id python: 'btn'+reportField['name']">...</button>
+										<script tal:content="python: '''setupCalender(\''''+reportField['name']+'''\' , \''''+dateFields[reportField['name']]+'''\')''' ">
+										</script>
+									</span>
+									</td>
+								</tr>
+							</span>
+						</table>
+						</span>
+					</div>
+					<div style="">
+					</div>
+				</div>
+				
+				
+			</div>
+		</div>
+		<input type="submit" value="Search" name="handleSearchForDataPost:method">
+	</form>
+<span class="clear"></span>
+
+	<script type="text/javascript" src="tabs.js"></script>
+	<script>
+	
+	var standardList = new Array("div_eml","div_dublincore","div_sans1878","div_iso19115","div_iso19115p2","div_iso19139");	
+	var selectedStandard = "All";
+	
+	function populateKeywords(theId)
+	{		
+		var selectedOnt = getSelectedValue(theId)
+		if(selectedOnt != "")
+		{
+			var elm = document.getElementById(theId);
+			var opElm = document.getElementById(selectedOnt);
+			var list = opElm.value;
+			var parts = list.split("|");
+			var arr = parts;
+
+			arr = jQuery.grep(arr, function(value, index){
+				  return Boolean( jq('#common_Keywords_selected option[value=' + value + ']').length == 0 );
+			    });
+
+			populateCombobox("common_Keywords_unselected", arr);
+		}	
+		else		
+		{
+			populateCombobox("common_Keywords_unselected", new Array(""));
+		}
+	}
+	
+	function selectStandard(standard)
+	{
+		selectedStandard = standard;
+		if (standard == "All")
+		{
+			hideAllStandards();
+		}
+		else
+		{			
+			showStandard("div_" + standard.toLowerCase());
+		}		
+	}
+		
+	function showStandard(standardName)
+	{
+		hideAllStandards()	
+		document.getElementById(standardName).style.visibility = "visible";
+		document.getElementById(standardName).style.display = "block";
+	}
+	
+	function hideAllStandards()
+	{
+		for (var x=0;x<standardList.length;x++)
+		{
+			document.getElementById(standardList[x]).style.visibility = "hidden";
+			document.getElementById(standardList[x]).style.display = "none";
+		}
+	}	
+	
+	function getBigestWindow()
+	{
+		var width = 0;
+		var height = 0;		
+		for (var x=0;x<standardList.length;x++)
+		{
+			var elm = document.getElementById(standardList[x])
+			if (elm.offsetWidth > width)
+			{
+				width = elm.offsetWidth;
+			}
+			if(elm.offsetHeight > height)
+			{
+				height = elm.offsetHeight;
+			}			
+		}		
+		var size = new Array(width, height);
+		return size;
+	}
+	
+	function setContainerToMaxHeight()
+	{
+		var height = (getBigestWindow()[1] + 10);						
+		var mainHeight = document.getElementById("divMainContainer").offsetHeight;		
+		mainHeight = mainHeight + (height - 100 + 20);		
+		document.getElementById("divMainContainer").style.height = mainHeight + "px";
+		selectStandard("All");
+	}	
+	//setContainerToMaxHeight();
+	
+	populateCombobox("cbxSpatialType", spatialOperations);
+    populateCombobox("cbxRegion", provinceList);
+			
+//	document.body.onload = setContainerToMaxHeight;	
+//	setContainerToMaxHeight()
+	
+	jq().ready(function() {selectStandard('All');});
+	
+</script>
+</div>
+
+</body>
+</html>
+

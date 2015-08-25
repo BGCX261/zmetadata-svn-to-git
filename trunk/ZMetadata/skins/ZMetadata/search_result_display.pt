@@ -1,0 +1,152 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+<body>
+
+<div metal:fill-slot="main">
+
+
+
+
+<script type="text/javascript">
+jq(document).ready(
+    function () {
+        
+        
+        
+        jq('#document-action-addtofavorites a').click(function(event){
+            event.preventDefault(); 
+            jq(".favorites-dialog").slideDown("slow");
+        });
+        jq('#favCancel').click(function(event){
+            event.preventDefault(); 
+            jq(".favorites-dialog").slideUp("slow");
+        });
+        jq('.favorites-dialog').insertAfter('ul.searchActions');
+    }
+);
+</script>
+<div class="favorites-dialog" style="display: none;">
+    <div id="favorites-dialog" title="Add to Favorites">
+        <p>
+            <span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
+            Adding item to favorites.
+        </p>
+    </div>
+    <div class="hiddenInViewSource" style="padding:20px;">
+        <p>
+            This item will be added to your favorites. Please specify your own Title and description, or leave it alone to accept default values.
+        </p>
+        <form id="favForm" action="/addtoFavorites">
+            <label class="fav-label" for="favTitle">
+                Title:
+            </label>
+            <input class="fav-field" name="favTitle" id="favTitle" type="input" value=""/><br />
+            <label class="fav-label" for="favDescription">
+                Description:
+            </label>
+            <input class="fav-field" name="favDescription" id="favDescription" type="input" value=""/><br />
+            <input type="submit" id="favAdd" value="Add to favorites."/>
+            <input type="button" id="favCancel" value="Cancel"/>
+        </form>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+	<span tal:define="global theSession python: context.REQUEST.SESSION"></span>	
+	<span tal:define="global pageList python: context.metadata_tool.getPageList(len(theSession['resultIds']))"></span>	
+	<ul tal:condition="python: hasattr(request, 'data')" class="searchActions">
+		<li>
+			<a tal:attributes="href string:handleSearchForMetadataPost${request/data}">Saved Search Link</a>
+		</li>
+		<li id="document-action-addtofavorites">
+			<a href="#" >
+				Add to Favorites
+			</a>
+		</li>
+	</ul>
+
+	<ul tal:condition="python: not hasattr(request, 'data')" class="searchActions">
+                <li>
+                        <a tal:attributes="href string:doSavedSearch${context/REQUEST/SESSION/data}">Saved Search Link</a>
+                </li>
+                <li id="document-action-addtofavorites">
+                        <a href="#" >
+                                Add to Favorites
+                        </a>
+                </li>
+        </ul>
+
+
+	<p>
+		<b tal:content="python: str(len(theSession['resultIds'])) + ' Matches found.' "></b>
+		<br>
+		
+		<!-- context.REQUEST['currentFrom']  currentFrom is an index in the current pageList-->
+		<span tal:condition="python: pageList and len(theSession['resultIds'])">
+			<span tal:condition="python: context.REQUEST.has_key('currentIndex')">
+				<b tal:content="python: 'Displaying records ' + str(pageList[int(context.REQUEST['currentIndex'])][0])  + ' - ' + str(pageList[int(context.REQUEST['currentIndex'])][1])  "></b>
+			</span>
+			
+			<span tal:condition="not: python: context.REQUEST.has_key('currentIndex')">
+				<b tal:content="python: 'Displaying records ' + str(pageList[0][0]) +'-' + str(pageList[0][1])"></b>
+			</span>
+		</span>
+		
+	</p>
+        <!-- then display the navigation links -->
+        <span tal:condition="python: pageList">
+                <span tal:repeat="listItem pageList">
+                        <a href="" tal:attributes="href python: context.REQUEST['URL'] +'?currentIndex=' + str(pageList.index(listItem)) + '&data=' + context.REQUEST.SESSION['data']" tal:content="python: str(listItem[0]) + '-' + str(listItem[1])"></a>
+                </span>
+        </span>
+	
+	<!-- <p tal:content="structure python: context.REQUEST"></p>  -->
+	
+	<span tal:condition="python: context.REQUEST.has_key('currentIndex')">		
+		<span tal:define="global theIndex python: int(context.REQUEST['currentIndex'])"></span>
+		<span tal:condition="pageList">
+			<span tal:repeat="res python: theSession['resultIds'][pageList[theIndex][0]: pageList[theIndex][1]]">
+				<span tal:content="structure python: context.metadata_tool.getSummaryPartForId(res)"></span>
+			</span>	
+		</span>
+		<span tal:condition="not: pageList">
+			<span tal:repeat="res python: theSession['resultIds']">
+				<span tal:content="structure python: context.metadata_tool.getSummaryPartForId(res)"></span>
+			</span>	
+		</span>		
+	</span>
+	
+	<span tal:condition="not: python: context.REQUEST.has_key('currentIndex') and len(theSession['resultIds']) > 0">
+		<span tal:define="global theIndex python: 0"></span>		
+		<span tal:condition="not: pageList">
+			<span tal:repeat="res python: theSession['resultIds']">
+				<span tal:content="structure python: context.metadata_tool.getSummaryPartForId(res)"></span>
+			</span>	
+		</span>		
+		<span tal:condition="pageList">
+			<span tal:repeat="res python: theSession['resultIds'][pageList[theIndex][0]: pageList[theIndex][1]]">
+				<span tal:content="structure python: context.metadata_tool.getSummaryPartForId(res)"></span>
+			</span>	
+		</span>
+	</span>
+	
+	<!-- then display the navigation links -->
+	<span tal:condition="python: pageList">		
+		<span tal:repeat="listItem pageList">
+			<a href="" tal:attributes="href python: context.REQUEST['URL'] +'?currentIndex=' + str(pageList.index(listItem)) + '&data=' + context.REQUEST.SESSION['data']" tal:content="python: str(listItem[0]) + '-' + str(listItem[1])"></a>			
+		</span>		
+	</span>	
+	
+	
+</div>
+
+</body>
+</html>

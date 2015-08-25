@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Created with Liquid XML Studio 6.1.15.0 - FREE Community Edition (http://www.liquid-technologies.com) -->
+<tnsb:EX_Extent xmlns:tns="http://www.opengis.net/gml" xmlns:tnsa="http://www.w3.org/1999/xlink" xmlns:tnsb="http://www.isotc211.org/2005/gmd" xmlns:tnsc="http://www.isotc211.org/2005/gco" xmlns:tnsd="http://www.isotc211.org/2005/gss" xmlns:tnse="http://www.isotc211.org/2005/gts" xmlns:tnsf="http://www.isotc211.org/2005/gsr" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.isotc211.org/2005/gmd C:\Plone3_Instance4080\Products\ZMetadata\standards\iso19139\gmd\gmd.xsd" uuid="string">
+  <tnsb:description xsi:type="tnsb:PT_FreeText_PropertyType" tnsc:nilReason="">
+    <tnsb:PT_FreeText id="AAAAA">
+      <tnsb:textGroup tnsa:href="http://www.liquid-technologies.com" tnsa:arcrole="http://www.liquid-technologies.com" uuidref="string" />
+      <tnsb:textGroup tnsa:href="http://www.liquid-technologies.com" tnsa:role="http://www.liquid-technologies.com" tnsa:title="string" uuidref="string" tnsc:nilReason="http://www.liquid-technologies.com" />
+    </tnsb:PT_FreeText>
+  </tnsb:description>
+  <tnsb:geographicElement tnsa:type="simple" tnsa:href="http://www.liquid-technologies.com" tnsa:arcrole="http://www.liquid-technologies.com" tnsa:title="string" tnsa:show="other" uuidref="string">
+    <tnsb:AbstractEX_GeographicExtent xsi:type="tnsb:EX_GeographicDescription_Type">
+      <tnsb:geographicIdentifier uuidref="string" />
+    </tnsb:AbstractEX_GeographicExtent>
+  </tnsb:geographicElement>
+  <tnsb:geographicElement tnsa:type="simple" tnsa:href="http://www.liquid-technologies.com" tnsa:show="other" uuidref="string" tnsc:nilReason="http://www.liquid-technologies.com">
+    <tnsb:AbstractEX_GeographicExtent xsi:type="tnsb:EX_GeographicDescription_Type" id="AAAAB">
+      <tnsb:geographicIdentifier tnsa:type="simple" tnsa:href="http://www.liquid-technologies.com" tnsa:role="http://www.liquid-technologies.com" tnsa:actuate="none" tnsc:nilReason="" />
+    </tnsb:AbstractEX_GeographicExtent>
+  </tnsb:geographicElement>
+  <tnsb:temporalElement tnsa:type="simple" tnsa:href="http://www.liquid-technologies.com" tnsa:role="http://www.liquid-technologies.com" tnsa:title="string" tnsa:actuate="onRequest">
+    <tnsb:EX_SpatialTemporalExtent id="AAAAC" uuid="string">
+      <tnsb:extent tnsa:href="http://www.liquid-technologies.com" tnsa:role="http://www.liquid-technologies.com" tnsa:arcrole="http://www.liquid-technologies.com" uuidref="string" />
+      <tnsb:spatialExtent tnsa:title="string" tnsa:show="embed" tnsa:actuate="none" />
+    </tnsb:EX_SpatialTemporalExtent>
+  </tnsb:temporalElement>
+  <tnsb:temporalElement tnsa:type="simple" tnsa:href="http://www.liquid-technologies.com" tnsa:role="http://www.liquid-technologies.com" tnsa:arcrole="http://www.liquid-technologies.com" uuidref="string" tnsc:nilReason="http://www.liquid-technologies.com" />
+  <tnsb:verticalElement tnsa:type="simple" tnsa:role="http://www.liquid-technologies.com" tnsc:nilReason="" />
+  <tnsb:verticalElement tnsa:role="http://www.liquid-technologies.com" tnsa:title="string" tnsa:show="none" uuidref="string" tnsc:nilReason="http://www.liquid-technologies.com">
+    <tnsb:EX_VerticalExtent id="AAAAD">
+      <tnsb:minimumValue />
+      <tnsb:maximumValue tnsc:nilReason="http://www.liquid-technologies.com" />
+      <tnsb:verticalCRS tnsa:href="http://www.liquid-technologies.com" tnsa:show="new" tnsc:nilReason="" />
+    </tnsb:EX_VerticalExtent>
+  </tnsb:verticalElement>
+</tnsb:EX_Extent>

@@ -1,0 +1,81 @@
+<html metal:use-macro="here/main_template/macros/master">
+    <body>
+        <div metal:fill-slot="main">
+			<style>
+			td{
+				text-align:left;
+			}
+
+			.smallText{
+				font-size:8pt;
+			}
+			</style>
+			
+			<script src="" tal:attributes="src python: context.absolute_url() + '/utils.js'"> </script>			
+			<div tal:define="global thePath here/absolute_url"></div>
+			<div id="thePath" value="" tal:attributes="value here/absolute_url"></div>
+
+			<SCRIPT LANGUAGE="JavaScript">
+			<!--
+
+			var path = document.getElementById('thePath').getAttribute('value')					
+
+			function doAddSource()
+			{
+				var organization = document.getElementById('tbxOrganization').value
+				var wfsSource = document.getElementById('tbxWFSSource').value
+				var wmsSource = document.getElementById('tbxWMSSource').value
+				
+				if (organization == '')
+				{
+					alert('Please give an organization name');
+					return;
+				}
+				
+				if (wmsSource == '')
+				{
+					alert('No valid urls given');
+					return;
+				}
+				
+				var s = path+"/addSource?wfsResource="+wfsSource+"&wmsResource="+wmsSource+"&organization="+organization;				
+				callMethod(s, handleResponse)
+				
+				document.getElementById('tbxOrganization').value = ""
+				document.getElementById('tbxWFSSource').value = ""
+				document.getElementById('tbxWMSSource').value = ""
+			}
+			
+			function handleResponse(res)
+			{
+				alert(res)
+			}		
+
+			//-->
+			</SCRIPT>			
+									
+				<TABLE>
+				<TR>
+					<TD class="smallText">Organization</TD>
+					<TD><input id="tbxOrganization" type="text" value=""></TD>
+					<td class="smallText">e.g CSIR</td>
+				</TR>
+				<TR>
+					<TD class="smallText">WFS Source</TD>
+					<TD><input id="tbxWFSSource" type="text" value=""></TD>
+					<td class="smallText">e.g http://hostName/source/wfs?</td>
+				</TR>
+				<TR>
+					<TD class="smallText">WMS Source</TD>
+					<TD><input id="tbxWMSSource" type="text" value=""></TD>
+					<td class="smallText">e.g http://hostName/source/wms?</td>
+				</TR>
+				<TR>
+					<TD colspan="3"><input type="button" value="Add" onclick="doAddSource()"></TD>				
+				</TR>
+				</TABLE>
+			
+        </div>
+    </body>
+</html>
+

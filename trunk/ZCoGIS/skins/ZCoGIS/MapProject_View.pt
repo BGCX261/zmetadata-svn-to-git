@@ -1,0 +1,88 @@
+<html metal:use-macro="here/main_template/macros/master">
+    <body>
+        <div metal:fill-slot="main">
+			<style>
+			td{
+				text-align:left;
+			}
+
+			.tdBorder{
+				border:thin solid silver;				
+			}
+
+			.tdBorderGreen{
+				border:thin solid silver;	
+				color:green;
+			}
+
+			.tdNotRunning{
+				border:thin solid red;
+				color: red;
+			}
+
+			.tableBorder{
+				border:thin solid gray;
+			}
+			.red{
+				color:red;
+			}
+
+			</style>	
+			
+			<div tal:define="global agreement python: context.checkAgreements(context.REQUEST)"></div>
+			<div tal:define="global layers here/getLayerList"></div>
+			
+			<div tal:condition="agreement">
+			     <p tal:content="structure agreement"></p>            
+            </div>
+			
+			<div tal:condition="not:agreement">
+    			 <TABLE>
+    			<TR>
+    				<Th>ID</Th>
+    				<TD tal:content="here/id"></TD>
+    			</TR>
+    			<TR>
+    				<Th>Title</Th>
+    				<TD tal:content="here/title"></TD>
+    			</TR>
+    			<TR>
+    				<Th>Description</Th>
+    				<TD tal:content="here/description"></TD>
+    			</TR>
+    			
+    			</TABLE>
+    
+    			<br><br>
+    			<div tal:condition="python: layers">
+    				<input type="button" value="View Project" onclick="openViewer()">
+    				<div id="viewerURL" value="" tal:attributes="value python: context.absolute_url() + '/viewer.html?wmsServerAddress=' + context.absolute_url() + '/wfswms?'"></div>
+    				
+    			</div>
+    			<br>
+    			<b>Layers</b><br><br>
+    			<div tal:condition="not: python:layers">
+    				<b class="red">No Layers in Project</b>
+    			</div>		
+    
+    			<div tal:repeat="layer layers">
+    				<em tal:content="python:layer['name']"></em><br>
+    			</div>   
+                
+                <SCRIPT LANGUAGE="JavaScript">
+    			<!--
+    			
+    			function openViewer()
+    			{
+    				window.open(document.getElementById('viewerURL').getAttribute('value'),'Viewer')
+    			}
+    
+    			//-->
+    			</SCRIPT>
+                         
+            </div>		
+
+        </div>
+    </body>
+</html>
+

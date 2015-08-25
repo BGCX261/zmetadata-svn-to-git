@@ -1,0 +1,524 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+<body>
+
+<div metal:fill-slot="main">
+	<!-- edit metadata bug workaround -->
+	<tal:mark replace="context/testPerm"/>
+	
+	<div id="thePath" value="" tal:attributes="value here/absolute_url"></div>
+    <span tal:define="global hasAllFields here/hasCoreFields"></span>
+	<span tal:define="global validationRes here/getValidationResults"></span>	
+	
+	<div tal:define="global dropdowns here/metadata_tool/getFieldValues"></div>
+	<div tal:define="global dateFields here/metadata_tool/getDateFields"></div>
+	
+	<span tal:condition="python: not hasAllFields[0]">
+		<!--  generate error message with all fields-->
+		<b>Some core fields are not present:</b><br><br>
+		<ul>
+			<span tal:repeat="fieldName python: hasAllFields[1]">
+				<li tal:content="fieldName"></li>				
+			</span>
+		</ul>
+	</span>
+	
+	<span tal:condition="python: hasAllFields[0]">	
+		<span tal:condition="python: not validationRes[0]">
+			<b>Document is not valid</b>
+			<p tal:content="python: validationRes[1]"></p>
+		</span>
+		
+		<span tal:condition="python: validationRes[0]">
+		
+			<span tal:define="global valsDict here/getCoreFields"></span>	
+
+		    <form id="core_fields_form" name="core_fields" action="" method="post" tal:attributes="action python: context.absolute_url() + '/updateCoreFields'">
+		    
+		    <style>
+                table.core{border:thin solid gray;width:490px;}
+                td.core{text-align:right;}
+                input.core{width:240px;}
+            </style>
+            
+            <table class="core">
+		        <tr><th colspan="2">Dataset Information</th></tr>
+		        <tr>
+		            <td>Dataset Title</td>
+		            <td class="core"><input class="core" type="text" name="DatasetTitle" id="tbxDatasetTitle" tal:attributes="value valsDict/DatasetTitle"></td>
+		        </tr>
+		        <tr>
+		            <td>Dataset Reference Date (yyyy-mm-ddThh:mm:ss)</td>
+		            <td class="core"><input class="core" type="text" name="DatasetReferenceDate" id="tbxDatasetReferenceDate" tal:attributes="value valsDict/DatasetReferenceDate"></td>
+		        </tr>
+		        <tr>
+		            <td>Dataset Responsible Party</td>
+		            <td class="core"><input class="core" type="text" name="DatasetResponsibleParty" id="tbxDatasetResponsibleParty" tal:attributes="value valsDict/DatasetResponsibleParty"></td>
+		        </tr>
+				<tr>
+		            <td>Dataset Responsible Party Organization</td>
+		            <td class="core"><input class="core" type="text" name="DatasetResponsiblePartyOrganization" id="tbxDatasetResponsiblePartyOrganization" tal:attributes="value valsDict/DatasetResponsiblePartyOrganization"></td>
+		        </tr>
+				<tr>
+		            <td>Dataset Responsible Party Position</td>
+		            <td class="core"><input class="core" type="text" name="DatasetResponsiblePartyPosition" id="tbxDatasetResponsiblePartyPosition" tal:attributes="value valsDict/DatasetResponsiblePartyPosition"></td>
+		        </tr>
+		        <tr>
+		            <td>Dataset Language</td>
+		            <td class="core"><input class="core" type="text" name="DatasetLanguage" id="tbxDatasetLanguage" tal:attributes="value valsDict/DatasetLanguage"></td>
+		        </tr>        
+		        <tr>
+		            <td>Dataset Character set</td>
+		            <td class="core"><input class="core" type="text" name="DatasetCharacterSet" id="tbxDatasetCharacterSet" tal:attributes="value valsDict/DatasetCharacterSet"></td>
+		        </tr>        
+		        <tr>
+		            <td>Dataset Topic Category</td>
+		            <td class="core"><input class="core" type="text" name="DatasetTopicCategory" id="tbxDatasetTopicCategory" tal:attributes="value valsDict/DatasetTopicCategory"></td>
+		        </tr>        
+		        <tr>
+		            <td>Dataset Scale</td>
+		            <td class="core"><input class="core" type="text" name="DatasetScale" id="tbxDatasetScale" tal:attributes="value valsDict/DatasetScale"></td>
+		        </tr>        
+		        <tr>
+		            <td>Dataset Abstract</td>
+		            <td class="core"><input class="core" type="text" name="DatasetAbstract" id="tbxDatasetAbstract" tal:attributes="value valsDict/DatasetAbstract"></td>
+		        </tr>        
+		        <tr>
+		            <td>Dataset Format Name</td>
+		            <td class="core"><input class="core" type="text" name="DatasetFormatName" id="tbxDatasetFormatName" tal:attributes="value valsDict/DatasetFormatName"></td>
+		        </tr>        
+		        <tr>
+		            <td>Dataset Format Version</td>
+		            <td class="core"><input class="core" type="text" name="DatasetFormatVersion" id="tbxDatasetFormatVersion" tal:attributes="value valsDict/DatasetFormatVersion"></td>
+		        </tr>        
+		    </table>
+		    		    
+		    <br/>
+		    
+		    <table class="core">
+		        <tr><th colspan="2">Spatial Information</th></tr>
+		        <tr>
+		            <td>West Bound Longitude</td>
+		            <td class="core"><input class="core" type="text" name="SpatialWest" id="tbxSpatialWest" tal:attributes="value valsDict/SpatialWest"></td>
+		        </tr>
+		        <tr>
+		            <td>South Bound Latitude</td>
+		            <td class="core"><input class="core" type="text" name="SpatialSouth" id="tbxSpatialSouth" tal:attributes="value valsDict/SpatialSouth"></td>
+		        </tr>
+		        <tr>
+		            <td>East Bound Longitude</td>
+		            <td class="core"><input class="core" type="text" name="SpatialEast" id="tbxSpatialEast" tal:attributes="value valsDict/SpatialEast"></td>
+		        </tr>
+		        <tr>
+		            <td>North Bound Latitude</td>
+		            <td class="core"><input class="core" type="text" name="SpatialNorth" id="tbxSpatialNorth" tal:attributes="value valsDict/SpatialNorth"></td>
+		        </tr>        
+		        <tr>
+		            <td>Temporal Extent Begin Date (yyyy-mm-ddThh:mm:ss)</td>
+		            <td class="core"><input class="core" type="text" name="SpatialBeginDate" id="tbxSpatialBeginDate" tal:attributes="value valsDict/SpatialBeginDate"></td>
+		        </tr>
+		        <tr>
+		            <td>Temporal Extent End Date (yyyy-mm-ddThh:mm:ss)</td>
+		            <td class="core"><input class="core" type="text" name="SpatialEndDate" id="tbxSpatialEndDate" tal:attributes="value valsDict/SpatialEndDate"></td>
+		        </tr>
+		        <tr>
+		            <td>Minimum Vertical Extent</td>
+		            <td class="core"><input class="core" type="text" name="SpatialVerticalExtentMinimum" id="tbxSpatialVerticalExtentMinimum" tal:attributes="value valsDict/SpatialVerticalExtentMinimum"></td>
+		        </tr>
+		        <tr>
+		            <td>Maximum Vertical Extent</td>
+		            <td class="core"><input class="core" type="text" name="SpatialMaximum" id="tbxSpatialMaximum" tal:attributes="value valsDict/SpatialMaximum"></td>
+		        </tr>
+		        <tr>
+		            <td>Vertical Extent Units</td>
+		            <td class="core"><input class="core" type="text" name="SpatialVerticalExtentUnits" id="tbxSpatialVerticalExtentUnits" tal:attributes="value valsDict/SpatialVerticalExtentUnits"></td>
+		        </tr>
+		        <tr>
+		            <td>Vertical Extent Datum</td>
+		            <td class="core"><input class="core" type="text" name="SpatialVerticalExtentDatum" id="tbxSpatialVerticalExtentDatum" tal:attributes="value valsDict/SpatialVerticalExtentDatum"></td>
+		        </tr>        
+		        <tr>
+		            <td>Spatial Representation</td>
+		            <td class="core"><input class="core" type="text" name="SpatialRepresentation" id="tbxSpatialRepresentation" tal:attributes="value valsDict/SpatialRepresentation"></td>
+		        </tr>
+		        <tr>
+		            <td>Spatial Reference System (SRS)</td>
+		            <td class="core"><input class="core" type="text" name="SpatialReferenceSystem" id="tbxSpatialReferenceSystem" tal:attributes="value valsDict/SpatialReferenceSystem"></td>
+		        </tr>
+		        <tr>
+		            <td>Linage Statement</td>
+		            <td class="core"><input class="core" type="text" name="SpatialLinageStatement" id="tbxSpatialLinageStatement" tal:attributes="value valsDict/SpatialLinageStatement"></td>
+		        </tr>
+		        
+		        <tr>
+		            <td>Online Resource URL</td>
+		            <td class="core"><input class="core" type="text" name="SpatialOnlineResourceURL" id="tbxSpatialOnlineResourceURL" tal:attributes="value valsDict/SpatialOnlineResourceURL"></td>
+		        </tr>
+		        <tr>
+		            <td>Online Resource Protocol</td>
+		            <td class="core"><input class="core" type="text" name="SpatialOnlineResourceProtocol" id="tbxSpatialOnlineResourceProtocol" tal:attributes="value valsDict/SpatialOnlineResourceProtocol"></td>
+		        </tr>
+		         <tr>
+		            <td>Online Resource Name</td>
+		            <td class="core"><input class="core" type="text" name="SpatialOnlineResourceName" id="tbxSpatialOnlineResourceName" tal:attributes="value valsDict/SpatialOnlineResourceName"></td>
+		        </tr>
+		         <tr>
+		            <td>Online Resource Description</td>
+		            <td class="core"><input class="core" type="text" name="SpatialOnlineResourceDescription" id="tbxSpatialOnlineResourceDescription" tal:attributes="value valsDict/SpatialOnlineResourceDescription"></td>
+		        </tr>        
+		    </table>
+		    
+		    <br/>
+		    
+		    <table class="core">
+		        <tr><th colspan="2">Metadata Information</th></tr>
+		        <tr>
+		            <td>File Identifier</td>
+		            <td class="core"><input class="core" type="text" name="MetadataFileIdentifier" id="tbxMetadataFileIdentifier" tal:attributes="value valsDict/MetadataFileIdentifier"></td>
+		        </tr>
+		        <tr>
+		            <td>Standard Name</td>
+		            <td class="core"><input class="core" type="text" name="MetadataStandardName" id="tbxMetadataStandardName" tal:attributes="value valsDict/MetadataStandardName"></td>
+		        </tr>
+		        <tr>
+		            <td>Standard Version</td>
+		            <td class="core"><input class="core" type="text" name="MetadataStandardVersion" id="tbxMetadataStandardVersion" tal:attributes="value valsDict/MetadataStandardVersion"></td>
+		        </tr>
+		        <tr>
+		            <td>Languange</td>
+		            <td class="core"><input class="core" type="text" name="MetadataLanguage" id="tbxMetadataLanguage" tal:attributes="value valsDict/MetadataLanguage"></td>
+		        </tr>
+		        <tr>
+		            <td>Character set</td>
+		            <td class="core"><input class="core" type="text" name="MetadataCharacterSet" id="tbxMetadataCharacterSet" tal:attributes="value valsDict/MetadataCharacterSet"></td>
+		        </tr>
+		        <tr>
+		            <td>Time Stamp (yyyy-mm-ddThh:mm:ss)</td>
+		            <td class="core"><input class="core" type="text" name="MetadataTimeStamp" id="tbxMetadataTimeStamp" tal:attributes="value valsDict/MetadataTimeStamp"></td>
+		        </tr>        
+		        <tr>
+		            <td>Point of Contact Individual Name</td>
+		            <td class="core"><input class="core" type="text" name="MetadataPointOfContactIndividualName" id="tbxMetadataPointOfContactIndividualName" tal:attributes="value valsDict/MetadataPointOfContactIndividualName"></td>
+		        </tr>
+		        <tr>
+		            <td>Point of Contact Organization Name</td>
+		            <td class="core"><input class="core" type="text" name="MetadataPointOfContactOrganizationName" id="tbxMetadataPointOfContactOrganizationName" tal:attributes="value valsDict/MetadataPointOfContactOrganizationName"></td>
+		        </tr>
+		        <tr>
+		            <td>Point of Contact Position Name</td>
+		            <td class="core"><input class="core" type="text" name="MetadataPointOfContactPositionName" id="tbxMetadataPointOfContactPositionName" tal:attributes="value valsDict/MetadataPointOfContactPositionName"></td>
+		        </tr>
+		         <tr>
+		            <td>Point of Contact Role</td>
+		            <td class="core"><input class="core" type="text" name="MetadataPointOfContactRole" id="tbxMetadataPointOfContactRole" tal:attributes="value valsDict/MetadataPointOfContactRole"></td>
+		        </tr>
+		    </table>    
+		    </form>
+			<br/>
+		    <input type="button" value="Submit" onclick="submitRecord()">
+		    <input type="button" value="Print" onclick="print()">
+			
+		</span>
+	</span>
+	
+	<div id="status" style="position:absolute;top:0px;left;0px;border:thin solid gray;visibility:hidden;background-color:#9D9D9D;font-size:20pt;">
+	   <p>Saving Data ...</p>
+	</div>
+	
+  <script>  
+    var path = document.getElementById('thePath').getAttribute('value')	
+    
+    function showStatus()
+    {
+        document.getElementById("status").style.visibility = "visible";
+        document.getElementById("status").style.top = getScreenMiddle()[1] + "px";
+        document.getElementById("status").style.left = getScreenMiddle()[0] + "px";        
+    }
+    
+    function hideStatus()
+    {        
+        document.getElementById("status").style.visibility = "hidden";
+        document.getElementById("status").style.top = getScreenMiddle()[1] + "px";
+        document.getElementById("status").style.left = getScreenMiddle()[0] + "px";
+    }
+    
+    function getScreenMiddle()
+    {
+        var theSize = new Array()
+        theSize[0] = Math.round(document.body.clientWidth/2);
+        theSize[1] = Math.round(document.body.clientHeight/2);
+        return theSize;
+        // return a list with screen middle coord
+    }	    
+    
+    function print()
+    {
+        var win = window.open(path + "/metadata_print_core_fields","Print_Core_Fields","")
+        theHTML = document.getElementById("core_fields_form").innerHTML
+        
+    }
+    
+    function submitRecord()
+    {
+        if(validateFormValues())
+        {
+            //showStatus()
+            document.getElementById("core_fields_form").submit()                      
+        }
+        else
+        {
+            return;
+        }
+    }
+  
+    function isValidDate(theDate)
+    {
+        // 2001-12-12T00:00:00
+        var parts = theDate.split("T")
+        if (parts.length != 2)
+        {
+            return false;
+        }
+        var date = parts[0]
+        var time = parts[1]
+        if (date.split("-").length != 3) return false;
+        if (time.split(":").length != 3)return false;
+        var datePart = date.split("-")
+        var timePart = time.split(":")
+        if (datePart[0].length != 4) return false;
+        if (datePart[1].length != 2) return false;
+        if (datePart[2].length != 2) return false;
+        if (!isNumber(datePart[0])) return false;
+        if (!isNumber(datePart[1])) return false;
+        if (!isNumber(datePart[2])) return false;
+        
+        if (timePart[0].length != 2) return false;
+        if (timePart[1].length != 2) return false;
+        if (timePart[2].length != 2) return false;
+        if (!isNumber(timePart[0])) return false;
+        if (!isNumber(timePart[1])) return false;
+        if (!isNumber(timePart[2])) return false;        
+        return true;
+    }
+    
+    function isNumber(theNumber)
+    {
+        var num = parseFloat(theNumber)
+        if (isNaN(num))
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+  
+    function validateFormValues()
+    {
+        //dataset values
+        var DatasetTitle = document.getElementById("tbxDatasetTitle").value
+        var DatasetReferenceDate = document.getElementById("tbxDatasetReferenceDate").value
+        var DatasetResponsibleParty = document.getElementById("tbxDatasetResponsibleParty").value
+        var DatasetResponsiblePartyOrganization = document.getElementById("tbxDatasetResponsiblePartyOrganization").value
+        var DatasetResponsiblePartyPosition = document.getElementById("tbxDatasetResponsiblePartyPosition").value
+		
+        var DatasetLanguage = document.getElementById("tbxDatasetLanguage").value
+        var DatasetCharacterSet = document.getElementById("tbxDatasetCharacterSet").value
+        var DatasetTopicCategory = document.getElementById("tbxDatasetTopicCategory").value
+        var DatasetScale = document.getElementById("tbxDatasetScale").value
+        var DatasetAbstract = document.getElementById("tbxDatasetAbstract").value
+        var DatasetFormatName = document.getElementById("tbxDatasetFormatName").value
+        var DatasetFormatVersion = document.getElementById("tbxDatasetFormatVersion").value
+        
+        //validate dataset values  
+        if (DatasetTitle.length == 0){
+            alert("Please give a valid title.\nAll values need to be completed");return false;
+        } 
+        if (!isValidDate(DatasetReferenceDate)){
+            alert("Please give a valid reference date.\nAll values need to be completed");return false;
+        } 
+        if (DatasetResponsibleParty.length == 0){
+            alert("Please give a valid responsible party.\nAll values need to be completed");return false;
+        } 
+		if (DatasetResponsiblePartyOrganization.length == 0){
+            alert("Please give a valid responsible party organization.\nAll values need to be completed");return false;
+        } 
+		if (DatasetResponsiblePartyPosition.length == 0){
+            alert("Please give a valid responsible party position.\nAll values need to be completed");return false;
+        } 
+        if (DatasetLanguage.length == 0){
+            alert("Please give a valid data set language.\nAll values need to be completed");return false;
+        } 
+        if (DatasetCharacterSet.length == 0){
+            alert("Please give a valid data set character set.\nAll values need to be completed");return false;
+        } 
+        if (DatasetTopicCategory.length == 0){
+            alert("Please give a valid data set topic category.\nAll values need to be completed");return false;
+        }  
+        if (!isNumber(DatasetScale)){
+            alert("Please give a valid dataset scale.\nAll values need to be completed");return false;
+        }  
+        if (DatasetAbstract.length == 0){
+            alert("Please give a valid data set abstract.\nAll values need to be completed");return false;
+        }  
+        if (DatasetFormatName.length == 0){
+            alert("Please give a valid data set format name.\nAll values need to be completed");return false;
+        }  
+        if (DatasetFormatVersion.length == 0){
+            alert("Please give a valid data set format version.\nAll values need to be completed");return false;
+        }      
+        
+        //spatial fields
+        var SpatialWest = document.getElementById("tbxSpatialWest").value
+        var SpatialSouth = document.getElementById("tbxSpatialSouth").value
+        var SpatialEast = document.getElementById("tbxSpatialEast").value
+        var SpatialNorth = document.getElementById("tbxSpatialNorth").value
+        var SpatialBeginDate = document.getElementById("tbxSpatialBeginDate").value
+        var SpatialEndDate = document.getElementById("tbxSpatialEndDate").value
+        var SpatialVerticalExtentMinimum = document.getElementById("tbxSpatialVerticalExtentMinimum").value
+        var SpatialMaximum = document.getElementById("tbxSpatialMaximum").value
+        var SpatialVerticalExtentUnits = document.getElementById("tbxSpatialVerticalExtentUnits").value
+        var SpatialVerticalExtentDatum = document.getElementById("tbxSpatialVerticalExtentDatum").value
+        var SpatialRepresentation = document.getElementById("tbxSpatialRepresentation").value
+        var SpatialReferenceSystem = document.getElementById("tbxSpatialReferenceSystem").value
+        var SpatialLinageStatement = document.getElementById("tbxSpatialLinageStatement").value
+        var SpatialOnlineResourceURL = document.getElementById("tbxSpatialOnlineResourceURL").value
+        var SpatialOnlineResourceProtocol = document.getElementById("tbxSpatialOnlineResourceProtocol").value
+        var SpatialOnlineResourceName = document.getElementById("tbxSpatialOnlineResourceName").value
+        var SpatialOnlineResourceDescription = document.getElementById("tbxSpatialOnlineResourceDescription").value
+        
+        if (!isNumber(SpatialWest)){
+            alert("Please give a valid West Bound Longitude.\nAll values need to be completed");return false;
+        } 
+        if (!isNumber(SpatialSouth)){
+            alert("Please give a valid South Bound Longitude.\nAll values need to be completed");return false;
+        } 
+        if (!isNumber(SpatialEast)){
+            alert("Please give a valid East Bound Longitude.\nAll values need to be completed");return false;
+        } 
+        if (!isNumber(SpatialNorth)){
+            alert("Please give a valid North Bound Longitude.\nAll values need to be completed");return false;
+        } 
+        if (!isValidDate(SpatialBeginDate)){
+            alert("Please give a valid Temporal extent begin date.\nAll values need to be completed");return false;
+        } 
+        if (!isValidDate(SpatialEndDate)){
+            alert("Please give a valid Temporal extent end date.\nAll values need to be completed");return false;
+        } 
+        if (!isNumber(SpatialVerticalExtentMinimum)){
+            alert("Please give a valid Minimum Vertical Extent.\nAll values need to be completed");return false;
+        } 
+        if (!isNumber(SpatialMaximum)){
+            alert("Please give a valid Maximum Vertical Extent.\nAll values need to be completed");return false;
+        } 
+        if (SpatialVerticalExtentUnits.length == 0){
+            alert("Please give a valid Vertical Extent Units.\nAll values need to be completed");return false;
+        } 
+        if (SpatialVerticalExtentDatum.length == 0){
+            alert("Please give a valid Vertical Extent Datum.\nAll values need to be completed");return false;
+        } 
+        if (SpatialRepresentation.length == 0){
+            alert("Please give a valid Spatial Representation.\nAll values need to be completed");return false;
+        } 
+        if (SpatialReferenceSystem.length == 0){
+            alert("Please give a valid Spatial Reference System.\nAll values need to be completed");return false;
+        } 
+        if (SpatialLinageStatement.length == 0){
+            alert("Please give a valid Linage Statement.\nAll values need to be completed");return false;
+        } 
+        if (SpatialOnlineResourceURL.length == 0){
+            alert("Please give a valid Online Resource URL.\nAll values need to be completed");return false;
+        } 
+        if (SpatialOnlineResourceProtocol.length == 0){
+            alert("Please give a valid Online Resource Protocol.\nAll values need to be completed");return false;
+        } 
+        if (SpatialOnlineResourceName.length == 0){
+            alert("Please give a valid Online Resource Name.\nAll values need to be completed");return false;
+        } 
+        if (SpatialOnlineResourceDescription.length == 0){
+            alert("Please give a valid Online Resource Description.\nAll values need to be completed");return false;
+        } 
+        
+        //metadata values
+        var MetadataFileIdentifier = document.getElementById("tbxMetadataFileIdentifier").value
+        var MetadataStandardName = document.getElementById("tbxMetadataStandardName").value
+        var MetadataStandardVersion = document.getElementById("tbxMetadataStandardVersion").value
+        var MetadataLanguage = document.getElementById("tbxMetadataLanguage").value
+        var MetadataCharacterSet = document.getElementById("tbxMetadataCharacterSet").value
+        var MetadataTimeStamp = document.getElementById("tbxMetadataTimeStamp").value
+        var MetadataPointOfContactIndividualName = document.getElementById("tbxMetadataPointOfContactIndividualName").value
+        var MetadataPointOfContactOrganizationName = document.getElementById("tbxMetadataPointOfContactOrganizationName").value
+        var MetadataPointOfContactPositionName = document.getElementById("tbxMetadataPointOfContactPositionName").value
+        var MetadataPointOfContactRole = document.getElementById("tbxMetadataPointOfContactRole").value
+        
+        if (MetadataFileIdentifier.length == 0){
+            alert("Please give a valid File Identifier.\nAll values need to be completed");return false;
+        } 
+        if (MetadataStandardName.length == 0){
+            alert("Please give a valid Standard Name.\nAll values need to be completed");return false;
+        } 
+        if (MetadataStandardVersion.length == 0){
+            alert("Please give a valid Standard Version.\nAll values need to be completed");return false;
+        } 
+        if (MetadataLanguage.length == 0){
+            alert("Please give a valid Languange.\nAll values need to be completed");return false;
+        } 
+        if (MetadataCharacterSet.length == 0){
+            alert("Please give a valid Character set.\nAll values need to be completed");return false;
+        } 
+        if (!isValidDate(MetadataTimeStamp)){
+            alert("Please give a valid Time Stamp.\nAll values need to be completed");return false;
+        } 
+        if (MetadataPointOfContactIndividualName.length == 0){
+            alert("Please give a valid Point of Contact Individual Name.\nAll values need to be completed");return false;
+        } 
+        if (MetadataPointOfContactOrganizationName.length == 0){
+            alert("Please give a valid Point of Contact Organization Name.\nAll values need to be completed");return false;
+        } 
+        if (MetadataPointOfContactPositionName.length == 0){
+            alert("Please give a valid Point of Contact Position Name.\nAll values need to be completed");return false;
+        } 
+        if (MetadataPointOfContactRole.length == 0){
+            alert("Please give a valid Point of Contact Role.\nAll values need to be completed");return false;
+        } 
+        return true;        
+    }
+    
+  </script> 
+	</div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

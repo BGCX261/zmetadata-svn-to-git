@@ -1,0 +1,73 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+<body>
+
+<div metal:fill-slot="main">	
+	<h2 tal:content="here/title_or_id">
+
+	</h2>
+	<div style="border:thin solid gray;">
+	<table width="100%">
+		<tr>
+			<td>
+				<table>
+					<tr>
+						<th align="left">Type</th><td tal:content="here/getMetadatatype"></td>			
+					</tr>
+					<tr tal:condition="here/getMetadatacategory">
+						<th align="left">Category</th><td tal:content="here/getMetadatacategory"></td>			
+					</tr>
+					<tr>
+						<th align="left">Metadata Title</th><td tal:content="here/mTitle"></td>			
+					</tr>
+					<tr>
+						<th align="left">Date</th><td tal:content="here/mDate"></td>
+					</tr>
+					<tr>
+						<th align="left">Organization</th><td tal:content="here/mOrganization"></td>
+					</tr>
+					<tr>
+						<th align="left">Abstract</th><td tal:content="here/mAbstract"></td>
+					</tr>
+					<tr>
+						<th align="left">Keywords</th><td tal:content="here/mKeywords"></td>
+					</tr>
+					<tr>
+						<th align="left">Bounds</th><td tal:content="here/mBounds"></td>
+					</tr>
+					
+					<span tal:condition="python: context.mOnlineResource">
+						<tr>
+							<th align="left">Online Resource</th>
+							<td>
+							<span tal:repeat="resource here/mOnlineResource">
+								<a href="" tal:attributes="href resource"><b tal:content="resource"></b></a> <br>
+							</span>
+							</td>
+						</tr>
+					</span>
+					
+				</table>
+			</td>			
+			<td align="right">
+				<span tal:condition="here/hasValidBounds">					
+					<img src="" tal:attributes="src python: context.absolute_url() + '/getMapSmall'" width="200" height="180"> 								
+				</span>
+				<span tal:condition="not: here/hasValidBounds">					
+					<img src="no_image.jpg" width="200" height="180"> 								
+				</span>
+			</td>
+		</tr>
+	</table>	
+	<div metal:use-macro="here/document_relateditems/macros/relatedItems">
+		show related items if they exist
+	</div>	
+</div>
+	
+	
+</div>
+
+</body>
+</html>

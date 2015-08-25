@@ -1,0 +1,18 @@
+<simpledc xmlns:dct="http://purl.org/dc/terms/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <dc:title>xx</dc:title>
+  <dc:creator>xx</dc:creator>
+  <dc:subject>xx</dc:subject>
+  <dc:description>xx</dc:description>
+  <dc:publisher>xx</dc:publisher>
+  <dc:contributor>xx</dc:contributor>
+  <dc:date>xx</dc:date>
+  <dc:type>xx</dc:type>
+  <dc:format>xx</dc:format>
+  <dc:identifier>3ef3a7bb-2c27-49c9-8fa7-c7527438396a</dc:identifier>
+  <dc:source>xx</dc:source>
+  <dc:language>xx</dc:language>
+  <dc:relation>xx</dc:relation>
+  <dc:coverage>North 90, South -90, East 180, West -180. Global</dc:coverage>
+  <dc:rights>xx</dc:rights>
+  <dct:modified>2008-08-27T07:50:00</dct:modified>
+</simpledc>

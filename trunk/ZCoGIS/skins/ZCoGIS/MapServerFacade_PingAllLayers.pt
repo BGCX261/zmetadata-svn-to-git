@@ -1,0 +1,51 @@
+<html metal:use-macro="here/main_template/macros/master">
+    <body>
+        <div metal:fill-slot="main">
+			<style>
+			td{
+				text-align:left;
+			}
+
+			.smallText{
+				font-size:8pt;
+			}
+			</style>
+
+			<h3>Server Ping Results</h3>
+			
+            
+            <div tal:define="global serverPingList here/getServerPingResults"> </div>
+
+            <div tal:condition="not: python: serverPingList">
+                <b>No Ping Results</b>
+            </div>
+            
+           
+                <div tal:condition="python: serverPingList">
+                    <div tal:repeat="serverName python: serverPingList.keys()">                        
+                        <h4 tal:content="python: 'Server Name: ' + serverName">Server Name</h4>
+                        <table border="1">
+                            <tr><th>LayerName</th> <th>WMS(sec)</th> <th>WFS(sec)</th> </tr>
+                            <div tal:define="layerDict python: serverPingList[serverName]">
+                                <div tal:repeat="layerName python: layerDict.keys()">
+                                    <tr>
+                                        <td tal:content="layerName"></td>
+                                        <div tal:condition="python:	layerDict[layerName][1] == 'Layer Unavailable'">
+                                            <td style="color:red;" tal:content="python: layerDict[layerName][1]"></td>
+                                        </div>
+                                        <div tal:condition="not: python: layerDict[layerName][1] == 'Layer Unavailable'">
+                                            <td style="color:green;" tal:content="python: layerDict[layerName][1]" ></td>
+                                        </div>
+                                        
+                                        <td tal:content="python: layerDict[layerName][0]"></td>
+                                    </tr>                                                               
+                                </div>
+                            </div>  
+                        </table>                  
+                    </div> 
+                </div>           
+			
+        </div>
+    </body>
+</html>
+

@@ -1,0 +1,141 @@
+<html metal:use-macro="here/main_template/macros/master">
+    <body>
+        <div metal:fill-slot="main">
+			<style>
+			td{
+				text-align:left;
+			}
+
+			.tdBorder{
+				border:thin solid silver;				
+			}
+
+			.tdBorderGreen{
+				border:thin solid silver;	
+				color:green;
+			}
+
+			.tdNotRunning{
+				border:thin solid red;
+				color: red;
+			}
+
+			.tableBorder{
+				border:thin solid gray;
+			}
+			.redFont{
+				color:red;
+			}
+			.greenFont{
+				color:green;
+			}
+			</style>
+
+			<!-- This will check that the components are synced -->
+            <!--<div tal:define="sync here/checkSyncState"></div>-->
+            
+            <div tal:define="global serverStatus here/getServerStatus"></div>			
+			<div tal:define="global layerRegistryLayerCount here/getLayerCount"></div>					
+			<div tal:define="global UMSLayerCount here/getLayerCount"></div>	
+			<div tal:define="global facadeLayerCount here/getFacadeLayerCount"></div>	
+
+			<TABLE class="tableBorder">
+			<tr>
+				<th>Server</th>
+				<th>URL</th>
+				<th>Status</th>
+				<th>Content</th>
+				<th>Ping Time</th>
+			</tr>
+
+			<TR>
+				<TD class="tdBorder">Universal MapServer</TD>
+				<TD class="tdBorder">the url</TD>
+				<span tal:condition="python: serverStatus['univeralMapServer'][0] == 'Running'">
+					<TD class="tdBorderGreen" tal:content="python: serverStatus['univeralMapServer'][0]">status</TD>
+				</span>
+				<span tal:condition="not: python: serverStatus['univeralMapServer'][0] == 'Running'">
+					<TD class="tdNotRunning" tal:content="python: serverStatus['univeralMapServer'][0]">status</TD>
+				</span>
+
+				<div tal:condition="python:UMSLayerCount == 0">
+					<td class="tdBorder redFont">Empty</td>
+				</div>
+				<div tal:condition="not:python:UMSLayerCount == 0">
+					<td class="tdBorder" tal:content="UMSLayerCount"></td>
+				</div>
+
+				<TD class="tdBorder" tal:content="python: serverStatus['univeralMapServer'][1]">ping times</TD>
+			</TR>
+			<TR>
+				<TD class="tdBorder">Layer Registry</TD>
+				<TD class="tdBorder">the url</TD>
+				<span tal:condition="python: serverStatus['layerregistry'][0] == 'Running'">
+					<TD class="tdBorderGreen" tal:content="python: serverStatus['layerregistry'][0]">status</TD>
+				</span>
+				<span tal:condition="not: python: serverStatus['layerregistry'][0] == 'Running'">
+					<TD class="tdNotRunning" tal:content="python: serverStatus['layerregistry'][0]">status</TD>
+				</span>
+				
+				<div tal:condition="python:layerRegistryLayerCount == 0">
+					<td class="tdBorder redFont">Empty</td>
+					
+				</div>
+				<div tal:condition="not:python:layerRegistryLayerCount == 0">
+					<td class="tdBorder" tal:content="layerRegistryLayerCount"></td>
+				</div>		
+
+				<TD class="tdBorder" tal:content="python: serverStatus['layerregistry'][1]">ping times</TD>
+			</TR>
+			<TR>
+				<TD class="tdBorder">Security Manager</TD>
+				<TD class="tdBorder">the url</TD>
+				<span tal:condition="python: serverStatus['securityManager'][0] == 'Running'">
+					<TD class="tdBorderGreen" tal:content="python: serverStatus['securityManager'][0]">status</TD>
+				</span>
+				<span tal:condition="not: python: serverStatus['securityManager'][0] == 'Running'">
+					<TD class="tdNotRunning" tal:content="python: serverStatus['securityManager'][0]">status</TD>
+				</span>
+				
+				<div tal:condition="not: python:context.getSecurityStructureCount()">
+					<td class="tdNotRunning">Empty</td>
+				</div>
+				<div tal:condition="python:context.getSecurityStructureCount()">
+					<td tal:content="python:context.getSecurityStructureCount()">Empty</td>
+				</div>
+
+				<TD class="tdBorder" tal:content="python: serverStatus['securityManager'][1]">ping times</TD>
+			</TR>
+			<TR>
+				<TD class="tdBorder">Request Response Translator</TD>
+				<TD class="tdBorder">the url</TD>
+				<span tal:condition="python: serverStatus['requestResponseTranslator'][0] == 'Running'">
+					<TD class="tdBorderGreen" tal:content="python: serverStatus['requestResponseTranslator'][0]">status</TD>
+				</span>
+				<span tal:condition="not: python: serverStatus['requestResponseTranslator'][0] == 'Running'">
+					<TD class="tdNotRunning" tal:content="python: serverStatus['requestResponseTranslator'][0]">status</TD>
+				</span>
+				<td class="tdBorder greenFont">Normal</td>
+				<TD class="tdBorder" tal:content="python: serverStatus['requestResponseTranslator'][1]">ping times</TD>
+			</TR>
+			</TABLE>
+
+			<br>
+
+			<TABLE>
+			<TR>
+				<Th class="tdBorder">Name</Th>
+				<Th class="tdBorder">URL</Th>
+				<Th class="tdBorder">Content</Th>
+			</TR>
+			<TR>
+				<TD class="tdBorder">MapServer Facade</TD>
+				<TD class="tdBorder" tal:content="python: context.absolute_url() + '/wfswms?'"></TD>
+				<TD class="tdBorder" tal:content="facadeLayerCount"></TD>
+			</TR>
+			</TABLE>			
+
+        </div>
+    </body>
+</html>
+

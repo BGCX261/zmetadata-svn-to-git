@@ -1,0 +1,42 @@
+<html metal:use-macro="here/main_template/macros/master">
+    <body>
+        <div metal:fill-slot="main">
+			<style>
+			td{
+				text-align:left;
+			}
+
+			.smallText{
+				font-size:8pt;
+			}
+
+			.td{
+				border:thin solid gray;
+			}
+			.th{
+				border:thin solid gray;
+				background-color:silver;
+			}
+			</style>
+
+			
+			<div tal:define="global times here/pingServer"></div>
+			
+			
+			<h3>Ping Times for Server Sources</h3>
+			
+			<table border="1">
+                <tr>
+                    <th>WMS (sec)</th> <th>WFS (sec)</th>
+                </tr>
+                <tr>
+                    <td tal:content="python: times[1]"></td>
+                    <td tal:content="python: times[0]"></td>
+                </tr>
+			</table>		
+			
+			
+        </div>
+    </body>
+</html>
+

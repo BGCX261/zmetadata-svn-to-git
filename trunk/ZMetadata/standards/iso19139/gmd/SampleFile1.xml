@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Created with Liquid XML Studio 6.1.15.0 - FREE Community Edition (http://www.liquid-technologies.com) -->
+<tnsb:EX_Extent xmlns:tns="http://www.opengis.net/gml" xmlns:tnsa="http://www.w3.org/1999/xlink" xmlns:tnsb="http://www.isotc211.org/2005/gmd" xmlns:tnsc="http://www.isotc211.org/2005/gco" xmlns:tnsd="http://www.isotc211.org/2005/gss" xmlns:tnse="http://www.isotc211.org/2005/gts" xmlns:tnsf="http://www.isotc211.org/2005/gsr" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.isotc211.org/2005/gmd C:\Plone3_Instance4080\Products\ZMetadata\standards\iso19139\gmd\gmd.xsd" uuid="string">
+  <tnsb:temporalElement tnsa:role="http://www.liquid-technologies.com" uuidref="string" />
+  <tnsb:temporalElement tnsa:type="simple" tnsa:href="http://www.liquid-technologies.com" tnsa:title="string" tnsa:show="embed" tnsa:actuate="onLoad" uuidref="string" tnsc:nilReason="http://www.liquid-technologies.com" />
+  <tnsb:temporalElement tnsa:arcrole="http://www.liquid-technologies.com" tnsa:show="none" uuidref="string" tnsc:nilReason="http://www.liquid-technologies.com" />
+  <tnsb:temporalElement tnsa:href="http://www.liquid-technologies.com" tnsa:role="http://www.liquid-technologies.com" tnsa:actuate="none" />
+  <tnsb:verticalElement tnsa:type="simple" tnsa:href="http://www.liquid-technologies.com" tnsa:role="http://www.liquid-technologies.com" tnsa:arcrole="http://www.liquid-technologies.com" tnsa:title="string" uuidref="string" />
+  <tnsb:verticalElement tnsa:type="simple" tnsa:href="http://www.liquid-technologies.com" tnsa:role="http://www.liquid-technologies.com" tnsa:arcrole="http://www.liquid-technologies.com" tnsa:title="string" tnsc:nilReason="" />
+  <tnsb:verticalElement tnsa:href="http://www.liquid-technologies.com" tnsa:role="http://www.liquid-technologies.com" tnsa:arcrole="http://www.liquid-technologies.com" tnsa:title="string" tnsa:show="none" uuidref="string" tnsc:nilReason="http://www.liquid-technologies.com" />
+</tnsb:EX_Extent>

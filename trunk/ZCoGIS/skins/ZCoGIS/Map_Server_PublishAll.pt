@@ -1,0 +1,120 @@
+<html metal:use-macro="here/main_template/macros/master">
+    <body>
+        <div metal:fill-slot="main">
+			<style>
+			td{
+				text-align:left;
+			}
+
+			.tdBorder{
+				border:thin solid silver;				
+			}
+
+			.tdBorderGreen{
+				border:thin solid silver;	
+				color:green;
+			}
+
+			.tdNotRunning{
+				border:thin solid red;
+				color: red;
+			}
+
+			.tableBorder{
+				border:thin solid gray;
+			}
+			</style>			
+			<script src="" tal:attributes="src python: context.absolute_url() + '/js/iframePost.js'"> </script>
+            <script src="" tal:attributes="src python: context.absolute_url() + '/js/utils.js'"> </script>	
+			<div tal:define="global thePath here/absolute_url"></div>
+			<div tal:define="global theRoles python: context.validRoles()"></div>
+			
+			<div id="thePath" value="" tal:attributes="value here/absolute_url"></div>
+            
+			<input type="button" value="Publish All" onclick="publishLayers()">	
+			<br>
+			<input type="button" value="Retract All" onclick="retractAll()">			
+			<br>			
+			
+			<br>		
+			<b>Select Roles to Publish</b>
+			<br>		
+            <select id="cbxPublishRoles" style="width:200px;height:100px;" multiple>
+                <span tal:repeat="r theRoles">
+                    <option tal:content="r"></option>
+                </span>               
+			</select>			
+			<br>
+			<input type="button" value="Publish For Roles" onclick="publishForRoles()">
+			
+			<div id="lTestLayer" style="border:medium solid gray;background-color:silver;position:absolute;top:300px;left:300px;visibility:hidden;width:85px;">
+				<img src="globe4.gif">
+				<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Wait...</p>
+			</div>			
+			
+			<SCRIPT LANGUAGE="JavaScript">
+			<!--
+			var path = document.getElementById('thePath').getAttribute('value')	
+						
+			function publishForRoles()
+			{
+                //res is a list of roles to publish
+                var res = getSelectedValues("cbxPublishRoles")     
+                
+                var tDict = {}	
+                tDict["rolesToPublish"] = res;		
+				showWait()
+				var cont = new Container('r3',handlePublishForRoles)				
+				cont.sendPostForm(path + "/publishLayersForRoles",tDict)                           
+			}
+			
+			function handlePublishForRoles(res)
+			{
+                hideWait()                
+                alert("Layers published for roles selected")
+			}
+            
+            function retractAll()
+			{	
+				var tDict = {}			
+				showWait()
+				var cont = new Container('r1',handleRetract)				
+				cont.sendPostForm(path + "/retractAllLayers",tDict)						
+			}
+			
+			function publishLayers()
+			{
+				var tDict = {}
+				showWait()			
+				var cont = new Container('r2',handlePublish)
+				cont.sendPostForm(path + "/publishAllLayers",tDict)					
+			}
+			
+			function handleRetract(res)
+			{				
+				hideWait()
+				alert("Layers Retracted")
+			}
+			
+			function handlePublish(res)
+			{				
+				hideWait()
+				alert("Layers Published")
+			}
+			
+			function showWait()
+			{
+				document.getElementById("lTestLayer").style.visibility = 'visible'
+			}
+			
+			function hideWait()
+			{
+				document.getElementById("lTestLayer").style.visibility = 'hidden'
+			}	
+			
+			//-->
+			</SCRIPT>
+        </div>
+    </body>
+</html>
+

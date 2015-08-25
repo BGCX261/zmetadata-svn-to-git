@@ -1,0 +1,146 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+<body>
+
+<div metal:fill-slot="main">
+	
+	<style>
+		.divMainContainer{visibility:visible; border:thin solid gray;}
+		.divMainContainerNoBorder{visibility:visible;height:100px;position:relative;}		
+		.customSelect{width:300px;}
+		.customText{width:300px;}
+		.customTextDisabled{width:300px;background-color:black;}		
+		.defaultDivVisible{clear:both;border:thin solid gray;top:4px; left:0px;visibility:visible;display:block;position:absolute;}		
+		.defaultDivVisibleNoBorder{clear:both;top:4px; left:0px;visibility:visible;display:block;position:absolute;}		
+		.error{color:red;}
+		.searchField{width:150px;}
+		.cBorder{border:thin solid gray;}
+		div#lMetadataFeedback {top:0px; left:0px;position:relative;visibility:visible;margin-bottom:5px;}
+	</style>
+
+	<link rel="stylesheet" type="text/css" href="calendar-win2k-1.css"/>	
+    <script type="text/javascript" src="calendar.js"></script>
+    <script type="text/javascript" src="calendar-en.js"></script>
+    <script type="text/javascript" src="calendar-setup.js"></script>
+    <script src="utils.js"> </script>	
+    
+    <div tal:define="global thePath here/absolute_url"></div>
+	<div id="thePath" value="" tal:attributes="value here/absolute_url"></div>
+	<!--<span tal:define="global hasAllFields here/hasGenericCoreFields"></span>-->
+	<span tal:define="global validationRes here/getValidationResults"></span>
+	<div tal:define="global aliasses here/metadata_tool/getFieldAliases"></div>
+	<div tal:define="global dropdowns here/metadata_tool/getFieldValues"></div>
+	<div tal:define="global dateFields here/metadata_tool/getDateFields"></div>	
+	<div tal:define="global fields here/metadata_tool/getGenericCoreFieldsOrder"></div>	
+	<span tal:define="global fieldsDict here/getGenericCoreFields"></span>
+    
+    <script>
+    var path = document.getElementById('thePath').getAttribute('value')
+    function setFeedbackMessage(message)
+    {				
+		document.getElementById("lMetadataFeedback").style.visibility = "visible";
+		document.getElementById("lMetadataFeedback").innerHTML = message;
+    }			
+    
+    function hideFeedback()
+    {
+        document.getElementById("lMetadataFeedback").style.visibility = "hidden";
+    }		
+		
+    function save()
+	{			
+		setFeedbackMessage("Saving fields. Please wait...")
+	}
+
+	function validate(res)
+	{	
+		if (res == undefined)
+		{
+            //getFormatedValidationMessage
+            setFeedbackMessage("Validating Data. Please wait ...")
+			getPostContent(path +"/getFormatedValidationMessage","",validate)					
+		}
+		else
+		{	
+			setFeedbackMessage(res)                
+		}
+	}
+		
+    function setupCalender(fieldName, dateFormat)
+	{			
+		if (dateFormat != undefined)
+		{
+			var format = dateFormat;
+		}
+		else
+		{
+			var format = "%Y-%m-%d";
+		}
+		Calendar.setup({inputField:fieldName,ifFormat:format,showsTime:false,button:"btn"+fieldName,singleClick:true,step:1});
+	}
+    </script>	
+	
+	<DIV id="lMetadataFeedback" tal:content="structure here/getFormatedValidationMessage"></DIV>
+	
+	<h3 tal:content="python: context.metadatatype + ' Core Editor'"></h3>
+	
+	<!--<span tal:condition="python: not hasAllFields[0]">		
+		<b>Some core fields are not present:</b><br><br>
+		<ul>
+			<span tal:repeat="fieldName python: hasAllFields[1]">
+				<li tal:content="fieldName"></li>				
+			</span>
+		</ul>
+	</span>	-->	
+	
+	<span tal:condition="python: 1">	
+		<form method="post" action="" tal:attributes="action string:${here/absolute_url}">
+			<table>						
+				<span tal:repeat="theField fields">
+					<tr>		
+					
+					<td tal:content="python: aliasses[theField][0]"></td>
+					
+					<td>
+						<span tal:condition="not: python: theField in fieldsDict.keys()">						
+							<b style="color:red">Not Available</b>
+						</span>
+					
+						<span tal:condition="python: (theField not in dropdowns.keys() and theField not in dateFields.keys() and theField in fieldsDict.keys())">						
+							<input class="customText" type="text" name="" value="" id="" tal:attributes="name theField;id theField; title python: aliasses[theField][1]; value python: fieldsDict[theField] ">
+						</span>							
+						
+						<span tal:condition="python: theField in dropdowns.keys() and theField in fieldsDict.keys()">
+							<select class="customSelect" id="" name="" tal:attributes="name theField; id theField; title python: aliasses[theField][1]">
+								<option tal:content="python: fieldsDict[theField]"></option>
+								<span tal:repeat="vocab python: dropdowns[theField]">
+									<option tal:content="vocab"></option>
+								</span>
+							</select>
+						</span>
+						
+						<span tal:condition="python: theField in dateFields.keys() and theField in fieldsDict.keys()">								
+							<form action="#" method="get">
+								<input type="text" class="searchField" value="" id="" name="" tal:attributes="name theField;id theField; title python: aliasses[theField][1]; value python: fieldsDict[theField]">
+								<button type="reset" id="" tal:attributes="id python: 'btn'+theField">...</button>
+							</form>
+								<script tal:content="python: '''setupCalender(\''''+theField+'''\' , \''''+dateFields[theField]+'''\')''' ">									
+							</script>
+						</span>
+					</td>
+					</tr>							
+				</span>		
+			</table>
+			<br>
+			<input type="submit" value="Save" name="updateGenericCoreFields:method" onmouseup="save()">&nbsp;
+			<input type="button" value="Validate" onclick="validate()">
+		</form>
+	</span>
+	
+		
+</div>
+
+</body>
+</html>

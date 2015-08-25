@@ -1,0 +1,1230 @@
+// module for handeling map requests and parsing te responses
+var layerNames = new Array()
+var layerEnvelopes = new Array()
+var layerVisible = new Array()
+var layerSRS = new Array()
+var globalEnvelope = new Array(0,0,0,0)
+var currentExtent = new Array(0,0,0,0)
+var lastGetMap = "";
+var lastGetCapabilities = "";
+var lastGetFeatureInfo = "";
+var initBox = new Array();
+var identifyDataDict = {};
+var identifyDataList = new Array();
+var reversedLayerNames = new Array();
+
+function stateCheck()
+{		
+	if ((document.getElementById("mapImage").readyState == 'complete') || (document.getElementById("mapImage").readyState == undefined))
+	{				
+		hideWait()
+	}
+}
+
+/*
+@summary: this does a getMap request with the globally set currentExtent array
+*/
+function doGetMap()
+{
+	showWait()	
+	document.getElementById("mapImage").onreadystatechange = stateCheck
+	document.getElementById("mapImage").onload = stateCheck
+	// build the get map request
+	layerStr = ""
+	
+	for (var x=0;x<reversedLayerNames.length;x++ )
+	{
+		if (document.getElementById('chb'+reversedLayerNames[x]).checked)
+		{
+			layerStr +=  reversedLayerNames[x]+ ",";
+		}			
+	}
+	if (layerStr == "")
+	{
+		alert("No Visible Layers.")
+		return;
+	}
+	var srs = getSRSForMap();
+	
+	layerStr = layerStr.slice(0,layerStr.length-1)	
+	currentExtent = getNormalizedExtent(currentExtent,getMapSize()[0],getMapSize()[1])
+	var theBox = currentExtent[0] +","+ currentExtent[1] +","+ currentExtent[2] +","+ currentExtent[3]
+	var url = wmsServerAddress + WMS_GETMAP_EXTENSION +"&srs=" + srs + "&Layers=" + layerStr + "&width=" + getMapSize()[0] + "&height=" + getMapSize()[1] + "&bbox=" + theBox
+	
+	document.getElementById("mapImage").setAttribute('src',url)		
+	disableScaleVisibleLayer()	
+}
+
+/*
+@summary: this will calculate a new envelope for the map that has the same xratio and yratio
+@param envelope: the array with coords to normalizze in ratio
+@param theWidth: the current width of the map image in the browser
+@param theHeight: the current height of the map image in the browser
+@return: an array with the new coords
+*/
+function getNormalizedExtent(envelope,theWidth,theHeight)
+{	
+	var newEnv = new Array()	
+	var sWidth = theWidth
+	var sHeight = theHeight
+	var xDiff = Math.abs(envelope[2] - envelope[0])	
+	var yDiff = Math.abs(envelope[3] - envelope[1])	
+	var xPixel = xDiff / sWidth
+	
+	var yDistance = xPixel * sHeight
+
+	//enlarge the y distance
+	if (yDistance > yDiff)
+	{
+		var distanceDiff = yDistance - yDiff
+		var halfDistance = distanceDiff / 2
+		newEnv[1] = envelope[1] - halfDistance
+		newEnv[3] = envelope[3] + halfDistance
+	}
+	else
+	{		
+		var distanceDiff = yDiff - yDistance
+		var halfDistance = distanceDiff / 2
+		newEnv[1] = envelope[1] + halfDistance
+		newEnv[3] = envelope[3] - halfDistance
+	}
+	newEnv[0] = envelope[0]
+	newEnv[2] = envelope[2]	
+	return newEnv;
+}
+
+/*
+@summary: this does a wms getCapabilities request at viewer startup
+*/
+function doGetCapabilities()
+{
+	showWait()    
+    var url = wmsServerAddress + "version=1.0.0&service=WMS&request=GetCapabilities"
+	var res = $.ajax({ 
+	  url: url, 
+	  async: false 
+	 }).responseText;
+	handleGetCapabilities(res);		
+}
+
+/*
+@summary: this does a getfeature info request for the current active layer for the coords passed
+@param x: the screen x coord where the user clicked
+@param y: the screen y coord where the user clicked
+*/
+function doGetFeatureInfo(x,y,x2,y2)
+{
+	showWait()
+	var activeLayer = getActiveLayer()
+	if (activeLayer == "")
+	{
+		hideWait()
+		alert('No active layer selected')
+		return;
+	}	
+	
+	var srs = getSRSForMap()
+	var mWidth = getMapSize()[0]
+	var mHeight = getMapSize()[1]
+	var mLayers = activeLayer
+	var box = currentExtent[0] +","+ currentExtent[1] +","+ currentExtent[2] +","+ currentExtent[3]
+	
+	var url = wmsServerAddress + WMS_GETFEATURE_INFO + "&styles=&bbox="+box+"&width="+mWidth+"&height="+mHeight+"&layers="+mLayers+"&query_layers="+mLayers+"&x="+x+"&y="+y+"&srs="+srs	
+	if ((x2 != undefined) && (y2 != undefined))
+	{
+		url += "&x2=" + x2 + "&y2=" + y2
+	}	
+	getContent(url,handleGetFeatureInfo)
+}
+
+/*
+@summary: gets the current active layer from the table of contents
+@return: the names if the layer that is marked as active in the TOC
+*/
+function getActiveLayer()
+{
+	for (var x=0;x<layerNames.length ;x++ )
+	{
+		if (document.getElementById('radio'+layerNames[x]).checked)
+		{			
+			return layerNames[x];
+		}
+	}
+	return "";
+}
+
+// ======================== Handlers ==========================
+function parseGMLToList(xmlString)
+{
+	var allDataList = new Array()	
+	xmlStr = cleanXMLForDOM(xmlString)		
+	var dom = createDOM(xmlStr)		
+	var elms = dom.getElementsByTagName('gmlfeatureMember')		
+	try
+	{
+		if (elms.length != 0)
+		{			
+			for (var x=0;x<elms.length ;x++ )
+			{				
+				var allDataDict = {}
+				tmpElms = elms[x].childNodes 
+				for (var y=0;y<tmpElms.length ;y++ )
+				{
+					var res = getNodeData2(tmpElms[y])
+					if (res != '')
+					{
+						allDataDict[res[0]] = res[1]
+					}
+					
+					if (tmpElms[y].hasChildNodes())
+					{
+						var res = getNodeDataFromNodes2(tmpElms[y].childNodes)
+						for (ee in res)
+						{
+							allDataDict[ee] = res[ee]
+						}					
+					}
+				}			
+				allDataList[x] = allDataDict			
+			}
+		}
+		return allDataList
+	}
+	catch(e)
+	{	
+		alert(e.description)
+	}	
+}
+
+
+function buildIdentifyDict(xmlString)
+{		
+	identifyDataList = new Array()	
+	xmlStr = cleanXMLForDOM(xmlString)		
+	var dom = createDOM(xmlStr)		
+	var elms = dom.getElementsByTagName('gmlfeatureMember')		
+    try
+	{
+		if (elms.length != 0)
+		{			
+			for (var x=0;x<elms.length ;x++ )
+			{				
+				identifyDataDict = {}
+				tmpElms = elms[x].childNodes 
+				for (var y=0;y<tmpElms.length ;y++ )
+				{
+					getNodeData(tmpElms[y])
+					if (tmpElms[y].hasChildNodes())
+					{
+						getNodeDataFromNodes(tmpElms[y].childNodes)					
+					}
+				}			
+				identifyDataList[x] = identifyDataDict			
+			}
+		}
+	}
+	catch(e)
+	{
+		alert(e)
+		alert(e.description)
+	}	
+}
+
+function buildIdentifyHTML_old(dataList,layerName)
+{
+	var str = ""
+	
+	str += "<p>&nbsp;&nbsp;&nbsp;<b>"+dataList.length+"  Results Found.</b></p>"	
+		
+	if (dataList.length > 0)
+	{	
+
+		if (layerName == 'lTestPits')
+		{
+			var allStr = ""
+			for (var t=0;t<dataList.length;t++)
+			{
+				var dataDict = dataList[t]
+				allStr += dataDict['UQ_SAGEO'] +","			
+			}
+			allStr = allStr.slice(0,-1)
+			reportPath = reportMappings['lTestPits']['UQ_SAGEO'] +  allStr 
+			str += "<input type='button' class='button' value='Report On All' onclick=\"getReport('"+reportPath+"')\"><br>"
+		}
+
+		if (layerName == 'lZoningPoly')
+		{
+			var allStr = ""
+			for (var t=0;t<dataList.length;t++)
+			{
+				var dataDict = dataList[t]
+				allStr += dataDict['UQ_SAGEO'] +","			
+			}
+			allStr = allStr.slice(0,-1)
+			reportPath = reportMappings['lZoningPoly']['UQ_SAGEO'] +  allStr 
+			str += "<input type='button' class='button' value='Report On All' onclick=\"getReport('"+reportPath+"')\"><br>"
+		}
+
+		if (layerName == 'lGeotecnical')
+		{
+			var allStr = ""
+			for (var t=0;t<dataList.length;t++)
+			{
+				var dataDict = dataList[t]
+				allStr += dataDict['POLNO'] +","			
+			}
+			allStr = allStr.slice(0,-1)
+			reportPath = reportMappings['lGeotecnical']['POLNO'] + allStr 		
+			str += "<input type='button' class='button' value='Report On All' onclick=\"getReport('"+reportPath+"')\"><br>"
+		}
+
+		if (layerName == 'lMineralPoints')
+		{
+			var allStr = ""
+			for (var t=0;t<dataList.length;t++)
+			{
+				var dataDict = dataList[t]
+				allStr += dataDict['UQ_REF'] +","			
+			}
+			allStr = allStr.slice(0,-1)
+			attributeReportPath = reportMappings['attribute']['UQ_REF'] + allStr
+			exploitationReportPath = reportMappings['exploitation']['UQ_REF'] + allStr
+			str += "<input type='button' class='buttonLarge' value='Report On All Attributes' onclick=\"getReport('"+attributeReportPath+"')\"><br>"
+			str += "<input type='button' class='buttonLarge' value='Report On All Exploitations' onclick=\"getReport('"+exploitationReportPath+"')\"><br>"
+		}
+	}
+	
+	for (var t=0;t<dataList.length;t++)
+	{
+		
+		str += "<b> Result "+(t+1)+"</b>"
+		
+		str += "<table>"
+		var dataDict = dataList[t]
+		for (x in dataDict)
+		{	
+			if (x == 'toXMLRPC')
+			{
+				continue;	
+			}		
+			
+			if (layerName == 'lTestPits')
+			{			
+				if (x == 'UQ_SAGEO')
+				{					
+					reportPath = reportMappings['lTestPits']['UQ_SAGEO'] + dataDict['UQ_SAGEO']				
+					//alert(reportPath)
+					str += "<tr><th>"+x+"</th> <td>"+dataDict[x]
+					str += " <input type='button' class='button' value='Report' onclick=\"getReport('"+reportPath+"')\"> &nbsp;"
+					str += "<input type='button' class='button' value='Scan' onclick=\"window.open('"+scannedImageBasePath+dataDict['UQ_SAGEO']+"/"+dataDict['TESTPIT_NO']+".jpg')\" > </td> </tr>"
+				}
+				else{
+					str += "<tr><th>"+x+"</th> <td>"+dataDict[x]+"</td></tr>"
+				}
+			}
+			if (layerName == 'lZoningPoly')
+			{
+				if (x == 'UQ_SAGEO')
+				{					
+					reportPath = reportMappings['lZoningPoly']['UQ_SAGEO'] + dataDict['UQ_SAGEO']				
+					str += "<tr><th>"+x+"</th> <td>"+dataDict[x]
+					str += " <input type='button' class='button' value='Report' onclick=\"getReport('"+reportPath+"')\"> &nbsp; </td> </tr>"				
+				}
+				else{
+					str += "<tr><th>"+x+"</th> <td>"+dataDict[x]+"</td></tr>"
+				}			
+			}
+
+			if (layerName == 'lGeotecnical')
+			{
+				if (x == 'POLNO')
+				{					
+					reportPath = reportMappings['lGeotecnical']['POLNO'] +  dataDict['POLNO']				
+					str += "<tr><th>"+x+"</th> <td>"+dataDict[x]
+					str += " <input type='button' class='button' value='Report' onclick=\"getReport('"+reportPath+"')\"> &nbsp; </td> </tr>"				
+				}
+				else{
+					str += "<tr><th>"+x+"</th> <td>"+dataDict[x]+"</td></tr>"
+				}				
+			}
+
+			if (layerName == 'lMineralPoints')
+			{
+				if (x == 'UQ_REF')
+				{					
+					reportPath = reportMappings['lMineralPoints']['UQ_REF'] +  dataDict['UQ_REF']	
+					exploitationReportPath = reportMappings['exploitation']['UQ_REF'] +  dataDict['UQ_REF']	
+					attributeReportPath = reportMappings['attribute']['UQ_REF'] + dataDict['UQ_REF']	
+					var theReference = dataDict['UQ_REF']					
+					str += "<tr><th>"+x+"</th> <td>"+dataDict[x]					
+					str += " <input type='button' class='button' value='Attribute' onclick=\"getReport('"+attributeReportPath+"')\">"						
+					str +="<input type='button' class='button' value='Locality' id='"+theReference+"' onclick=\"showLocality(event,'"+theReference+"')\" >"					
+					str += " <input type='button' class='button' value='Exploitation' onclick=\"getReport('"+exploitationReportPath+"')\"> &nbsp; </td> </tr>"				
+				}
+				else{
+					str += "<tr><th>"+x+"</th> <td>"+dataDict[x]+"</td></tr>"
+				}				
+			}
+
+			if(layerName != 'lMineralPoints' && layerName != 'lGeotecnical' && layerName != 'lZoningPoly' && layerName != 'lTestPits'){
+				str += "<tr><th >"+x+"</th> <td >"+dataDict[x]+"</td></tr>"	
+			}			
+		}
+		str += "</table><br>"
+	}
+
+	return str; 
+}
+
+/*
+@summary: this handles the getfeature info reposnse message and displays it in a new window
+*/
+function handleGetFeatureInfo()
+{
+	if (req.readyState == 4)
+	{	            
+		var res = req.responseText;	
+		buildIdentifyDict(res)
+		if (identifyDataList.length == 0)
+		{
+            if (res.toLowerCase().indexOf("missing") != -1)
+            {
+                htmlStr = "<html><body><pre><b>No Results Found</b></pre></body></html>"
+            }
+            else
+            {
+			 htmlStr = "<html><body><pre>"+res+"</pre></body></html>"
+			}
+		}
+		else
+		{
+			var activeLayer = getActiveLayer()	
+			var layerName = LayerNameMapping[activeLayer]
+			if (layerName == undefined)
+			{
+				layerName = activeLayer
+			}	
+			htmlStr = buildIdentifyHTML(identifyDataList,layerName) 
+		}	
+		
+		hideWait()
+		var win = window.open("resultsDisplay.html","tmpWin","width=600,height=400,toolbar=0,location=0,menubar=0,scrollbars=1,resizable=1")		
+    }     
+	
+}
+
+function getNodeData(theNode)
+{
+	if (theNode.nodeType == 3)
+	{
+		return "";
+	}	
+	if (theNode.tagName == undefined)
+	{
+		return "";
+	}	
+	var sName = theNode.tagName.toUpperCase()
+	if (isIEBrowser())
+	{
+		var sValue = theNode.text		
+	}
+	else
+	{
+		try
+		{
+			var sValue = theNode.firstChild.nodeValue
+		}
+		catch(e){
+			var sValue = '&nbsp;'
+		}
+	}	
+	try
+	{		
+		sName = Trim(sName)
+	}
+	catch(e){
+		return
+	}	
+	try
+	{
+		if (sValue == null)
+		{
+			sValue = 'Null'	
+		}
+		else{
+			sValue = Trim(sValue)
+		}		
+	}
+	catch(e){	
+	}	
+	sValue = sValue.replace("\n"," ")
+	sValue = sValue.replace("\t"," ")
+	sValue = sValue.replace("\r"," ")
+	sValue = sValue.replace("\f"," ")	
+
+	if (sValue == "")
+	{
+		sValue = '&nbsp;&nbsp;'
+	}	
+	if (sValue.indexOf("function()") != -1)
+	{		
+		return
+	}	
+	if ((sName.indexOf('toXMLRPC') == -1) && (sName.indexOf('TOXMLRPC') == -1))
+	{       
+		identifyDataDict[sName] = sValue
+	}	
+}
+
+function getNodeData2(theNode)
+{
+	if (theNode.nodeType == 3)
+	{
+		return "";
+	}	
+	if (theNode.tagName == undefined)
+	{
+		return "";
+	}	
+	var sName = theNode.tagName.toUpperCase()
+	if (isIEBrowser())
+	{
+		var sValue = theNode.text		
+	}
+	else
+	{
+		try
+		{
+			var sValue = theNode.firstChild.nodeValue
+		}
+		catch(e){
+			var sValue = '&nbsp;'
+		}
+	}	
+	try
+	{		
+		sName = Trim(sName)
+	}
+	catch(e){
+		return
+	}	
+	try
+	{
+		if (sValue == null)
+		{
+			sValue = 'Null'	
+		}
+		else{
+			sValue = Trim(sValue)
+		}		
+	}
+	catch(e){	
+	}	
+	sValue = sValue.replace("\n"," ")
+	sValue = sValue.replace("\t"," ")
+	sValue = sValue.replace("\r"," ")
+	sValue = sValue.replace("\f"," ")	
+
+	if (sValue == "")
+	{
+		sValue = '&nbsp;&nbsp;'
+	}	
+	if (sValue.indexOf("function()") != -1)
+	{		
+		return ''
+	}	
+	if ((sName.indexOf('toXMLRPC') == -1) && (sName.indexOf('TOXMLRPC') == -1))
+	{
+		var tmpList = new Array(sName,sValue) 	
+		return tmpList
+		//identifyDataDict[sName] = sValue
+	}	
+}
+
+function getNodeDataFromNodes2(nodeList)
+{	
+	var tmpDict = {}
+	for (var x=0;x<nodeList.length ;x++)
+	{
+		res = getNodeData2(nodeList[x])
+		if (res != '')
+		{
+			tmpDict[res[0]] = res[1]
+		}
+	}
+	return tmpDict
+}
+
+function getNodeDataFromNodes(nodeList)
+{	
+	for (var x=0;x<nodeList.length ;x++)
+	{
+		getNodeData(nodeList[x])
+	}
+}
+
+function getReport(reportURL)
+{	
+	var cont = new Container("sample"+getGUID(),openReport)	
+	cont.getURLContent(reportURL)
+}
+
+function openReport(url)
+{			
+	if (url.indexOf('ServiceException') != -1)
+	{
+		alert('There was an error. ' + url)
+		return;
+	}
+	var reportWindow = window.open(url,getGUID())
+}
+
+function getGUID()
+{
+	var d = new Date()
+	secs = d.getTime() 
+	sSec = secs.toString();
+	sSec = sSec.replace(".","");
+	return sSec;
+}
+
+function hasScan(layerName)
+{
+	if (typeof(reportMappings[layerName]['scan']) != 'undefined')
+	{
+		return true;
+	}
+	return false;
+
+}
+
+function hasReportMap(layerName,sName)
+{
+	if (typeof(reportMappings[layerName]) != 'undefined')
+	{
+		if (typeof(reportMappings[layerName][sName]) != 'undefined')
+		{
+			return true;
+		}
+		
+	}
+	
+	/*if (typeof(reportMappings[attrName]) != 'undefined')
+	{
+		return true;
+	}*/
+	else
+	{
+		return false;
+	}
+	return false;
+}
+
+function cleanXMLForDOM(cleanStr)
+{
+	var cleanStr = cleanStr.toString()
+	// remove namspace prefix	
+	ePoint = cleanStr.indexOf("<gml:featureMember>")
+	if (ePoint != -1)
+	{
+		var partStr = cleanStr.slice(ePoint + 19,cleanStr.length)
+		cPoint = partStr.indexOf(":")
+		if (cPoint != -1)
+		{
+			repl = partStr.slice(0,cPoint +1)								
+			repl = repl.replace("   ","")
+			repl = repl.replace("  ","")
+			repl = repl.replace(" ","")
+			repl = repl.replace("\t"," ")
+			repl = repl.replace("\n"," ")			
+			repl = repl.replace("<","")					
+			
+			rr = /\n/ig
+			cleanStr = cleanStr.replace(rr," ")			
+
+			while (cleanStr.indexOf(repl) != -1)
+			{
+				cleanStr = cleanStr.replace(repl,"")				
+			}
+		}
+	}		
+
+	var index = cleanStr.indexOf("wfs:FeatureCollection")
+	if (index != -1)
+	{		
+		re = /:/g
+		tmpString = cleanStr.replace(re,"")
+		return tmpString
+	}
+	else{		
+		return cleanStr
+	}
+}
+
+
+
+/*
+@summary: this handles the getcapabilities response and parses the xml into 4 arrays.
+layerNames,layerEnvelopes,layerSRS and layerVisible
+*/
+function handleGetCapabilities(res)
+{			
+	var theIndex = res.indexOf("<WMT_MS_Capabilities")
+	res = res.slice(theIndex,res.length)
+    var dom = createDOM(res);		
+	var containerLayer = dom.getElementsByTagName("Layer")[0]
+	var layerElms = containerLayer.getElementsByTagName("Layer")			
+	
+	for (var x=0;x<layerElms.length; x++)
+	{			
+		if (layerElms[x] != null)
+		{					
+			var layerName = layerElms[x].getElementsByTagName('Name')[0].firstChild.nodeValue	
+			if (layerElms[x].getElementsByTagName('LatLonBoundingBox').length == 0)
+			{
+				var minx = parseFloat(containerLayer.getElementsByTagName("LatLonBoundingBox")[0].getAttribute("minx"))
+				var miny = parseFloat(containerLayer.getElementsByTagName("LatLonBoundingBox")[0].getAttribute("miny"))
+				var maxx = parseFloat(containerLayer.getElementsByTagName("LatLonBoundingBox")[0].getAttribute("maxx"))
+				var maxy = parseFloat(containerLayer.getElementsByTagName("LatLonBoundingBox")[0].getAttribute("maxy"))
+			}
+			else
+			{				
+				var minx = parseFloat(layerElms[x].getElementsByTagName('LatLonBoundingBox')[0].getAttribute("minx"))
+				var miny = parseFloat(layerElms[x].getElementsByTagName('LatLonBoundingBox')[0].getAttribute("miny"))
+				var maxx = parseFloat(layerElms[x].getElementsByTagName('LatLonBoundingBox')[0].getAttribute("maxx"))
+				var maxy = parseFloat(layerElms[x].getElementsByTagName('LatLonBoundingBox')[0].getAttribute("maxy"))
+			}
+				
+			if (layerElms[x].getElementsByTagName('SRS')[0] != null)
+			{
+				var srs = layerElms[x].getElementsByTagName('SRS')[0].firstChild.nodeValue
+			}
+			else{
+				var srs = "";
+			}
+			reversedLayerNames[x] = layerName
+			layerNames[x] = layerName
+			layerVisible[x] = true;
+			layerEnvelopes[x] = new Array(minx,miny,maxx,maxy)				
+			layerSRS[x] = srs				
+		}						
+	}
+    reversedLayerNames.reverse();        
+    /*layerNames = layerNames.reverse();
+    layerVisible = layerVisible.reverse();
+    layerEnvelopes = layerEnvelopes.reverse();
+    layerSRS = layerSRS.reverse();*/
+    				
+	document.getElementById("layerDisplay").innerHTML = getLayerListDisplay();
+	document.getElementById('legendDisplay').innerHTML = getLegendListDisplayIndividual()
+
+	disableScaleVisibleLayer()
+	globalEnvelope = getGlobalEnvelope()		
+	currentExtent = getGlobalEnvelope()	
+	if (initBox.length == 4)
+	{			
+		currentExtent = initBox;
+	}
+	
+	hideWait();
+	doGetMap();		         
+}
+
+/*
+@summary: this retrieves the legend images for all the layers and builds the legend html display interface
+@return: html string
+*/
+function getLegendListDisplayIndividual()
+{
+// builds a html body for the legend images to be displayed in	
+	var str = '<table>'
+	for (var x=0;x<layerNames.length;x++ )
+	{		
+		var theSrc = wmsServerAddress + 'request=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&LAYER=' + layerNames[x]
+		str += '<tr><td class="smallText legendTD">'+layerNames[x]+'</td>  '
+		str += '<td class="legendTD"><img src="'+theSrc+'" ></td></tr>'
+	}
+	str += '</table>'	
+	return str;
+}
+
+function getLegendListDisplay()
+{
+// builds a html body for the legend images to be displayed in	
+	var imgSrc = wmsServerAddress.replace("wfswms?","getSingleLegendGraphic?layers=")
+	var layers = ''	
+	for (var x=0;x<layerNames.length;x++ )
+	{		
+		layers += layerNames[x] + "|"		
+	}
+	layers = layers.slice(0,layers.length -1)
+	var str = '<table>'	
+	str += '<img style="border:medium solid gray;" id="imgSingleLegend" src="'+imgSrc + layers +'">' 
+	str += '</table>'	
+	return str;
+}
+
+
+/*
+@summary: this builds the TOc from the layerNames array and returns the html
+@return: html string
+*/
+function getLayerListDisplay()
+{
+	var lDisplay = "<table class='smallText'><tr><th>Active</th><th>Name</th> <th>Visible</th> </tr>"
+	for (var x=0;x<layerNames.length ;x++ )
+	{
+		lDisplay += "<tr><td><input type='radio' name='gRadio' id='radio"+layerNames[x]+"'></td><td><b onclick='getMetadata(\""+layerNames[x]+"\")'>"+layerNames[x]+"</b></td><td><input type='checkbox' id='chb"+layerNames[x]+"' checked=1 ></td></tr>"	
+	}
+	lDisplay += "</table>"	
+	return lDisplay;
+}
+
+/*
+@summary: this checks which of the layers are not visible at the current extent and grays out the checkbox and adio box in 
+the TOC
+*/
+function disableScaleVisibleLayer()
+{	
+	// check if the layer is scale visible and if not then disable it
+	//disabled = true / false
+	xDiff = Math.abs(currentExtent[2] - currentExtent[0])
+	for (var x=0;x<layerNames.length ;x++ )
+	{
+		layerDiff = Math.abs(layerEnvelopes[x][2] - layerEnvelopes[x][0])		
+		
+		/*if (layerDiff < xDiff)
+		{
+			// disable the layers
+			document.getElementById('chb'+layerNames[x]).disabled = true;
+			document.getElementById('radio'+layerNames[x]).disabled = true;
+		}
+		else{
+			document.getElementById('chb'+layerNames[x]).disabled = false;
+			document.getElementById('radio'+layerNames[x]).disabled = false;
+		}*/
+		document.getElementById('chb'+layerNames[x]).disabled = false;
+		document.getElementById('radio'+layerNames[x]).disabled = false;
+	}
+}
+
+/*
+@summary: checks whether the given extent is larger that the globalExtent
+@param extent: the extent to compare to the global extent
+@return: boolean
+*/
+function isExtentInFullExtent(extent)
+{
+	if (extent[0] <= globalEnvelope[0])
+	{
+		return false;
+	}
+	if (extent[1] <= globalEnvelope[1])
+	{
+		return false;
+	}
+	if (extent[2] >= globalEnvelope[2])
+	{
+		return false;
+	}
+	if (extent[3] >= globalEnvelope[3])
+	{
+		return false;
+	}
+	return true;
+}
+
+/*
+@summary: calculates the encapsulating envelope from all the layer envelopes
+@return: the global envelope as calculated from all the layers in arrat format
+*/
+function getGlobalEnvelope()
+{
+	var minx = 99e99;
+	var miny = 99e99;
+	var maxx = -99e99;
+	var maxy = -99e99;
+
+	for (var x=0;x<layerEnvelopes.length ;x++ )
+	{
+		if (layerEnvelopes[x][0] < minx)
+		{
+			minx = parseFloat(layerEnvelopes[x][0]);
+		}
+
+		if (layerEnvelopes[x][1] < miny)
+		{
+			miny = parseFloat(layerEnvelopes[x][1]);
+		}
+
+		if (layerEnvelopes[x][2] > maxx)
+		{
+			maxx = parseFloat(layerEnvelopes[x][2]);
+		}
+
+		if (layerEnvelopes[x][3] > maxy)
+		{
+			maxy = parseFloat(layerEnvelopes[x][3]);
+		}
+	}	
+	var env = new Array(minx,miny,maxx,maxy)
+	return env;
+}
+
+/*
+@summary: checks the layerSRS array for the map srs
+@return: the srs for the map
+*/
+function getSRSForMap()
+{
+	var theSRS = ""
+	for (var x=0;x<layerSRS.length ;x++ )
+	{
+		if (layerSRS[x] != "")
+		{
+			theSRS = layerSRS[x]
+			if (theSRS.indexOf(" ") == -1)
+			{
+				return theSRS
+			}			
+		}
+	}
+	return theSRS	
+}
+
+/*
+@summary: converts a screen coord to a map coord
+@param x: point in pixel units
+@param y: point in pixel units
+@return: a map point in dd
+*/
+function screenToMap(x,y)
+{
+	// calc ratio of 
+	var mapWidth = getMapSize()[0]
+	var mapHeight = getMapSize()[1]
+
+	var xDiff = Math.abs(currentExtent[2] - currentExtent[0])
+	var yDiff = Math.abs(currentExtent[3] - currentExtent[1])
+	
+	var xPixelRatio = xDiff / mapWidth;
+	var yPixelRatio = yDiff / mapHeight;
+	// one pixel is (geoWidth / mapWidth) dd
+
+	var newX = currentExtent[0] + (x * xPixelRatio)
+	var newY = currentExtent[3] - (y * yPixelRatio)
+
+	var coord = new Array(newX,newY)
+	return coord;
+}
+
+/*
+@summary: this will shrink the given envelope a given percentage
+@param env: the envelope to shrink
+@param percentage: the percentage to shrink the envelope
+percentage in format 0.5 for 50%
+*/
+function shrinkEnvelope(env,percentage)
+{
+	xAmount = ((env[2] - env[0]) * percentage) / 2
+	yAmount = ((env[3] - env[1]) * percentage) / 2
+
+	var minx = env[0] + xAmount
+	var miny = env[1] + yAmount
+	var maxx = env[2] - xAmount
+	var maxy = env[3] - yAmount
+
+	var newEnv = new Array(minx,miny,maxx,maxy)
+	return newEnv	
+}
+
+/*
+@summary: this will grow the given envelope a given percentage
+@param env: the envelope to grow
+@param percentage: the percentage to grow the envelope
+percentage in format 0.5 for 50%
+*/
+function growEnvelope(env,percentage)
+{
+	xAmount = ((env[2] - env[0]) * percentage) / 2
+	yAmount = ((env[3] - env[1]) * percentage) / 2
+
+	var minx = env[0] - xAmount
+	var miny = env[1] - yAmount
+	var maxx = env[2] + xAmount
+	var maxy = env[3] + yAmount
+
+	var newEnv = new Array(minx,miny,maxx,maxy)
+	return newEnv
+}
+
+
+/*
+	@ summary: copy the map image to the clipboard
+*/
+function copyToClipboard()
+{
+	var oControlRange = document.body.createTextRange();	
+	oControlRange.moveToElementText(document.all.mapImage);	
+	oControlRange.execCommand("copy");
+	alert("Copied the map image to the clipboard")
+}
+
+/*
+	@summary: copy the current map extent to the clipboard
+*/
+function copyExtentToClipboard()
+{	
+	theEnvelope = currentExtent
+	copyString = "xMin="+theEnvelope[0] +",yMin="+theEnvelope[1] +",xMax="+ theEnvelope[2]+",yMax="+theEnvelope[3]	
+	window.clipboardData.setData("Text",copyString)
+	alert("Extent copied to clipboard")
+}
+
+/*
+@summary: this checks the document search option for the wmsServerAddress and then sets the parameter
+This can be used to change the wmsServerAddress at startup rather that through the config file
+Valid options to be passed to the viewer are:
+* wmsServerAddress : this is the url address to the wms server
+*initBox=minX:minY:maxX:maxY   // extent to be displayed
+*layers=river;city;roads;lakes // the layers to display on the map
+*/
+function parseOptions()
+{
+	var sString = document.location.search
+	sString = sString.slice(1,sString.length)	
+	if (sString.length != 0)
+	{
+		var parts = sString.split("&")
+		for (var x=0;x<parts.length ;x++ )
+		{
+			if(parts[x].indexOf("wmsServerAddress") != -1)
+			{
+				var theOption = parts[x].split("=")
+				wmsServerAddress = theOption[1]				
+			}
+
+			if (parts[x].indexOf("initBox") != -1)
+			{
+				var boxOption = parts[x].split("=")
+				strBox = boxOption[1]	
+				var tmpBox = strBox.split(":");				
+				initBox[0] = parseFloat(tmpBox[0])
+				initBox[1] = parseFloat(tmpBox[1])
+				initBox[2] = parseFloat(tmpBox[2])
+				initBox[3] = parseFloat(tmpBox[3])
+			}
+
+			if (parts[x].indexOf("layers") != -1)
+			{
+				var layersoption = parts[x].split("=")
+				strLayers = theOption[1]	
+				layers = strLayers.split(";");
+			}
+
+		}
+	}	
+
+}
+
+/*
+@summary: this function checks if the browser is 'ie'.
+@return: boolean, stating if it is an IE browser
+*/
+function isIEBrowser()
+{
+	if (getBrowserType() == 'ie')
+	{
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+
+/*
+@summary: this checks if the browser is 'ie' or 'netscape bassed'
+@return: the value 'ie' or 'netscape'
+*/
+function getBrowserType()
+{
+	var theAppName = window.navigator.appName.toLowerCase();
+	if (theAppName.toLowerCase().indexOf('internet') != -1)
+	{
+		return 'ie'
+	}
+	if (theAppName.indexOf('netscape') != -1)
+	{
+		return 'netscape'
+	}
+}
+
+function buildIdentifyHTML(dataList,layerName)
+{
+	var str = ""	
+	str += "<p>&nbsp;&nbsp;&nbsp;<b>"+dataList.length+"  Results Found.</b></p>"	
+		
+	if (dataList.length > 0)
+	{	
+
+		if (layerName == 'lTestPits')
+		{
+			var allStr = ""
+			for (var t=0;t<dataList.length;t++)
+			{
+				var dataDict = dataList[t]
+				allStr += dataDict['UQ_SAGEO'] +","			
+			}
+			allStr = allStr.slice(0,-1)
+			reportPath = reportMappings['lTestPits']['UQ_SAGEO'] +  allStr 
+			str += "<input type='button' class='button' value='Report On All' onclick=\"getReport('"+reportPath+"')\"><br>"
+		}
+
+		if (layerName == 'lZoningPoly')
+		{
+			var allStr = ""
+			for (var t=0;t<dataList.length;t++)
+			{
+				var dataDict = dataList[t]
+				allStr += dataDict['UQ_SAGEO'] +","			
+			}
+			allStr = allStr.slice(0,-1)
+			reportPath = reportMappings['lZoningPoly']['UQ_SAGEO'] +  allStr 
+			str += "<input type='button' class='button' value='Report On All' onclick=\"getReport('"+reportPath+"')\"><br>"
+		}
+
+		if (layerName == 'lGeotecnical')
+		{
+			var allStr = ""
+			for (var t=0;t<dataList.length;t++)
+			{
+				var dataDict = dataList[t]
+				allStr += dataDict['POLNO'] +","			
+			}
+			allStr = allStr.slice(0,-1)
+			reportPath = reportMappings['lGeotecnical']['POLNO'] + allStr 		
+			str += "<input type='button' class='button' value='Report On All' onclick=\"getReport('"+reportPath+"')\"><br>"
+		}
+
+		if (layerName == 'lMineralPoints')
+		{
+			var allStr = ""
+			for (var t=0;t<dataList.length;t++)
+			{
+				var dataDict = dataList[t]
+				allStr += dataDict['UQ_REF'] +","			
+			}
+			allStr = allStr.slice(0,-1)
+			attributeReportPath = reportMappings['attribute']['UQ_REF'] + allStr
+			exploitationReportPath = reportMappings['exploitation']['UQ_REF'] + allStr
+			str += "<input type='button' class='buttonLarge' value='Report On All Attributes' onclick=\"getReport('"+attributeReportPath+"')\"><br>"
+			str += "<input type='button' class='buttonLarge' value='Report On All Exploitations' onclick=\"getReport('"+exploitationReportPath+"')\"><br>"
+		}
+	}
+	
+	
+	var hDict = dataList[0]
+	var tableHeader = '<tr>'
+	for (r in hDict)
+	{
+			if (r == 'toXMLRPC')
+			{				
+				continue;	
+			}	
+		tableHeader += '<th>'+ r +'</th>'
+	}
+	tableHeader += '</tr>'
+	str += "<table>" + tableHeader
+	
+	for (var t=0;t<dataList.length;t++)
+	{		
+		
+		str += '<tr>'
+		var dataDict = dataList[t]
+		for (x in dataDict)
+		{	
+			if (x == 'toXMLRPC')
+			{				
+				continue;	
+			}	
+			//lBuffCadastre	
+			if (layerName == 'lBuffCadastre')
+			{
+				if (x == 'ERF_NUMBER')
+				{					
+					reportPath = reportMappings['lBuffCadastre']['ERF_NUMBER'] + dataDict['ERF_NUMBER']				
+					str += "<td>"+dataDict[x]
+					str += " <input type='button' class='button' value='Report' onclick=\"getReport('"+reportPath+"')\"> &nbsp; </td> "				
+				}
+				else{
+					str += "<td>"+dataDict[x]+"</td>"
+				}			
+			}
+			
+			if (layerName == 'lTestPits')
+			{			
+				if (x == 'UQ_SAGEO')
+				{					
+					reportPath = reportMappings['lTestPits']['UQ_SAGEO'] + dataDict['UQ_SAGEO']						
+					str += "<td>"+dataDict[x]
+					str += " <input type='button' class='button' value='Report' onclick=\"getReport('"+reportPath+"')\"> &nbsp;"
+					str += "<input type='button' class='button' value='Scan' onclick=\"window.open('"+scannedImageBasePath+dataDict['UQ_SAGEO']+"/"+dataDict['TESTPIT_NO']+".jpg')\" > </td> "
+				}
+				else{
+					str += "<td>"+dataDict[x]+"</td>"
+				}
+			}
+			if (layerName == 'lZoningPoly')
+			{
+				if (x == 'UQ_SAGEO')
+				{					
+					reportPath = reportMappings['lZoningPoly']['UQ_SAGEO'] + dataDict['UQ_SAGEO']				
+					str += "<td>"+dataDict[x]
+					str += " <input type='button' class='button' value='Report' onclick=\"getReport('"+reportPath+"')\"> &nbsp; </td> "				
+				}
+				else{
+					str += "<td>"+dataDict[x]+"</td>"
+				}			
+			}
+
+			if (layerName == 'lGeotecnical')
+			{
+				if (x == 'POLNO')
+				{					
+					reportPath = reportMappings['lGeotecnical']['POLNO'] +  dataDict['POLNO']				
+					str += "<td>"+dataDict[x]
+					str += " <input type='button' class='button' value='Report' onclick=\"getReport('"+reportPath+"')\"> &nbsp; </td> "				
+				}
+				else{
+					str += "<td>"+dataDict[x]+"</td>"
+				}				
+			}
+
+			if (layerName == 'lMineralPoints')
+			{
+				if (x == 'UQ_REF')
+				{					
+					reportPath = reportMappings['lMineralPoints']['UQ_REF'] +  dataDict['UQ_REF']	
+					exploitationReportPath = reportMappings['exploitation']['UQ_REF'] +  dataDict['UQ_REF']	
+					attributeReportPath = reportMappings['attribute']['UQ_REF'] + dataDict['UQ_REF']	
+					var theReference = dataDict['UQ_REF']					
+					str += "<td>"+dataDict[x]					
+					str += " <input type='button' class='button' value='Attribute' onclick=\"getReport('"+attributeReportPath+"')\">"						
+					str +="<input type='button' class='button' value='Locality' id='"+theReference+"' onclick=\"showLocality(event,'"+theReference+"')\" >"					
+					str += " <input type='button' class='button' value='Exploitation' onclick=\"getReport('"+exploitationReportPath+"')\"> &nbsp; </td> "				
+				}
+				else{
+					str += "<td>"+dataDict[x]+"</td>"
+				}				
+			}
+			if(layerName != 'lMineralPoints' && layerName != 'lGeotecnical' && layerName != 'lZoningPoly' && layerName != 'lTestPits' && layerName != 'lBuffCadastre')
+			{				
+				str += "<td >"+dataDict[x]+"</td>"	
+			}			
+		}
+		str += '</tr>'		
+	}
+
+	return str; 
+}
+

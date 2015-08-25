@@ -1,0 +1,62 @@
+<html metal:use-macro="here/main_template/macros/master">
+    <body>
+        <div metal:fill-slot="main">
+			<style>
+			td{
+				text-align:left;
+				font-size:8pt;
+				border:thin solid gray;				
+				padding:4px;
+			}
+
+			.smallText{
+				font-size:8pt;
+			}
+			</style>			
+
+			<div tal:define="global comStatus here/checkComponentStatuses"></div>
+			
+			<div tal:condition="python: comStatus[1] and comStatus[0] and comStatus[2] and comStatus[3]">
+
+				<div tal:define="global sources here/getSources"></div>		
+				<div tal:define="global thePath here/absolute_url"></div>
+
+				<TABLE>
+				<TR>
+					<Th>Tests</Th>
+				</TR>
+				<TR>
+					<TD><a href="" tal:attributes="href python: thePath + '/testWMSGetCapabilities'">WMS GetCapabilities</a></TD>
+				</TR>
+				<TR>
+					<TD><a href="" tal:attributes="href python: thePath + '/testWFSCapabilities'">WFS GetCapabilities</a></TD>
+				</TR>
+				<TR>
+					<TD><a href="" tal:attributes="href python: thePath + '/testGetMap'">GetMap</a></TD>
+				</TR>
+				<TR>
+					<TD><a href="" tal:attributes="href python: thePath + '/testLegendGraphic'">GetLegendGraphic</a></TD>
+				</TR>
+				<TR>
+					<TD><a href="" tal:attributes="href python: thePath + '/testGetFeature'">GetFeature</a></TD>
+				</TR>
+				<TR>
+					<TD><a href="" tal:attributes="href python: thePath + '/testDescribeFeatureType'">DescribeFeatureType</a></TD>
+				</TR>
+				<TR>
+					<TD><a href="" tal:attributes="href python: thePath + '/testGetFeatureInfo'">GetFeatureInfo</a></TD>
+				</TR>
+				</TABLE>
+			</div>
+
+			<div tal:condition="not: python: (comStatus[1] or comStatus[0] or comStatus[2] or comStatus[3])"> 
+				<p>
+					All components in the status tab must be running.				
+				</p>
+			</div>
+
+							
+        </div>
+    </body>
+</html>
+

@@ -1,0 +1,261 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+<body>
+
+<div metal:fill-slot="main">     
+	
+	<div id="thePath" value="" tal:attributes="value here/absolute_url"></div>
+    <span tal:define="global hasAllFields here/hasCoreFields"></span>
+	<span tal:define="global validationRes here/getValidationResults"></span>	
+	
+	<span tal:condition="python: not hasAllFields[0]">
+		<!--  generate error message with all fields-->
+		<b>Some core fields are not present:</b><br><br>
+		<ul>
+			<span tal:repeat="fieldName python: hasAllFields[1]">
+				<li tal:content="fieldName"></li>				
+			</span>
+		</ul>
+	</span>
+	
+	<span tal:condition="python: hasAllFields[0]">	
+		<span tal:condition="python: not validationRes[0]">
+			<b>Document is not valid</b>
+			<p tal:content="python: validationRes[1]"></p>
+		</span>
+		
+		<span tal:condition="python: validationRes[0]">
+		
+			<span tal:define="global valsDict here/getCoreFields"></span>	
+
+		    <form id="core_fields_form" name="core_fields" action="" method="post" tal:attributes="action python: context.absolute_url() + '/updateCoreFields'">
+		    
+		    <style>
+                table.core{border:thin solid gray;width:490px;}
+                td.core{text-align:right;}
+                input.core{width:240px;}
+            </style>
+            
+            <table class="core">
+		        <tr><th colspan="2">Dataset Information</th></tr>
+		        <tr>
+		            <td>Dataset Title</td>
+		            <td class="core"><input class="core" type="text" name="DatasetTitle" id="tbxDatasetTitle" tal:attributes="value valsDict/DatasetTitle"></td>
+		        </tr>
+		        <tr>
+		            <td>Dataset Reference Date (yyyy-mm-ddThh:mm:ss)</td>
+		            <td class="core"><input class="core" type="text" name="DatasetReferenceDate" id="tbxDatasetReferenceDate" tal:attributes="value valsDict/DatasetReferenceDate"></td>
+		        </tr>
+		        <tr>
+		            <td>Dataset Responsible Party</td>
+		            <td class="core"><input class="core" type="text" name="DatasetResponsibleParty" id="tbxDatasetResponsibleParty" tal:attributes="value valsDict/DatasetResponsibleParty"></td>
+		        </tr>
+				<tr>
+		            <td>Dataset Responsible Party Organization</td>
+		            <td class="core"><input class="core" type="text" name="DatasetResponsiblePartyOrganization" id="tbxDatasetResponsiblePartyOrganization" tal:attributes="value valsDict/DatasetResponsiblePartyOrganization"></td>
+		        </tr>
+				<tr>
+		            <td>Dataset Responsible Party Position</td>
+		            <td class="core"><input class="core" type="text" name="DatasetResponsiblePartyPosition" id="tbxDatasetResponsiblePartyPosition" tal:attributes="value valsDict/DatasetResponsiblePartyPosition"></td>
+		        </tr>
+		        <tr>
+		            <td>Dataset Language</td>
+		            <td class="core"><input class="core" type="text" name="DatasetLanguage" id="tbxDatasetLanguage" tal:attributes="value valsDict/DatasetLanguage"></td>
+		        </tr>        
+		        <tr>
+		            <td>Dataset Character set</td>
+		            <td class="core"><input class="core" type="text" name="DatasetCharacterSet" id="tbxDatasetCharacterSet" tal:attributes="value valsDict/DatasetCharacterSet"></td>
+		        </tr>        
+		        <tr>
+		            <td>Dataset Topic Category</td>
+		            <td class="core"><input class="core" type="text" name="DatasetTopicCategory" id="tbxDatasetTopicCategory" tal:attributes="value valsDict/DatasetTopicCategory"></td>
+		        </tr>        
+		        <tr>
+		            <td>Dataset Scale</td>
+		            <td class="core"><input class="core" type="text" name="DatasetScale" id="tbxDatasetScale" tal:attributes="value valsDict/DatasetScale"></td>
+		        </tr>        
+		        <tr>
+		            <td>Dataset Abstract</td>
+		            <td class="core"><input class="core" type="text" name="DatasetAbstract" id="tbxDatasetAbstract" tal:attributes="value valsDict/DatasetAbstract"></td>
+		        </tr>        
+		        <tr>
+		            <td>Dataset Format Name</td>
+		            <td class="core"><input class="core" type="text" name="DatasetFormatName" id="tbxDatasetFormatName" tal:attributes="value valsDict/DatasetFormatName"></td>
+		        </tr>        
+		        <tr>
+		            <td>Dataset Format Version</td>
+		            <td class="core"><input class="core" type="text" name="DatasetFormatVersion" id="tbxDatasetFormatVersion" tal:attributes="value valsDict/DatasetFormatVersion"></td>
+		        </tr>        
+		    </table>
+		    		    
+		    <br/>
+		    
+		    <table class="core">
+		        <tr><th colspan="2">Spatial Information</th></tr>
+		        <tr>
+		            <td>West Bound Longitude</td>
+		            <td class="core"><input class="core" type="text" name="SpatialWest" id="tbxSpatialWest" tal:attributes="value valsDict/SpatialWest"></td>
+		        </tr>
+		        <tr>
+		            <td>South Bound Latitude</td>
+		            <td class="core"><input class="core" type="text" name="SpatialSouth" id="tbxSpatialSouth" tal:attributes="value valsDict/SpatialSouth"></td>
+		        </tr>
+		        <tr>
+		            <td>East Bound Longitude</td>
+		            <td class="core"><input class="core" type="text" name="SpatialEast" id="tbxSpatialEast" tal:attributes="value valsDict/SpatialEast"></td>
+		        </tr>
+		        <tr>
+		            <td>North Bound Latitude</td>
+		            <td class="core"><input class="core" type="text" name="SpatialNorth" id="tbxSpatialNorth" tal:attributes="value valsDict/SpatialNorth"></td>
+		        </tr>        
+		        <tr>
+		            <td>Temporal Extent Begin Date (yyyy-mm-ddThh:mm:ss)</td>
+		            <td class="core"><input class="core" type="text" name="SpatialBeginDate" id="tbxSpatialBeginDate" tal:attributes="value valsDict/SpatialBeginDate"></td>
+		        </tr>
+		        <tr>
+		            <td>Temporal Extent End Date (yyyy-mm-ddThh:mm:ss)</td>
+		            <td class="core"><input class="core" type="text" name="SpatialEndDate" id="tbxSpatialEndDate" tal:attributes="value valsDict/SpatialEndDate"></td>
+		        </tr>
+		        <tr>
+		            <td>Minimum Vertical Extent</td>
+		            <td class="core"><input class="core" type="text" name="SpatialVerticalExtentMinimum" id="tbxSpatialVerticalExtentMinimum" tal:attributes="value valsDict/SpatialVerticalExtentMinimum"></td>
+		        </tr>
+		        <tr>
+		            <td>Maximum Vertical Extent</td>
+		            <td class="core"><input class="core" type="text" name="SpatialMaximum" id="tbxSpatialMaximum" tal:attributes="value valsDict/SpatialMaximum"></td>
+		        </tr>
+		        <tr>
+		            <td>Vertical Extent Units</td>
+		            <td class="core"><input class="core" type="text" name="SpatialVerticalExtentUnits" id="tbxSpatialVerticalExtentUnits" tal:attributes="value valsDict/SpatialVerticalExtentUnits"></td>
+		        </tr>
+		        <tr>
+		            <td>Vertical Extent Datum</td>
+		            <td class="core"><input class="core" type="text" name="SpatialVerticalExtentDatum" id="tbxSpatialVerticalExtentDatum" tal:attributes="value valsDict/SpatialVerticalExtentDatum"></td>
+		        </tr>        
+		        <tr>
+		            <td>Spatial Representation</td>
+		            <td class="core"><input class="core" type="text" name="SpatialRepresentation" id="tbxSpatialRepresentation" tal:attributes="value valsDict/SpatialRepresentation"></td>
+		        </tr>
+		        <tr>
+		            <td>Spatial Reference System (SRS)</td>
+		            <td class="core"><input class="core" type="text" name="SpatialReferenceSystem" id="tbxSpatialReferenceSystem" tal:attributes="value valsDict/SpatialReferenceSystem"></td>
+		        </tr>
+		        <tr>
+		            <td>Linage Statement</td>
+		            <td class="core"><input class="core" type="text" name="SpatialLinageStatement" id="tbxSpatialLinageStatement" tal:attributes="value valsDict/SpatialLinageStatement"></td>
+		        </tr>
+		        
+		        <tr>
+		            <td>Online Resource URL</td>
+		            <td class="core"><input class="core" type="text" name="SpatialOnlineResourceURL" id="tbxSpatialOnlineResourceURL" tal:attributes="value valsDict/SpatialOnlineResourceURL"></td>
+		        </tr>
+		        <tr>
+		            <td>Online Resource Protocol</td>
+		            <td class="core"><input class="core" type="text" name="SpatialOnlineResourceProtocol" id="tbxSpatialOnlineResourceProtocol" tal:attributes="value valsDict/SpatialOnlineResourceProtocol"></td>
+		        </tr>
+		         <tr>
+		            <td>Online Resource Name</td>
+		            <td class="core"><input class="core" type="text" name="SpatialOnlineResourceName" id="tbxSpatialOnlineResourceName" tal:attributes="value valsDict/SpatialOnlineResourceName"></td>
+		        </tr>
+		         <tr>
+		            <td>Online Resource Description</td>
+		            <td class="core"><input class="core" type="text" name="SpatialOnlineResourceDescription" id="tbxSpatialOnlineResourceDescription" tal:attributes="value valsDict/SpatialOnlineResourceDescription"></td>
+		        </tr>        
+		    </table>
+		    
+		    <br/>
+		    
+		    <table class="core">
+		        <tr><th colspan="2">Metadata Information</th></tr>
+		        <tr>
+		            <td>File Identifier</td>
+		            <td class="core"><input class="core" type="text" name="MetadataFileIdentifier" id="tbxMetadataFileIdentifier" tal:attributes="value valsDict/MetadataFileIdentifier"></td>
+		        </tr>
+		        <tr>
+		            <td>Standard Name</td>
+		            <td class="core"><input class="core" type="text" name="MetadataStandardName" id="tbxMetadataStandardName" tal:attributes="value valsDict/MetadataStandardName"></td>
+		        </tr>
+		        <tr>
+		            <td>Standard Version</td>
+		            <td class="core"><input class="core" type="text" name="MetadataStandardVersion" id="tbxMetadataStandardVersion" tal:attributes="value valsDict/MetadataStandardVersion"></td>
+		        </tr>
+		        <tr>
+		            <td>Languange</td>
+		            <td class="core"><input class="core" type="text" name="MetadataLanguage" id="tbxMetadataLanguage" tal:attributes="value valsDict/MetadataLanguage"></td>
+		        </tr>
+		        <tr>
+		            <td>Character set</td>
+		            <td class="core"><input class="core" type="text" name="MetadataCharacterSet" id="tbxMetadataCharacterSet" tal:attributes="value valsDict/MetadataCharacterSet"></td>
+		        </tr>
+		        <tr>
+		            <td>Time Stamp (yyyy-mm-ddThh:mm:ss)</td>
+		            <td class="core"><input class="core" type="text" name="MetadataTimeStamp" id="tbxMetadataTimeStamp" tal:attributes="value valsDict/MetadataTimeStamp"></td>
+		        </tr>        
+		        <tr>
+		            <td>Point of Contact Individual Name</td>
+		            <td class="core"><input class="core" type="text" name="MetadataPointOfContactIndividualName" id="tbxMetadataPointOfContactIndividualName" tal:attributes="value valsDict/MetadataPointOfContactIndividualName"></td>
+		        </tr>
+		        <tr>
+		            <td>Point of Contact Organization Name</td>
+		            <td class="core"><input class="core" type="text" name="MetadataPointOfContactOrganizationName" id="tbxMetadataPointOfContactOrganizationName" tal:attributes="value valsDict/MetadataPointOfContactOrganizationName"></td>
+		        </tr>
+		        <tr>
+		            <td>Point of Contact Position Name</td>
+		            <td class="core"><input class="core" type="text" name="MetadataPointOfContactPositionName" id="tbxMetadataPointOfContactPositionName" tal:attributes="value valsDict/MetadataPointOfContactPositionName"></td>
+		        </tr>
+		         <tr>
+		            <td>Point of Contact Role</td>
+		            <td class="core"><input class="core" type="text" name="MetadataPointOfContactRole" id="tbxMetadataPointOfContactRole" tal:attributes="value valsDict/MetadataPointOfContactRole"></td>
+		        </tr>
+		    </table>    
+		    </form>
+			<br/>
+		    <input type="button" value="Print" onclick="print()">			
+		</span>
+	</span>
+  <script>  
+    var path = document.getElementById('thePath').getAttribute('value')		    
+    
+    function print()
+    {
+        var win = window.open(path + "/metadata_print_core_fields","Print_Core_Fields","")
+        theHTML = document.getElementById("core_fields_form").innerHTML        
+    }    
+    
+  </script> 
+	</div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

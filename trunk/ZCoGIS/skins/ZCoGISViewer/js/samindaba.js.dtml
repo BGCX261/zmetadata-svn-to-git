@@ -1,0 +1,969 @@
+var provinceList = new Array('North West','Limpopo','Gauteng','Mpumulanga','Free State','KwaZulu-Natal','Eastern Cape','Northern Cape','Western Cape')
+var provinceMap = {'North West':'NW','Limpopo':'NP','Gauteng':'GT','Mpumulanga':'MP','Free State':'FS','KwaZulu-Natal':'KZ','Eastern Cape':'EC','Northern Cape':'NC','Western Cape':'WC'}
+
+var tabLayer = new Array('lFarm','lCoords','lRadius','lMapName')
+var radiusFilter = "<DWithin><gml:Point><gml:coordinates>[COORDS]</gml:coordinates></gml:Point><Distance units='m'>[DISTANCE]</Distance></DWithin>"
+var likeFilter = '<ogc:Filter><ogc:And><ogc:PropertyIsEqualTo><ogc:PropertyName>PROVCODE</ogc:PropertyName><ogc:Literal>[PROVINCE]</ogc:Literal></ogc:PropertyIsEqualTo> <ogc:PropertyIsLike wildcard="*" singlechar="." escape="!" ><ogc:PropertyName>FARM_NAME</ogc:PropertyName><ogc:Literal>[FARMNAME]</ogc:Literal></ogc:PropertyIsLike></ogc:And></ogc:Filter>'
+//var likeFilterFarmNumber = '<ogc:Filter><ogc:And><ogc:PropertyIsLike wildcard="*" singlechar="." escape="!"><ogc:PropertyName>RECNO</ogc:PropertyName><ogc:Literal>[RECNO]</ogc:Literal></ogc:PropertyIsLike><ogc:PropertyIsEqualTo><ogc:PropertyName>PROVCODE</ogc:PropertyName><ogc:Literal>[PROVINCE]</ogc:Literal></ogc:PropertyIsEqualTo></ogc:And></ogc:Filter>'
+var farmName_Number_and_Province = '<ogc:Filter><ogc:And> <ogc:PropertyIsEqualTo><ogc:PropertyName>RECNO</ogc:PropertyName><ogc:Literal>[RECNO]</ogc:Literal></ogc:PropertyIsEqualTo><ogc:PropertyIsEqualTo> <ogc:PropertyName>PROVCODE</ogc:PropertyName> <ogc:Literal>[PROVINCE]</ogc:Literal> </ogc:PropertyIsEqualTo> <ogc:PropertyIsLike wildcard="*" singlechar="." escape="!" > <ogc:PropertyName>FARM_NAME</ogc:PropertyName> <ogc:Literal>[FARMNAME]</ogc:Literal> </ogc:PropertyIsLike> </ogc:And></ogc:Filter>'
+var boxFilter = '<ogc:Filter><ogc:BBOX><PropertyName>gml:BBOXproperty</PropertyName><gml:Box><gml:coordinates>[COORDS]</gml:coordinates></gml:Box></ogc:BBOX></ogc:Filter>'
+
+var boxPart2 = '<ogc:BBOX><PropertyName>gml:BBOXproperty</PropertyName><gml:Box><gml:coordinates>[COORDS]</gml:coordinates></gml:Box></ogc:BBOX>'
+var boxPart = '<ogc:Intersects><ogc:PropertyName>gml:BBOXproperty</ogc:PropertyName><gml:Polygon srsName="EPSG:4326"><gml:outerBoundaryIs><gml:LinearRing><gml:coordinates>[COORDS]</gml:coordinates> </gml:LinearRing></gml:outerBoundaryIs></gml:Polygon></ogc:Intersects>'
+
+var propPart = '<ogc:PropertyIsEqualTo><ogc:PropertyName>[PROPNAME]</ogc:PropertyName><ogc:Literal>[PROPVALUE]</ogc:Literal></ogc:PropertyIsEqualTo>'
+var greaterPart = '<ogc:PropertyIsGreaterThan><ogc:PropertyName>[PROPNAME]</ogc:PropertyName><ogc:Literal>[PROPVALUE]</ogc:Literal></ogc:PropertyIsGreaterThan>'
+var lessPart = '<ogc:PropertyIsLessThan><ogc:PropertyName>[PROPNAME]</ogc:PropertyName> <ogc:Literal>[PROPVALUE]</ogc:Literal> </ogc:PropertyIsLessThan>'
+var topo50Filter = '<ogc:Filter><ogc:PropertyIsEqualTo><ogc:PropertyName>TILE_NAME</ogc:PropertyName><ogc:Literal>[PROPVAL]</ogc:Literal></ogc:PropertyIsEqualTo></ogc:Filter>'
+var topo250Filter = '<ogc:Filter><ogc:PropertyIsEqualTo><ogc:PropertyName>MAPNUM</ogc:PropertyName><ogc:Literal>[PROPVAL]</ogc:Literal></ogc:PropertyIsEqualTo></ogc:Filter>'
+var betweenFilter = '<ogc:PropertyIsBetween><ogc:PropertyName>UQ_REF</ogc:PropertyName><ogc:LowerBoundary> <ogc:Literal>[LOWER]</ogc:Literal> </ogc:LowerBoundary><ogc:UpperBoundary><ogc:Literal>[UPPER]</ogc:Literal></ogc:UpperBoundary></ogc:PropertyIsBetween>'
+
+var projectPath = ""
+var searchMode = "lFarm"
+
+
+function getGeometryColumn(name)
+{
+	var colName = connection.getGeometryColumnForLayerName(name)
+	return colName
+}
+
+function showLayer(layerName)
+{
+	searchMode = layerName
+	hideAll()
+	document.getElementById(layerName).style.visibility = 'visible'
+}
+
+/*
+@summary: Sets all the layers in the tabLayers list's style.visible to hidden
+*/
+
+function hideAll()
+{
+	for (var x=0;x<tabLayer.length;x++)
+	{
+		document.getElementById(tabLayer[x]).style.visibility = 'hidden'	
+	}
+}
+
+/*
+	@summary: Parses the browser url and looks for the project url parameter
+			  This is the project object in plone to use for querying
+*/
+function parseURLOptions()
+{	
+	var searchURL = document.location.search	
+	if(searchURL != '')
+	{
+		searchURL = searchURL.slice(1,searchURL.length)		
+		parts = searchURL.split("&")
+		for (var x=0;x<parts.length;x++)
+		{
+			lParts = parts[x].split("=")
+			if (lParts[0] == 'project')
+			{
+				projectPath = lParts[1]
+			}
+		}		
+	}	
+	connection = XMLRPC.getService(projectPath);
+	connection.add("getGeometryColumnForLayerName","getGeometryColumnForLayerName")	
+
+	populateCombobox("cbxProvinces",provinceList)
+	setSelectedIndex("cbxProvinces",1)		
+}
+
+function doMapSearch()
+{      	
+	var radio50 = document.getElementById("r50").checked
+	var radio250 = document.getElementById("r250").checked
+	
+	var val50 = document.getElementById("tbx50").value
+	var val250 = document.getElementById("tbx250").value
+	if (radio50)
+	{
+		var layerName = getTopo50LayerName()
+		if (val50 == "")
+		{
+			alert("No Valid Search Value Given");
+			return;
+		}
+		
+		var theFilter = topo50Filter.replace('[PROPVAL]',val50)
+		var postPath = projectPath + "/wfswms?service=wfs&request=getfeature&maxfeatures="+maxFarmSearch+"&version=1.0.0&typename=" + layerName + "&filter=" + theFilter					
+		var url = projectPath + "/wfswms?"
+		params = "service=wfs&request=getfeature&maxfeatures="+maxFarmSearch+"&version=1.0.0&typename=" + layerName + "&filter=" + theFilter		
+		var postPath = projectPath + "/wfswms?service=wfs&request=getfeature&maxfeatures="+maxFarmSearch+"&version=1.0.0&typename=" + layerName + "&filter=" + theFilter		
+		getPostContent(url,params,handleMapSearch)			
+	}
+	if (radio250)
+	{
+		var layerName = getTopo250LayerName()
+		if (val250 == "")
+		{
+			alert("No Valid Search Value Given");
+			return;
+		}
+		
+		var theFilter = topo250Filter.replace('[PROPVAL]',val250)
+		var postPath = projectPath + "/wfswms?service=wfs&request=getfeature&maxfeatures="+maxFarmSearch+"&version=1.0.0&typename=" + layerName + "&filter=" + theFilter					
+		var url = projectPath + "/wfswms?"
+		params = "service=wfs&request=getfeature&maxfeatures="+maxFarmSearch+"&version=1.0.0&typename=" + layerName + "&filter=" + theFilter		
+		var postPath = projectPath + "/wfswms?service=wfs&request=getfeature&maxfeatures="+maxFarmSearch+"&version=1.0.0&typename=" + layerName + "&filter=" + theFilter		
+		getPostContent(url,params,handleMapSearch)	
+	}
+}
+
+/*
+	@summary: Gets the values from the input boxes and performs the search through wfs
+*/
+function doFarmSearch()
+{	
+	layerName = getFarmLayerName()	
+
+	var province = getSelectedValue("cbxProvinces")
+	var farmName = document.getElementById("tbxFarmName").value 
+	var farmNumber = document.getElementById("tbxFarmNumber").value 		
+	if (province == "")
+	{
+		alert('No province selected')
+		return;
+	}
+	
+	if (farmName == "")
+	{
+		alert('No valid farm name given')
+		return;			
+	}
+	if (farmName.length < 3)
+	{
+		alert('Farm Name Must Be At Least 3 Characters Long');
+		return;
+	}
+
+	if (farmNumber == "")
+	{
+		var theFilter = likeFilter.replace("[FARMNAME]",farmName.toUpperCase()+"*")
+		theFilter = theFilter.replace("[PROVINCE]",provinceMap[province])			
+		var postPath = projectPath + "/wfswms?service=wfs&request=getfeature&maxfeatures="+maxFarmSearch+"&version=1.0.0&typename=" + layerName + "&filter=" + theFilter					
+		var url = projectPath + "/wfswms?"
+		params = "service=wfs&request=getfeature&maxfeatures="+maxFarmSearch+"&version=1.0.0&typename=" + layerName + "&filter=" + theFilter
+		getPostContent(url,params,handleFarmSearch)		
+	}
+	else
+	{		
+		var theFilter = farmName_Number_and_Province.replace("[FARMNAME]",farmName.toUpperCase()+"*")
+		theFilter = theFilter.replace("[PROVINCE]",provinceMap[province])
+		theFilter = theFilter.replace("[RECNO]",farmNumber)
+		var postPath = projectPath + "/wfswms?service=wfs&request=getfeature&maxfeatures="+maxFarmSearch+"&version=1.0.0&typename=" + layerName + "&filter=" + theFilter					
+		var url = projectPath + "/wfswms?"
+		params = "service=wfs&request=getfeature&maxfeatures="+maxFarmSearch+"&version=1.0.0&typename=" + layerName + "&filter=" + theFilter		
+		var postPath = projectPath + "/wfswms?service=wfs&request=getfeature&maxfeatures="+maxFarmSearch+"&version=1.0.0&typename=" + layerName + "&filter=" + theFilter		
+		getPostContent(url,params,handleFarmSearch)		
+	}		
+		
+}
+
+/*
+	@summary: Gets the values from the input boxes and performs the search through wfs
+*/
+function doLatLongSearch()
+{	
+	layerName = getMineralLayerName()
+
+	var minX = document.getElementById('tbxMinX').value
+	var maxX = document.getElementById('tbxMaxX').value
+	var minY = document.getElementById('tbxMinY').value
+	var maxY = document.getElementById('tbxMaxY').value
+
+	if (minX == '' || minY == '' || maxX == '' || maxY == '' )
+	{
+		alert("Values given is not valid")
+		return 
+	}
+
+	floatMinX = parseFloat(minX)
+	floatMinY = parseFloat(minY)
+	floatMaxX = parseFloat(maxX)
+	floatMaxY = parseFloat(maxY)
+
+	if (isNaN(floatMinX) || isNaN(floatMinY) || isNaN(floatMaxX) || isNaN(floatMaxY))
+	{
+		alert('Not all values are valid numbers')
+		return
+	}	
+	
+	var colName = getGeometryColumn(layerName)	
+	var theFilter = boxPart2.replace('[GEOMCOL]',colName)
+	theFilter = theFilter.replace('[COORDS]',floatMinX + "," + floatMinY + " " +  floatMaxX + "," + floatMaxY)
+	
+	var refineStr = getRefineStatement()	
+	if (refineStr == "")
+	{
+		var compound = '<ogc:Filter>' + refineStr + theFilter +  '</ogc:Filter>'
+	}
+	else
+	{
+		var compound = '<ogc:Filter><ogc:And>' + refineStr + theFilter +  '</ogc:And></ogc:Filter>'
+	}	
+	var postPath = projectPath + "/wfswms?service=wfs&request=getfeature&maxfeatures="+maxEnvelopeSearch+"&version=1.0.0&typename=" + layerName + "&filter=" + compound			
+	var url = projectPath + "/wfswms?"
+	params = "service=wfs&request=getfeature&maxfeatures="+maxEnvelopeSearch+"&version=1.0.0&typename=" + layerName + "&filter=" + compound
+	getPostContent(url,params,handleBBoxResponse)
+	//getContent(postPath,handleBBoxResponse)		
+}
+
+/*
+	summary: handles the search response for the farm search and populates the results interface
+*/
+function handleFarmSearch()
+{	
+	if (req.readyState == 4)
+	{	        
+		var res = req.responseText;		
+        
+        if (res.toLowerCase().indexOf("serviceexception") != -1)
+        {
+          alert(res)
+          return;
+        } 
+        
+        buildIdentifyDict(res)			
+		if (identifyDataList.length == 0)
+		{
+			alert("No Results Found")
+			return;
+		}		
+		
+        identifyDataList = getUniqueList(identifyDataList)        
+        // for each of the resuts get compound statement and execute
+        // build a list of allthe results compoundedly
+        requestList = new Array();
+        requestListData = new Array();
+        currentRequestCount = 0;
+        for (var x=0;x<identifyDataList.length;x++)
+        {
+            var compound = getCompoundStatement(identifyDataList[x]);            
+            requestList[requestList.length] = compound; 
+        }
+        
+        // build a list of the farm names
+        farmNameList = new Array();
+        for (var x=0;x<identifyDataList.length;x++)
+        {
+            farmNameList[x] = identifyDataList[x]["FARM_NAME"]
+        }
+        
+        var url = projectPath + "/wfswms?"	
+        var params = requestList[currentRequestCount]  
+        resultsFarmName = farmNameList[currentRequestCount]     
+	    getPostContent(url,params,doLoopPostForFarm)
+        currentRequestCount += 1; 
+        // execute all the compounds and keep the results    		
+        //execCompoundStatement()		
+	}	
+}
+
+function doLoopPostForFarm()
+{
+    if (req.readyState == 4)
+	{             
+		var res = req.responseText;			
+		if (res.toLowerCase().indexOf("serviceexception") != -1)
+        {
+          alert(res)
+          return;
+        }
+        
+        buildIdentifyDict(res)	
+        addFarmNameToDataList(identifyDataList,resultsFarmName)
+        requestListData = requestListData.concat(identifyDataList)
+        
+        if(currentRequestCount < requestList.length)
+        {            
+            var url = projectPath + "/wfswms?"	
+            var params =  requestList[currentRequestCount]            
+            getPostContent(url,params,doLoopPostForFarm)
+            resultsFarmName = farmNameList[currentRequestCount]
+            currentRequestCount += 1; 
+        }
+        else
+        {
+            htmlStr = buildIdentifyHTML(requestListData,'lMineralPoints')			
+    		window.open("resultsDisplaySamindaba.html","tmpName") ;
+            return;       
+        } 
+          
+    }
+}
+
+function addFarmNameToDataList(list,farmName)
+{
+    for (var x=0;x< list.length;x++)
+    {
+        list[x]['FARM_NAME'] = farmName
+    }
+}
+
+function handleMapSearch()
+{
+	if (req.readyState == 4)
+	{             
+		var res = req.responseText;			
+		if (res.toLowerCase().indexOf("serviceexception") != -1)
+        {
+          alert(res)
+          return;
+        }
+        buildIdentifyDict(res)			
+		if (identifyDataList.length == 0)
+		{
+			alert("No Results Found")
+			return;
+		}		
+		identifyDataList = getUniqueList(identifyDataList)			
+		execCompoundStatement()		
+	}	
+}
+
+function getRefineStatement()
+{
+	var partCount = 0
+	var start = document.getElementById('tbxUniqueRefStart').value
+	var end = document.getElementById('tbxUniqueRefEnd').value
+	var uniqueRef = document.getElementById('tbxUniqueRef').value	
+
+	var status = getSelectedValueAttribute('cbxStatus')
+	var mName = getSelectedValueAttribute('cbxName')
+	var rank = ''
+	//var rank = getSelectedValueAttribute('cbxRank')
+	var orebody = getSelectedValueAttribute('cbxOrebody')
+	var commodities = getSelectedValueAttribute('cbxCommodities')
+	
+	if ((start == "") && (end == "") && (uniqueRef == "") && (status == "") && (mName == "") && (rank == "") && (orebody == "") && (commodities == ""))
+	{		
+		return '';
+	}
+	
+	str = ""
+	if (uniqueRef != '')
+	{
+		partCount += 1
+		var uQInt = parseInt(uniqueRef)
+		if (isNaN(uQInt))
+		{
+			alert('Unique Reference Number Is Not Valid');
+			return;
+		}
+		var tmp1 = propPart.replace('[PROPNAME]','UQ_REF')
+		tmp1 = tmp1.replace('[PROPVALUE]',uQInt)
+		str += tmp1		
+	}
+
+	if ((start != '') && (end != ''))
+	{
+		partCount += 1
+		startInt = parseInt(start)
+		endInt = parseInt(end)
+		if (isNaN(startInt) || isNaN(endInt))
+		{
+			alert('Invalid Number Range');
+			return;
+		}
+		if(startInt >= endInt)
+		{
+			alert('Invalid Number Range');
+			return;
+		}
+		
+		var tmp1 = betweenFilter.replace('[LOWER]',startInt)
+		tmp1 = tmp1.replace('[UPPER]',endInt)        
+		str += tmp1
+		
+	}
+	if (status != '')
+	{
+		partCount += 1
+		var tmp1 = propPart.replace('[PROPNAME]','DEPSTAT')
+		tmp1 = tmp1.replace('[PROPVALUE]',status)
+		str += tmp1
+	}
+	if (mName != '')
+	{
+		partCount += 1
+		var tmp1 = propPart.replace('[PROPNAME]','DEPNAME_1')
+		tmp1 = tmp1.replace('[PROPVALUE]',mName)
+		str += tmp1
+	}
+	/*if (rank != '')
+	{
+		var tmp1 = propPart.replace('PROPNAME','')
+		tmp1 = tmp1.replace('PROPVALUE',rank)
+		str += tmp1
+	}*/
+	if (orebody != '')
+	{
+		partCount += 1
+		var tmp1 = propPart.replace('[PROPNAME]','MAP_SYMBOL')
+		tmp1 = tmp1.replace('[PROPVALUE]',orebody)
+		str += tmp1
+	}
+	if (commodities != '')
+	{
+		partCount += 1
+		var tmp1 = propPart.replace('[PROPNAME]','COM1')
+		tmp1 = tmp1.replace('[PROPVALUE]',commodities)
+		str += tmp1
+	}
+	
+	if (partCount > 1)
+	{
+		str = '<ogc:And>' + str + '</ogc:And>'
+	}	
+	
+	return str
+}
+
+function cleanString(strValue)
+{    
+    strValue = strValue.replace(/\n/g, " ");
+    strValue = strValue.replace(/\t/g, " ");
+    strValue = strValue.replace(/\r/g, " ");
+    strValue = strValue.replace(/\f/g, " ");    
+	return strValue;
+}
+
+function getCompoundStatement(dataDict)
+{
+    layerName = getMineralLayerName()	
+	var colName = getGeometryColumn(layerName)   
+    //var tmp = identifyDataList[0]		
+	var orStr = ''	
+            		
+    tmpStr = boxPart.replace('[GEOM]',colName)
+	// tmpStr  = tmpStr.replace('[COORDS]',identifyDataList[x][colName.toUpperCase()])
+	var theCoords = dataDict["_SHAPE_"]
+	theCoords = trimCoords(theCoords)
+    tmpStr  = tmpStr.replace('[COORDS]',theCoords)		
+    orStr += tmpStr		
+    orStr = cleanString(orStr)    		
+
+	var refineStr = getRefineStatement()	
+	if (refineStr == "")
+	{
+		var compound = '<ogc:Filter>' + refineStr + orStr +  '</ogc:Filter>'
+	}
+	else
+	{
+		var compound = '<ogc:Filter><ogc:And>' + refineStr + orStr +  '</ogc:And></ogc:Filter>'
+	}	 	
+	var postPath = projectPath + "/wfswms?service=wfs&request=getfeature&version=1.0.0&maxfeatures="+maxEnvelopeSearch+"&typename=" + layerName + "&filter=" + compound	
+		
+    var url = projectPath + "/wfswms?"
+	var params = "service=wfs&request=getfeature&version=1.0.0&maxfeatures="+maxEnvelopeSearch+"&typename=" + layerName + "&filter=" + compound
+	return params;
+}
+
+function execCompoundStatement()
+{	
+	layerName = getMineralLayerName()	
+	var colName = getGeometryColumn(layerName)	
+	if (identifyDataList.length == 0)
+	{		
+		return ''	
+	}
+	
+    //var boxStr = buildBBoxFromCoords(identifyDataList)    
+    var tmp = identifyDataList[0]		
+	var orStr = ''	
+    for (var x=0;x<identifyDataList.length;x++)
+	{        		
+        tmpStr = boxPart.replace('[GEOM]',colName)
+		// tmpStr  = tmpStr.replace('[COORDS]',identifyDataList[x][colName.toUpperCase()])
+		var theCoords = identifyDataList[x]["_SHAPE_"]
+		theCoords = trimCoords(theCoords)
+        tmpStr  = tmpStr.replace('[COORDS]',theCoords)		
+        orStr += tmpStr
+	}
+	//orStr = boxStr    
+    orStr = cleanString(orStr)	
+	
+    if (identifyDataList.length > 1)
+	{
+		orStr = '<ogc:Or>' + orStr + '</ogc:Or>' 
+	}		
+
+	var refineStr = getRefineStatement()	
+	if (refineStr == "")
+	{
+		var compound = '<ogc:Filter>' + refineStr + orStr +  '</ogc:Filter>'
+	}
+	else
+	{
+		var compound = '<ogc:Filter><ogc:And>' + refineStr + orStr +  '</ogc:And></ogc:Filter>'
+	}	 	
+	var postPath = projectPath + "/wfswms?service=wfs&request=getfeature&version=1.0.0&maxfeatures="+maxEnvelopeSearch+"&typename=" + layerName + "&filter=" + compound	
+		
+    var url = projectPath + "/wfswms?"
+	var params = "service=wfs&request=getfeature&version=1.0.0&maxfeatures="+maxEnvelopeSearch+"&typename=" + layerName + "&filter=" + compound
+	getPostContent(url,params,handleBBoxResponse)	
+}
+
+/*
+	@summary: builds an html structure that is used to display the results from the initial farm name or number search
+	@param dataList: dataList is a list of dictionaries containing the result information
+	@return: an html string used to populate the results display
+*/
+function builtFarmSelectInterface(dataList)
+{		
+	if (dataList.length == 0)
+	{
+		return "<p>No Results Found</p>"
+	}
+	var str = "<table>"
+	str += "<tr><th>RECNO</th> <th>PROVCODE</th> <th>FARM NAME</th></tr>"
+	for (var x=0;x<dataList.length;x++)
+	{		
+		str += "<tr><td>"+dataList[x]['RECNO']+"</td> <td>"+dataList[x]['PROVCODE']+"</td> <td>"+dataList[x]['FARM_NAME']+"</td> <td><input type='button' value='select' onclick='getMineralsForEnvelope(\""+dataList[x]["GMLBOUNDEDBY"]+"\")'></td></tr>"	
+	}
+	str += "</table>"
+	return str	
+}
+
+function getMineralLayerName()
+{
+	var layerName = ''
+	for (key in LayerNameMapping)
+	{
+		if (LayerNameMapping[key] == "lMineralPoints")
+		{
+			layerName = key;
+		}
+	}
+	return layerName
+}
+
+function getTopo250LayerName()
+{
+	var layerName = ''
+	for (key in LayerNameMapping)
+	{
+		if (LayerNameMapping[key] == "lTopo250")
+		{
+			layerName = key;
+		}
+	}
+	return layerName
+}
+
+function getTopo50LayerName()
+{
+	var layerName = ''
+	for (key in LayerNameMapping)
+	{
+		if (LayerNameMapping[key] == "lTopo50")
+		{
+			layerName = key;
+		}
+	}
+	return layerName
+}
+
+function getFarmLayerName()
+{
+	var layerName = ''
+	for (key in LayerNameMapping)
+	{
+		if (LayerNameMapping[key] == "lFarms")
+		{
+			layerName = key;
+		}
+	}
+	return layerName
+}
+
+
+/*
+	@summary:
+*/
+function getMineralsForEnvelope(envStr)
+{
+	var parts = envStr.split(" ")
+	var floatMinX = parseFloat(parts[0].split(",")[0])
+	var floatMinY = parseFloat(parts[0].split(",")[1])
+	var floatMaxX = parseFloat(parts[1].split(",")[0])
+	var floatMaxY = parseFloat(parts[1].split(",")[1])
+	
+	layerName = getMineralLayerName()
+
+	var colName = getGeometryColumn(layerName)
+	var theFilter = boxFilter.replace('[GEOMCOL]',colName)
+	theFilter = theFilter.replace('[COORDS]',floatMinX + "," + floatMinY + " " +  floatMaxX + "," + floatMaxY)
+	var postPath = projectPath + "/wfswms?service=wfs&request=getfeature&maxfeatures="+maxEnvelopeSearch+"&version=1.0.0&typename=" + layerName + "&filter=" + theFilter	
+	
+	getContent(postPath,handleBBoxResponse)	
+}
+
+/*
+	@summary:
+*/
+function handleBBoxResponse()
+{
+	if (req.readyState == 4)
+	{
+		var res = req.responseText;	
+        if (res.toLowerCase().indexOf("serviceexception") != -1)
+        {
+          alert(res)
+          return;
+        }				
+        buildIdentifyDict(res)		
+		var layerName = getMineralLayerName()
+		var colName = getGeometryColumn(layerName)	
+		
+		var lenCount = 0
+		for (var x=0;x<identifyDataList.length;x++)
+		{
+			var tmpDict = identifyDataList[x]
+			for (k in tmpDict)
+			{
+				if (k.toUpperCase() == colName.toUpperCase())
+				{
+					lenCount += tmpDict[k].length					
+					tmpDict[k] = ""					
+				}
+			}			
+		}			
+		htmlStr = buildIdentifyHTML(identifyDataList,'lMineralPoints')			
+		window.open("resultsDisplaySamindaba.html","tmpName")
+	}
+}
+
+function hideSelectBoxes()
+{
+	document.getElementById('lRefine').style.visibility = 'hidden';
+	document.getElementById('lFarm').style.visibility = 'hidden';
+	document.getElementById('lCoords').style.visibility = 'hidden';
+	document.getElementById('lRadius').style.visibility = 'hidden';
+	document.getElementById('lMapName').style.visibility = 'hidden';
+}
+
+/*
+	@summary:
+*/
+function doRadiusSearch()
+{
+	var radius = document.getElementById('tbxRadiusRadius').value
+	var xPos = document.getElementById('tbxRadiusLong').value
+	var yPos = document.getElementById('tbxRadiusLat').value
+	
+	if (radius == '' || xPos == '' || yPos == '')
+	{
+		alert('Values given are not valid')
+		return
+	}
+
+	floatXPos = parseFloat(xPos)
+	floatYPos = parseFloat(yPos)
+	floatRadius = parseFloat(radius)		
+
+	if (isNaN(floatRadius))
+	{
+		alert("Radius is not valid")
+		return
+	}
+	if (isNaN(floatXPos))
+	{
+		alert("Long is not valid")
+		return
+	}
+	if (isNaN(floatYPos))
+	{
+		alert("Latitude is not valid")
+		return
+	}
+	
+	layerName = getMineralLayerName()
+	
+	//boxPart2
+	//getBoxForPointAndDistance(xPos,yPos,distance)
+	var theBox = getBoxForPointAndDistance(floatXPos,floatYPos,floatRadius)
+    var theFilter = boxPart2.replace('[COORDS]',theBox);
+    
+    /*var theFilter = radiusFilter.replace('[COORDS]',floatXPos + "," + floatYPos)
+	theFilter = theFilter.replace('[DISTANCE]',floatRadius)*/
+	
+	var refineStr = getRefineStatement()	
+	if (refineStr == "")
+	{
+		var compound = '<ogc:Filter>' + refineStr + theFilter +  '</ogc:Filter>'
+	}
+	else
+	{
+		var compound = '<ogc:Filter><ogc:And>' + refineStr + theFilter +  '</ogc:And></ogc:Filter>'
+	}	
+	var postPath = projectPath + "/wfswms?service=wfs&request=getfeature&maxfeatures="+maxEnvelopeSearch+"&version=1.0.0&typename=" + layerName + "&filter=" + compound	
+	getContent(postPath,handleRadiusResponse)		
+}
+
+/*
+	@summary:
+*/
+function handleRadiusResponse()
+{	
+	if (req.readyState == 4)
+	{
+        var res = req.responseText;	
+        if (res.toLowerCase().indexOf("serviceexception") != -1)
+        {
+          alert(res)
+          return;
+        }	            		
+		buildIdentifyDict(res)
+		htmlStr = buildIdentifyHTML(identifyDataList,'lMineralPoints')		
+		//var closeButton = "<input type='button' class='button' onclick='closeResults()' value='X'>"		
+		/*htmlStr = closeButton + htmlStr + closeButton
+		hideSelectBoxes()
+		document.getElementById("results").style.visibility = 'visible';
+		document.getElementById("results").innerHTML = htmlStr*/
+		window.open("resultsDisplaySamindaba.html","tmpName")
+	}
+}
+
+/*
+	@summary:
+*/
+function closeResults()
+{
+	document.getElementById('lRefine').style.visibility = 'visible';
+	document.getElementById('lFarm').style.visibility = 'visible';
+	document.getElementById('lCoords').style.visibility = 'visible';
+	document.getElementById('lRadius').style.visibility = 'visible';
+	document.getElementById('lMapName').style.visibility = 'visible';	
+	
+	document.getElementById('lLocality').style.visibility = 'hidden'
+	document.getElementById('results').style.visibility = 'hidden'
+	document.getElementById('results').innerHTML = ''
+}
+
+/*
+	@summary:
+*/
+function closeFarmResults()
+{
+	document.getElementById('farmSearchResults').style.visibility = 'hidden'
+	document.getElementById('farmSearchResults').innerHTML = ''
+}
+
+/*
+	@summary:
+*/
+function getUniqueList(list)
+{
+	var newList = new Array()
+	for (var x=0;x<list.length;x++)
+	{
+		if (!hasRecord(newList,list[x]['RECNO'],list[x]['FARM_NAME']))
+		{
+			newList[newList.length] = list[x]
+		}
+	}
+	return newList
+}
+
+/*
+	@summary:
+*/
+function hasRecord(list,theCode,farmName)
+{
+	for (var x=0;x<list.length;x++)
+	{
+		var fName = list[x]['FARM_NAME']
+		var fCode = list[x]['RECNO']
+		if (fName == farmName && theCode == fCode)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+/*
+	@summary:
+*/
+function getLocalityReportOptions()
+{
+	document.getElementById('lLocality').style.visibility = 'hidden'
+	var hasHostRock = document.getElementById('hostRock').checked
+	var hasOreBody = document.getElementById('oreBody').checked
+	var hasSample = document.getElementById('sample').checked
+	var hasDataReference = document.getElementById('dataReference').checked
+
+	var hostRock = hasHostRock == true ? 1 : 0
+	var oreBody = hasOreBody == true ? 1 : 0
+	var sample = hasSample == true ? 1 : 0
+	var dataReference = hasDataReference == true ? 1 : 0	
+	var theURL = reportMappings['locality']['UQ_REF'] + referenceNumber + '&PRINT_DATA=' + dataReference + '&PRINT_HOSTROCK=' + hostRock + '&PRINT_OREBODY=' + oreBody + '&PRINT_SAMPLE=' + sample
+	
+	getReport(theURL)
+}
+
+function showLocality(event,SAM)
+{			
+	referenceNumber = SAM
+	if (window.document.body.scrollTop != undefined)
+	{
+		scrollHeight = window.document.body.scrollTop
+	}
+	else
+	{
+		scrollHeight = window.scrollX
+	}	
+	
+	if (event.target != undefined)
+	{
+		theTarget = event.target
+	}
+	else
+	{
+	theTarget = event.srcElement
+	}
+	theID = theTarget.getAttribute('id') 
+	
+	var xPos = event.clientX 
+	var yPos = event.clientY + scrollHeight	
+	document.getElementById('lLocality').style.visibility = 'visible'
+	document.getElementById('lLocality').style.left = xPos
+	document.getElementById('lLocality').style.top = yPos	
+}
+
+function search()
+{	
+	if (searchMode == 'lFarm')
+	{
+		doFarmSearch()
+	}
+	if (searchMode == 'lCoords')
+	{
+		doLatLongSearch()
+	}
+	if (searchMode == 'lRadius')
+	{
+		doRadiusSearch()
+	}
+	if (searchMode == 'lMapName')
+	{
+		doMapSearch()
+	}
+}
+
+function metersToDd(meters)
+{
+    // 1 dd = 111 111 meters
+    return meters / 111111;
+}
+
+// distance is in meters and pos is in dd
+function getBoxForPointAndDistance(xPos,yPos,distance)
+{
+    var ddDistance = metersToDd(distance)
+    var minx = xPos - ddDistance
+    var maxx = xPos + ddDistance
+    
+    var miny = yPos - ddDistance    
+    var maxy = yPos + ddDistance    
+    //var env = new Array(minx,miny,maxx,maxy);
+    return minx + "," + miny + " " + maxx + "," + maxy;     
+    //return env;    
+}
+
+function buildBBoxFromCoords(identifyDataList)
+{
+    var minx = 99e99;
+	var miny = 99e99;
+	var maxx = -99e99;
+	var maxy = -99e99;	
+	
+	if (identifyDataList.length == 0)
+	{
+	   return "";
+    } 
+	       
+    var coords = identifyDataList[0]["_SHAPE_"]
+    coords = cleanString(coords);
+    var coordList = coords.split(" ");   
+
+	for (var x=0;x<coordList.length ;x++ )
+	{
+	   var tmpParts = coordList[x].split(",")
+	   var xPos = parseFloat(tmpParts[0]);
+	   var yPos = parseFloat(tmpParts[1]);	
+	
+		if (xPos < minx)
+		{
+			minx = xPos
+		}
+
+		if (yPos < miny)
+		{
+			miny = yPos
+		}
+
+		if (xPos > maxx)
+		{
+			maxx = xPos
+		}
+
+		if (yPos > maxy)
+		{
+			maxy = yPos
+		}
+	}	
+	var env = new Array(minx,miny,maxx,maxy)    
+	return minx + "," + miny + " " + maxx + "," + maxy	
+}
+
+function trimCoords(coordString)
+{
+    var retString = "";
+    var coordList = coordString.split(" ")
+    for (var x=0;x<coordList.length;x++)    
+    {
+        var tmpParts = coordList[x].split(",")
+        // get the index of the .
+        //only take first 2 decimals
+        var xPos = trimNumber(tmpParts[0])
+        var yPos = trimNumber(tmpParts[1])    
+        retString += xPos + "," + yPos + " "          
+    } 
+    
+    retString = retString.slice(0,-1)     
+    return retString;
+}
+
+function trimNumber(number)
+{
+	if (number == undefined)	
+    {
+        return "";
+    }
+    var index = number.indexOf(".")
+	if (index == -1)
+	{
+		return number;
+	}
+
+	var parts = number.split(".")
+	if(parts[1].length < 6) //6 works most of the time
+	{
+		return number;
+	}
+
+	var newNumber = parts[0] + "." + parts[1].slice(0,5)
+	return newNumber;	
+}
+
+
+
+

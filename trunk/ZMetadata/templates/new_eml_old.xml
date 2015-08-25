@@ -1,0 +1,684 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<eml:eml xmlns:eml="eml://ecoinformatics.org/eml-2.0.1" xmlns:cit="eml://ecoinformatics.org/literature-2.0.1" xmlns:doc="eml://ecoinformatics.org/documentation-2.0.1" xmlns:ds="eml://ecoinformatics.org/dataset-2.0.1" xmlns:prot="eml://ecoinformatics.org/protocol-2.0.1" xmlns:res="eml://ecoinformatics.org/resource-2.0.1" xmlns:sw="eml://ecoinformatics.org/software-2.0.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="eml://ecoinformatics.org/eml-2.0.1
+C:\!Projects\NSIF\docs\metadata\eml\eml-2.0.1\eml-2.0.1\eml.xsd" packageId="String" system="String" scope="system">
+	<dataset id="String" system="String" scope="document">
+		<alternateIdentifier system="String">xx</alternateIdentifier>
+		<shortName>xx</shortName>
+		<title>xx</title>
+		<creator id="String" system="String" scope="document">
+			<individualName>
+				<salutation>xx</salutation>
+				<givenName>xx</givenName>
+				<surName>xx</surName>
+			</individualName>
+			<address id="String" system="String" scope="document">
+				<deliveryPoint>xx</deliveryPoint>
+				<city>xx</city>
+				<administrativeArea>xx</administrativeArea>
+				<postalCode>xx</postalCode>
+				<country>xx</country>
+			</address>
+			<phone phonetype="voice">xx</phone>
+			<electronicMailAddress>xx</electronicMailAddress>
+			<onlineUrl>xx</onlineUrl>
+			<userId directory="String">xx</userId>
+		</creator>
+		<metadataProvider id="String" system="String" scope="document">
+			<individualName>
+				<salutation>xx</salutation>
+				<givenName>xx</givenName>
+				<surName>xx</surName>
+			</individualName>
+			<address id="String" system="String" scope="document">
+				<deliveryPoint>xx</deliveryPoint>
+				<city>xx</city>
+				<administrativeArea>xx</administrativeArea>
+				<postalCode>xx</postalCode>
+				<country>xx</country>
+			</address>
+			<phone phonetype="voice">xx</phone>
+			<electronicMailAddress>xx</electronicMailAddress>
+			<onlineUrl>xx</onlineUrl>
+			<userId directory="String">xx</userId>
+		</metadataProvider>
+		<associatedParty id="String" system="String" scope="document">
+			<individualName>
+				<salutation>xx</salutation>
+				<givenName>xx</givenName>
+				<surName>xx</surName>
+			</individualName>
+			<address id="String" system="String" scope="document">
+				<deliveryPoint>xx</deliveryPoint>
+				<city>xx</city>
+				<administrativeArea>xx</administrativeArea>
+				<postalCode>xx</postalCode>
+				<country>xx</country>
+			</address>
+			<phone phonetype="voice">xx</phone>
+			<electronicMailAddress>xx</electronicMailAddress>
+			<onlineUrl>xx</onlineUrl>
+			<userId directory="String">xx</userId>
+			<role>contentProvider</role>
+		</associatedParty>
+		<pubDate>2001</pubDate>
+		<language>xx</language>
+		<series>xx</series>
+		<abstract>
+			<section>
+				<title>xx</title>
+				<para>Text<itemizedlist>
+						<listitem/>
+					</itemizedlist>
+				</para>
+			</section>
+		</abstract>
+		<keywordSet>
+			<keyword keywordType="place">xx</keyword>
+			<keywordThesaurus>xx</keywordThesaurus>
+		</keywordSet>
+		<additionalInfo>
+			<section>
+				<title>xx</title>
+				<para>Text<itemizedlist>
+						<listitem/>
+					</itemizedlist>
+				</para>
+			</section>
+		</additionalInfo>
+		<intellectualRights>
+			<section>
+				<title>xx</title>
+				<para>Text<itemizedlist>
+						<listitem/>
+					</itemizedlist>
+				</para>
+			</section>
+		</intellectualRights>
+		<distribution id="String" system="String" scope="document">
+			<online>
+				<url function="download">xx</url>
+			</online>
+		</distribution>
+		<coverage id="String" system="String" scope="document">
+			<geographicCoverage id="String" system="String" scope="document">
+				<geographicDescription>xx</geographicDescription>
+				<boundingCoordinates>
+					<westBoundingCoordinate>xx</westBoundingCoordinate>
+					<eastBoundingCoordinate>xx</eastBoundingCoordinate>
+					<northBoundingCoordinate>xx</northBoundingCoordinate>
+					<southBoundingCoordinate>xx</southBoundingCoordinate>
+					<boundingAltitudes>
+						<altitudeMinimum>xx</altitudeMinimum>
+						<altitudeMaximum>xx</altitudeMaximum>
+						<altitudeUnits>xx</altitudeUnits>
+					</boundingAltitudes>
+				</boundingCoordinates>
+				<datasetGPolygon>
+					<datasetGPolygonOuterGRing>
+						<gRingPoint>
+							<gRingLatitude>xx</gRingLatitude>
+							<gRingLongitude>xx</gRingLongitude>
+						</gRingPoint>
+						<gRingPoint>
+							<gRingLatitude>xx</gRingLatitude>
+							<gRingLongitude>xx</gRingLongitude>
+						</gRingPoint>
+						<gRingPoint>
+							<gRingLatitude>xx</gRingLatitude>
+							<gRingLongitude>xx</gRingLongitude>
+						</gRingPoint>
+					</datasetGPolygonOuterGRing>
+					<datasetGPolygonExclusionGRing>
+						<gRingPoint>
+							<gRingLatitude>xx</gRingLatitude>
+							<gRingLongitude>xx</gRingLongitude>
+						</gRingPoint>
+					</datasetGPolygonExclusionGRing>
+				</datasetGPolygon>
+			</geographicCoverage>
+		</coverage>
+		<purpose>
+			<section>
+				<title>xx</title>
+				<para>Text<itemizedlist>
+						<listitem/>
+					</itemizedlist>
+				</para>
+			</section>
+		</purpose>
+		<maintenance>
+			<description>
+				<section>
+					<title>xx</title>
+					<para>Text<itemizedlist>
+							<listitem/>
+						</itemizedlist>
+					</para>
+				</section>
+			</description>
+			<maintenanceUpdateFrequency>annually</maintenanceUpdateFrequency>
+			<changeHistory>
+				<changeScope>xx</changeScope>
+				<oldValue>xx</oldValue>
+				<changeDate>1967-08-13</changeDate>
+				<comment>xx</comment>
+			</changeHistory>
+		</maintenance>
+		<contact id="String" system="String" scope="document">
+			<individualName>
+				<salutation>xx</salutation>
+				<givenName>xx</givenName>
+				<surName>xx</surName>
+			</individualName>
+			<address id="String" system="String" scope="document">
+				<deliveryPoint>xx</deliveryPoint>
+				<city>xx</city>
+				<administrativeArea>xx</administrativeArea>
+				<postalCode>xx</postalCode>
+				<country>xx</country>
+			</address>
+			<phone phonetype="voice">xx</phone>
+			<electronicMailAddress>xx</electronicMailAddress>
+			<onlineUrl>xx</onlineUrl>
+			<userId directory="String">xx</userId>
+		</contact>
+		<publisher id="String" system="String" scope="document">
+			<individualName>
+				<salutation>xx</salutation>
+				<givenName>xx</givenName>
+				<surName>xx</surName>
+			</individualName>
+			<address id="String" system="String" scope="document">
+				<deliveryPoint>xx</deliveryPoint>
+				<city>xx</city>
+				<administrativeArea>xx</administrativeArea>
+				<postalCode>xx</postalCode>
+				<country>xx</country>
+			</address>
+			<phone phonetype="voice">xx</phone>
+			<electronicMailAddress>xx</electronicMailAddress>
+			<onlineUrl>xx</onlineUrl>
+			<userId directory="String">xx</userId>
+		</publisher>
+		<pubPlace>xx</pubPlace>
+		<methods>
+			<methodStep>
+				<description>
+					<section>
+						<title>xx</title>
+						<para>Text<itemizedlist>
+								<listitem/>
+							</itemizedlist>
+						</para>
+					</section>
+				</description>
+				<citation id="String" system="String" scope="document">
+					<alternateIdentifier system="String">xx</alternateIdentifier>
+					<shortName>xx</shortName>
+					<title>xx</title>
+					<creator id="String" system="String" scope="document">
+						<individualName>
+							<salutation>xx</salutation>
+							<givenName>xx</givenName>
+							<surName>xx</surName>
+						</individualName>
+						<address id="String" system="String" scope="document">
+							<deliveryPoint>xx</deliveryPoint>
+							<city>xx</city>
+							<administrativeArea>xx</administrativeArea>
+							<postalCode>xx</postalCode>
+							<country>xx</country>
+						</address>
+						<phone phonetype="voice">xx</phone>
+						<electronicMailAddress>xx</electronicMailAddress>
+						<onlineUrl>xx</onlineUrl>
+						<userId directory="String">xx</userId>
+					</creator>
+					<metadataProvider id="String" system="String" scope="document">
+						<individualName>
+							<salutation>xx</salutation>
+							<givenName>xx</givenName>
+							<surName>xx</surName>
+						</individualName>
+						<address id="String" system="String" scope="document">
+							<deliveryPoint>xx</deliveryPoint>
+							<city>xx</city>
+							<administrativeArea>xx</administrativeArea>
+							<postalCode>xx</postalCode>
+							<country>xx</country>
+						</address>
+						<phone phonetype="voice">xx</phone>
+						<electronicMailAddress>xx</electronicMailAddress>
+						<onlineUrl>xx</onlineUrl>
+						<userId directory="String">xx</userId>
+					</metadataProvider>
+					<associatedParty id="String" system="String" scope="document">
+						<individualName>
+							<salutation>xx</salutation>
+							<givenName>xx</givenName>
+							<surName>xx</surName>
+						</individualName>
+						<address id="String" system="String" scope="document">
+							<deliveryPoint>xx</deliveryPoint>
+							<city>xx</city>
+							<administrativeArea>xx</administrativeArea>
+							<postalCode>xx</postalCode>
+							<country>xx</country>
+						</address>
+						<phone phonetype="voice">xx</phone>
+						<electronicMailAddress>xx</electronicMailAddress>
+						<onlineUrl>xx</onlineUrl>
+						<userId directory="String">xx</userId>
+						<role>contentProvider</role>
+					</associatedParty>
+					<pubDate>2001</pubDate>
+					<language>xx</language>
+					<series>xx</series>
+					<abstract>
+						<section>
+							<title>xx</title>
+							<para>Text<itemizedlist>
+									<listitem/>
+								</itemizedlist>
+							</para>
+						</section>
+					</abstract>
+					<keywordSet>
+						<keyword keywordType="place">xx</keyword>
+						<keywordThesaurus>xx</keywordThesaurus>
+					</keywordSet>
+					<additionalInfo>
+						<section>
+							<title>xx</title>
+							<para>Text<itemizedlist>
+									<listitem/>
+								</itemizedlist>
+							</para>
+						</section>
+					</additionalInfo>
+					<intellectualRights>
+						<section>
+							<title>xx</title>
+							<para>Text<itemizedlist>
+									<listitem/>
+								</itemizedlist>
+							</para>
+						</section>
+					</intellectualRights>
+					<distribution id="String" system="String" scope="document">
+						<online>
+							<url function="download">xx</url>
+						</online>
+					</distribution>
+					<coverage id="String" system="String" scope="document">
+						<geographicCoverage id="String" system="String" scope="document">
+							<geographicDescription>xx</geographicDescription>
+							<boundingCoordinates>
+								<westBoundingCoordinate>xx</westBoundingCoordinate>
+								<eastBoundingCoordinate>xx</eastBoundingCoordinate>
+								<northBoundingCoordinate>xx</northBoundingCoordinate>
+								<southBoundingCoordinate>xx</southBoundingCoordinate>
+								<boundingAltitudes>
+									<altitudeMinimum>xx</altitudeMinimum>
+									<altitudeMaximum>xx</altitudeMaximum>
+									<altitudeUnits>xx</altitudeUnits>
+								</boundingAltitudes>
+							</boundingCoordinates>
+							<datasetGPolygon>
+								<datasetGPolygonOuterGRing>
+									<gRingPoint>
+										<gRingLatitude>xx</gRingLatitude>
+										<gRingLongitude>xx</gRingLongitude>
+									</gRingPoint>
+									<gRingPoint>
+										<gRingLatitude>xx</gRingLatitude>
+										<gRingLongitude>xx</gRingLongitude>
+									</gRingPoint>
+									<gRingPoint>
+										<gRingLatitude>xx</gRingLatitude>
+										<gRingLongitude>xx</gRingLongitude>
+									</gRingPoint>
+								</datasetGPolygonOuterGRing>
+								<datasetGPolygonExclusionGRing>
+									<gRingPoint>
+										<gRingLatitude>xx</gRingLatitude>
+										<gRingLongitude>xx</gRingLongitude>
+									</gRingPoint>
+								</datasetGPolygonExclusionGRing>
+							</datasetGPolygon>
+						</geographicCoverage>
+					</coverage>
+					<article>
+						<journal>xx</journal>
+						<volume>xx</volume>
+						<issue>xx</issue>
+						<pageRange>xx</pageRange>
+						<publisher id="String" system="String" scope="document">
+							<individualName>
+								<salutation>xx</salutation>
+								<givenName>xx</givenName>
+								<surName>xx</surName>
+							</individualName>
+							<address id="String" system="String" scope="document">
+								<deliveryPoint>xx</deliveryPoint>
+								<city>xx</city>
+								<administrativeArea>xx</administrativeArea>
+								<postalCode>xx</postalCode>
+								<country>xx</country>
+							</address>
+							<phone phonetype="voice">xx</phone>
+							<electronicMailAddress>xx</electronicMailAddress>
+							<onlineUrl>xx</onlineUrl>
+							<userId directory="String">xx</userId>
+						</publisher>
+						<publicationPlace>xx</publicationPlace>
+						<ISSN>xx</ISSN>
+					</article>
+					<access id="String" system="String" scope="document" order="allowFirst" authSystem="String">
+						<allow>
+							<principal>xx</principal>
+							<permission>read</permission>
+						</allow>
+					</access>
+				</citation>
+				<instrumentation>xx</instrumentation>
+				<software id="String" system="String" scope="document">
+					<alternateIdentifier system="String">xx</alternateIdentifier>
+					<shortName>xx</shortName>
+					<title>xx</title>
+					<creator id="String" system="String" scope="document">
+						<individualName>
+							<salutation>xx</salutation>
+							<givenName>xx</givenName>
+							<surName>xx</surName>
+						</individualName>
+						<address id="String" system="String" scope="document">
+							<deliveryPoint>xx</deliveryPoint>
+							<city>xx</city>
+							<administrativeArea>xx</administrativeArea>
+							<postalCode>xx</postalCode>
+							<country>xx</country>
+						</address>
+						<phone phonetype="voice">xx</phone>
+						<electronicMailAddress>xx</electronicMailAddress>
+						<onlineUrl>xx</onlineUrl>
+						<userId directory="String">xx</userId>
+					</creator>
+					<metadataProvider id="String" system="String" scope="document">
+						<individualName>
+							<salutation>xx</salutation>
+							<givenName>xx</givenName>
+							<surName>xx</surName>
+						</individualName>
+						<address id="String" system="String" scope="document">
+							<deliveryPoint>xx</deliveryPoint>
+							<city>xx</city>
+							<administrativeArea>xx</administrativeArea>
+							<postalCode>xx</postalCode>
+							<country>xx</country>
+						</address>
+						<phone phonetype="voice">xx</phone>
+						<electronicMailAddress>xx</electronicMailAddress>
+						<onlineUrl>xx</onlineUrl>
+						<userId directory="String">xx</userId>
+					</metadataProvider>
+					<associatedParty id="String" system="String" scope="document">
+						<individualName>
+							<salutation>xx</salutation>
+							<givenName>xx</givenName>
+							<surName>xx</surName>
+						</individualName>
+						<address id="String" system="String" scope="document">
+							<deliveryPoint>xx</deliveryPoint>
+							<city>xx</city>
+							<administrativeArea>xx</administrativeArea>
+							<postalCode>xx</postalCode>
+							<country>xx</country>
+						</address>
+						<phone phonetype="voice">xx</phone>
+						<electronicMailAddress>xx</electronicMailAddress>
+						<onlineUrl>xx</onlineUrl>
+						<userId directory="String">xx</userId>
+						<role>contentProvider</role>
+					</associatedParty>
+					<pubDate>2001</pubDate>
+					<language>xx</language>
+					<series>xx</series>
+					<abstract>
+						<section>
+							<title>xx</title>
+							<para>Text<itemizedlist>
+									<listitem/>
+								</itemizedlist>
+							</para>
+						</section>
+					</abstract>
+					<keywordSet>
+						<keyword keywordType="place">xx</keyword>
+						<keywordThesaurus>xx</keywordThesaurus>
+					</keywordSet>
+					<additionalInfo>
+						<section>
+							<title>xx</title>
+							<para>Text<itemizedlist>
+									<listitem/>
+								</itemizedlist>
+							</para>
+						</section>
+					</additionalInfo>
+					<intellectualRights>
+						<section>
+							<title>xx</title>
+							<para>Text<itemizedlist>
+									<listitem/>
+								</itemizedlist>
+							</para>
+						</section>
+					</intellectualRights>
+					<distribution id="String" system="String" scope="document">
+						<online>
+							<url function="download">xx</url>
+						</online>
+					</distribution>
+					<coverage id="String" system="String" scope="document">
+						<geographicCoverage id="String" system="String" scope="document">
+							<geographicDescription>xx</geographicDescription>
+							<boundingCoordinates>
+								<westBoundingCoordinate>xx</westBoundingCoordinate>
+								<eastBoundingCoordinate>xx</eastBoundingCoordinate>
+								<northBoundingCoordinate>xx</northBoundingCoordinate>
+								<southBoundingCoordinate>xx</southBoundingCoordinate>
+								<boundingAltitudes>
+									<altitudeMinimum>xx</altitudeMinimum>
+									<altitudeMaximum>xx</altitudeMaximum>
+									<altitudeUnits>xx</altitudeUnits>
+								</boundingAltitudes>
+							</boundingCoordinates>
+							<datasetGPolygon>
+								<datasetGPolygonOuterGRing>
+									<gRingPoint>
+										<gRingLatitude>xx</gRingLatitude>
+										<gRingLongitude>xx</gRingLongitude>
+									</gRingPoint>
+									<gRingPoint>
+										<gRingLatitude>xx</gRingLatitude>
+										<gRingLongitude>xx</gRingLongitude>
+									</gRingPoint>
+									<gRingPoint>
+										<gRingLatitude>xx</gRingLatitude>
+										<gRingLongitude>xx</gRingLongitude>
+									</gRingPoint>
+								</datasetGPolygonOuterGRing>
+								<datasetGPolygonExclusionGRing>
+									<gRingPoint>
+										<gRingLatitude>xx</gRingLatitude>
+										<gRingLongitude>xx</gRingLongitude>
+									</gRingPoint>
+								</datasetGPolygonExclusionGRing>
+							</datasetGPolygon>
+						</geographicCoverage>
+					</coverage>
+					<implementation>
+						<distribution id="String" system="String" scope="document">
+							<online>
+								<url function="download">xx</url>
+							</online>
+						</distribution>
+						<size>xx</size>
+						<language>
+							<LanguageValue>xx</LanguageValue>
+							<LanguageCodeStandard>xx</LanguageCodeStandard>
+						</language>
+						<operatingSystem>xx</operatingSystem>
+						<machineProcessor>xx</machineProcessor>
+						<virtualMachine>xx</virtualMachine>
+						<diskUsage>xx</diskUsage>
+						<runtimeMemoryUsage>xx</runtimeMemoryUsage>
+						<programmingLanguage>xx</programmingLanguage>
+						<checksum>xx</checksum>
+						<dependency>
+							<action>install</action>
+							<software id="String" system="String" scope="document">
+								<alternateIdentifier system="String">xx</alternateIdentifier>
+								<shortName>xx</shortName>
+								<title>xx</title>
+								<creator id="String" system="String" scope="document">
+									<individualName>
+										<salutation>xx</salutation>
+										<givenName>xx</givenName>
+										<surName>xx</surName>
+									</individualName>
+									<address id="String" system="String" scope="document">
+										<deliveryPoint>xx</deliveryPoint>
+										<city>xx</city>
+										<administrativeArea>xx</administrativeArea>
+										<postalCode>xx</postalCode>
+										<country>xx</country>
+									</address>
+									<phone phonetype="voice">xx</phone>
+									<electronicMailAddress>xx</electronicMailAddress>
+									<onlineUrl>xx</onlineUrl>
+									<userId directory="String">xx</userId>
+								</creator>
+								<metadataProvider id="String" system="String" scope="document">
+									<individualName>
+										<salutation>xx</salutation>
+										<givenName>xx</givenName>
+										<surName>xx</surName>
+									</individualName>
+									<address id="String" system="String" scope="document">
+										<deliveryPoint>xx</deliveryPoint>
+										<city>xx</city>
+										<administrativeArea>xx</administrativeArea>
+										<postalCode>xx</postalCode>
+										<country>xx</country>
+									</address>
+									<phone phonetype="voice">xx</phone>
+									<electronicMailAddress>xx</electronicMailAddress>
+									<onlineUrl>xx</onlineUrl>
+									<userId directory="String">xx</userId>
+								</metadataProvider>
+								<associatedParty id="String" system="String" scope="document">
+									<individualName>
+										<salutation>xx</salutation>
+										<givenName>xx</givenName>
+										<surName>xx</surName>
+									</individualName>
+									<address id="String" system="String" scope="document">
+										<deliveryPoint>xx</deliveryPoint>
+										<city>xx</city>
+										<administrativeArea>xx</administrativeArea>
+										<postalCode>xx</postalCode>
+										<country>xx</country>
+									</address>
+									<phone phonetype="voice">xx</phone>
+									<electronicMailAddress>xx</electronicMailAddress>
+									<onlineUrl>xx</onlineUrl>
+									<userId directory="String">xx</userId>
+									<role>contentProvider</role>
+								</associatedParty>
+								<pubDate>2001</pubDate>
+								<language>xx</language>
+								<series>xx</series>
+								<abstract>
+									<section>
+										<title>xx</title>
+										<para>Text<itemizedlist>
+												<listitem/>
+											</itemizedlist>
+										</para>
+									</section>
+								</abstract>
+								<keywordSet>
+									<keyword keywordType="place">xx</keyword>
+									<keywordThesaurus>xx</keywordThesaurus>
+								</keywordSet>
+								<additionalInfo>
+									<section>
+										<title>xx</title>
+										<para>Text<itemizedlist>
+												<listitem/>
+											</itemizedlist>
+										</para>
+									</section>
+								</additionalInfo>
+								<intellectualRights>
+									<section>
+										<title>xx</title>
+										<para>Text<itemizedlist>
+												<listitem/>
+											</itemizedlist>
+										</para>
+									</section>
+								</intellectualRights>
+								<distribution id="String" system="String" scope="document">
+									<online>
+										<url function="download">xx</url>
+									</online>
+								</distribution>
+								<coverage id="String" system="String" scope="document">
+									<geographicCoverage id="String" system="String" scope="document">
+										<geographicDescription>xx</geographicDescription>
+										<boundingCoordinates>
+											<westBoundingCoordinate>xx</westBoundingCoordinate>
+											<eastBoundingCoordinate>xx</eastBoundingCoordinate>
+											<northBoundingCoordinate>xx</northBoundingCoordinate>
+											<southBoundingCoordinate>xx</southBoundingCoordinate>
+											<boundingAltitudes>
+												<altitudeMinimum>xx</altitudeMinimum>
+												<altitudeMaximum>xx</altitudeMaximum>
+												<altitudeUnits>xx</altitudeUnits>
+											</boundingAltitudes>
+										</boundingCoordinates>
+										<datasetGPolygon>
+											<datasetGPolygonOuterGRing>
+												<gRingPoint>
+													<gRingLatitude>xx</gRingLatitude>
+													<gRingLongitude>xx</gRingLongitude>
+												</gRingPoint>
+												<gRingPoint>
+													<gRingLatitude>xx</gRingLatitude>
+													<gRingLongitude>xx</gRingLongitude>
+												</gRingPoint>
+												<gRingPoint>
+													<gRingLatitude>xx</gRingLatitude>
+													<gRingLongitude>xx</gRingLongitude>
+												</gRingPoint>
+											</datasetGPolygonOuterGRing>
+											<datasetGPolygonExclusionGRing>
+												<gRingPoint>
+													<gRingLatitude>xx</gRingLatitude>
+													<gRingLongitude>xx</gRingLongitude>
+												</gRingPoint>
+											</datasetGPolygonExclusionGRing>
+										</datasetGPolygon>
+									</geographicCoverage>
+								</coverage>
+							</software>
+						</dependency>
+					</implementation>
+				</software>
+			</methodStep>
+		</methods>
+	</dataset>
+</eml:eml>

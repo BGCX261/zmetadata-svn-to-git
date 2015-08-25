@@ -1,0 +1,105 @@
+<html metal:use-macro="here/main_template/macros/master">
+    <body>
+        <div metal:fill-slot="main">
+			<style>
+			.custd{
+				text-align:left;
+				border: thin solid gray;
+			}
+			.custd2{
+				text-align:center;
+				border: thin solid gray;
+			}
+
+			.smallText{
+				font-size:7pt;
+				color:#0066CC;
+			}
+
+			.cusTable{
+				border: thin solid gray;
+			}
+			
+			.thColor{
+				background-color:lightsteelblue;
+			}
+
+			</style>	
+		<script src="" tal:attributes="src python: context.absolute_url() + '/utils.js'"> </script>	
+		<div tal:define="global sources here/getSources"></div>		
+		<div tal:define="global comStatus here/checkComponentStatuses"></div>		
+			<div tal:define="global thePath here/absolute_url"></div>
+		
+		<div tal:condition="python: comStatus[1] and comStatus[0] and comStatus[2] and comStatus[3]"> 				
+			
+			<SCRIPT LANGUAGE="JavaScript">
+			<!--
+			function getThePath()
+			{
+				var theElm = document.getElementById('absolutePath')
+				return theElm.getAttribute('value')
+			}
+
+			function openLegend(theName)
+			{				
+				var theAbPath = getThePath()				
+				var selValue = getSelectedValue(theName)				
+				
+				var theURL = theAbPath + "/testGetLegendGraphicForLayerName?name=" + selValue
+				window.open(theURL,"preview","width=200,height=200,menubar=0,toolbar=0,location=0,resizable=1")
+			}
+
+			function openDescription(theName)
+			{
+				var theAbPath = getThePath()
+				var selValue = getSelectedValue(theName)
+				var theURL = theAbPath + "/testDescribeFeatureTypeForLayerName?name=" + selValue				
+				window.open(theURL,"preview","width=800,height=600,menubar=0,toolbar=0,location=0,resizable=1,scrollbars=1")
+			}
+			//-->
+			</SCRIPT>						
+				<div tal:define="global layers here/getCurrentLayerRegistryLayers"></div>		
+				<div tal:define="global thePath here/absolute_url"></div>
+				<div id="absolutePath" value="" tal:attributes="value here/absolute_url"></div>
+
+				<div tal:condition="not: python:layers.keys()">
+					<b>No layers regitered with the layer registry</b>
+					<br>
+					<b>Please call update layers on Layer Registry</b>
+				</div>
+				
+				<div tal:condition="python:layers.keys()">
+					<div tal:repeat="layer python: layers.keys()" style="border:thin solid gray;">
+						<br>
+						<b tal:content="layer" style="color:steelblue;"></b>									
+							<table border="1" style="width:550px;">
+								<tr>
+									<th class="thColor">Layer</th> <th class="thColor">Description</th> <th class="thColor">Legend</th>
+								</tr>
+								<tr>								
+									<td>
+										<select style="width:350px;" id="" tal:attributes="id repeat/layer/number">								
+											<div tal:repeat="layerName python:layers[layer]">
+													<option tal:content="layerName" ></option>																						
+											</div>	
+										</select>
+									</td>
+								<td><input type="button" value="..." onclick="" tal:attributes="onclick python: 'openDescription(\'%s\')' %str(repeat['layer'].number())"></td>
+								<td><input type="button" value="..." onclick="" tal:attributes="onclick python: 'openLegend(\'%s\')' %(repeat['layer'].number())"></td>
+								
+								</tr>
+							</table>				
+						
+					</div>	
+				</div>
+			</div>
+
+			<div tal:condition="not: python: comStatus[1] or comStatus[0] or comStatus[2] or comStatus[3]"> 
+				<p>
+					All components in the status tab must be running.				
+				</p>
+			</div>
+        </div>
+    </body>
+</html>
+

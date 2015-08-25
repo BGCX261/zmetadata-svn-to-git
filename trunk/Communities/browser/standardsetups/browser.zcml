@@ -1,0 +1,26 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:browser="http://namespaces.zope.org/browser"
+           xmlns:five="http://namespaces.zope.org/five"
+           xmlns:zcml="http://namespaces.zope.org/zcml"
+           xmlns:i18n="http://namespaces.zope.org/i18n"
+           xmlns:plone="http://namespaces.plone.org/plone"
+           i18n_domain="Communities">
+
+ 
+  <browser:page
+     for="Products.Communities.content.interfaces.IStandardSetups"
+     name="view-standards"
+     class="Products.Communities.browser.standardsetups.ViewStandardSetups.ViewStandardSetups"
+     template="templates/view-standards.pt"
+     permission="zope2.View"
+     />
+
+
+
+ 
+
+  
+<!-- ##code-section BROWSER #fill in your manual code here -->
+<!-- ##/code-section BROWSER -->
+
+</configure>

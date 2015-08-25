@@ -1,0 +1,143 @@
+// module for handling the panning function
+var panning = false;
+
+function handlePan(e)
+{     
+    if(isIEBrowser())
+	{	
+       
+	   if(e.button == 2)
+	   {	      
+           return;
+	   }
+	}
+	else
+	{	   
+	   if(e.button == 2)
+	   {	       
+	       return;
+	   }
+	}
+
+	if (isIE)
+	{		
+		this.absDestX = e.clientX;
+		this.absDestY = e.clientY;
+		
+		this.relDestX = e.offsetX;
+		this.relDestY = e.offsetY;	
+	}
+	else
+	{		
+		this.absDestX = e.clientX;
+		this.absDestY = e.clientY;		
+		this.relDestX = e.layerX;
+		this.relDestY = e.layerY;		
+	}  
+
+	switch (e.type)
+	{
+		case "mousedown":
+		leftButtonIn = true		
+			if (isIE)
+            {
+				this.absOrigX = e.clientX;
+				this.absOrigY = e.clientY;
+				this.absDestX = e.clientX;
+				this.absDestY = e.clientY;
+
+				this.relOrigX = e.offsetX;
+				this.relOrigY = e.offsetY;
+				this.relDestX = e.offsetX;
+				this.relDestY = e.offsetY;	
+            }
+			else
+			{				
+				this.absOrigX = e.clientX;				
+				this.absOrigY = e.clientY;
+				this.absDestX = e.clientX;
+
+				this.absDestY = e.clientY;
+
+				this.relOrigX = e.layerX;
+				this.relOrigY = e.layerY;
+				this.relDestX = e.layerX;
+
+				this.relDestY = e.layerY;
+			}  				
+			panning = true;					
+		break;	
+
+		case "mousemove":			
+			
+			if (panning && leftButtonIn)
+			{	//alert('yeeeehaaa')
+				window.status = 'Panning is at ' + this.absDestX + " : " + this.absDestY
+				var newX = this.absDestX - this.absOrigX
+				var newY = this.absDestY - this.absOrigY
+				drawFeedbackAt(newX,newY)		
+			}		
+
+		break;
+		
+		case "mouseup":
+			leftButtonIn = false
+			panning = false	;	
+			window.status = 'Done Panning..'
+			hideFeedback()
+			var xDiff = this.absDestX - this.absOrigX
+			var yDiff = this.absDestY - this.absOrigY			
+
+			// calc the new extent
+			var iminx = document.getElementById('feedback').offsetLeft
+			var iminy = document.getElementById('feedback').offsetTop
+			var iWidth = document.getElementById('feedback').offsetWidth
+			var iHeight = document.getElementById('feedback').offsetHeight
+			var imaxx = iminx + iWidth
+			var imaxy = iminy + iHeight
+
+			// adjust the screen envelope for the pan
+			iminx = iminx - (2*xDiff)
+			imaxx = imaxx - (2*xDiff)
+			iminy = iminy - (2*yDiff)
+			imaxy = imaxy - (2*yDiff)
+			
+			var bottomCoord = screenToMap(iminx,iminy)
+			var topCoord = screenToMap(imaxx,imaxy)
+			currentExtent[0] = bottomCoord[0]
+			currentExtent[1] = topCoord[1]
+			currentExtent[2] = topCoord[0]
+			currentExtent[3] = bottomCoord[1]			
+			// do the getImage for the new extent		
+			doGetMap();
+			
+		break;
+	}
+
+}
+
+function duplicatePanMouseMove()
+{
+	if (panning && leftButtonIn)
+	{				
+		window.status = 'Panning is at ' + this.absDestX + " : " + this.absDestY		
+		drawFeedbackAt(this.absDestX,this.absDestY)		
+	}	
+}
+
+function hideFeedback()
+{
+	var elmFeedback = document.getElementById('feedback')
+	elmFeedback.style.visibility = 'hidden'
+}
+
+function drawFeedbackAt(x,y)
+{	
+	var elmFeedback = document.getElementById('feedback')
+	elmFeedback.style.visibility = 'visible'
+	elmFeedback.style.width = document.getElementById('map').offsetWidth
+	elmFeedback.style.height = document.getElementById('map').offsetHeight
+	elmFeedback.style.left = x
+	elmFeedback.style.top = y
+}
+

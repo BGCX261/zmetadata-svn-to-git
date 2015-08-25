@@ -1,0 +1,131 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+<body>
+
+<div metal:fill-slot="main">
+	<div tal:define="global thePath here/absolute_url"></div>
+	<div id="thePath" value="" tal:attributes="value here/absolute_url"></div>
+	<style>
+	   table{border:thin solid gray;}
+	   .searchField{width:100px;}
+	</style>
+	<link rel="stylesheet" type="text/css" href="calendar-win2k-1.css"/>  
+	<script src="utils.js"> </script>
+	<script type="text/javascript" src="calendar.js"></script>
+    <script type="text/javascript" src="calendar-en.js"></script>
+    <script type="text/javascript" src="calendar-setup.js"></script>
+	
+	
+	<table>
+	   <tr>
+	       <td><input type="button" value="Metadata Catalogue Report" onclick="openMetadataCatalogueReport()"></td>
+       </tr>  
+    </table>
+	
+	<br>
+	
+	<table>
+	   <tr>
+	       <td><input type="button" value="Metadata Count Per Custodian" onclick="openCustodianCountReport()"></td>
+       </tr>  
+    </table>     
+    
+    <br>
+    
+    <table>
+       <tr>
+	       <td colspan="2">Metadata Harvested For:</td>
+       </tr>
+       <tr>
+	       <td><input type="radio" name="harvested" id="rbtnToday" onchange="setSelectedOption('Today')" checked></td>
+	       <td>Today</td>
+       </tr> 
+       <tr>
+	       <td><input type="radio" name="harvested" id="rbtnWeek" onchange="setSelectedOption('Week')"></td>
+	       <td>This Week</td>
+       </tr> 
+       <tr>
+	       <td><input type="radio" name="harvested" id="rbtnMonth" onchange="setSelectedOption('Month')"></td>
+	       <td>This Month</td>
+       </tr> 
+       <tr>
+	       <td><input type="radio" name="harvested" id="rbtnYear" onchange="setSelectedOption('Year')"></td>
+	       <td>This Year</td>
+       </tr> 
+       <tr>
+	       <td><input type="radio" name="harvested" id="rbtnDateRange" onchange="setSelectedOption('From')"></td>
+	       <td><form action="#" method="get">From<input type="text" class="searchField" value="" id="tbxFromDate" name="tbxFromDate" disabled><button type="reset" id="btnFromDate">...</button></form></td>
+           <td><form action="#" method="get">&nbsp;To<input type="text" class="searchField" value="" id="tbxToDate" disabled><button type="reset" id="btnToDate" >...</button></form></td>			        
+       </tr> 
+              
+       <tr>
+	       <td colspan="2"><input type="button" value="Get Report" onclick="openMetadataHarvestedForDateRange()"></td>
+       </tr>
+	   
+	</table>
+		
+	<script>	
+	var selectedOption = "Today"
+	var path = document.getElementById('thePath').getAttribute('value')	
+	
+	function openMetadataCatalogueReport()
+	{
+		window.open(path + "/metadata_catalogue")		
+	}
+	
+	function setSelectedOption(op)
+	{	   
+	   selectedOption = op;
+	}
+	
+	function openCustodianCountReport()
+	{
+	   document.location = path + "/getMetadataCountPerCustodian"	   
+	}
+	
+	function openMetadataHarvestedForDateRange()
+	{
+	   
+	   if (selectedOption == "From")
+	   {
+	       var fromDate = document.getElementById("tbxFromDate").value
+	       var toDate = document.getElementById("tbxToDate").value
+	       if (fromDate.length == 0 || toDate.length == 0)
+	       {
+	           alert("Please give a valid from and to date");
+	           return;
+	       }	       
+	       document.location = path + "/getMetadataHarvestedInDateRange?from_date=" + fromDate + "&to_date=" + toDate   
+	   }
+	   else
+	   {	       
+	       document.location = path + "/getMetadataHarvestedInDateRange?time_operation=" + selectedOption
+       }     
+	}
+	
+	
+	Calendar.setup({
+        inputField     :    "tbxFromDate",      
+        ifFormat       :    "%Y-%m-%d",//"%m/%d/%Y %I:%M %p",
+        showsTime      :    false,            
+        button         :    "btnFromDate",   
+        singleClick    :    true,           
+        step           :    1               
+    });
+    Calendar.setup({
+        inputField     :    "tbxToDate",      
+        ifFormat       :    "%Y-%m-%d",//"%m/%d/%Y %I:%M %p",
+        showsTime      :    false,            
+        button         :    "btnToDate",   
+        singleClick    :    true,           
+        step           :    1               
+    });
+	
+	</script>
+    
+</div>
+
+</body>
+</html>

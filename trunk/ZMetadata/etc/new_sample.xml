@@ -1,0 +1,648 @@
+
+<gmd:verticalElement>
+	<gmd:EX_VerticalExtent id="verticalCRS_hPa">
+		<gml:minimumValue><gco:Real>10</gco:Real></gml:minimumValue>
+		<gml:maximumValue><gco:Real>1000</gco:Real></gml:maximumValue>
+	<gmd:verticalCRS/>
+	</gmd:EX_VerticalExtent>
+</gmd:verticalElement>
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<MD_Metadata id="de.orgname.localid"
+xmlns="http://www.isotc211.org/2005/gmd"
+xmlns:iso="http://www.isotc211.org/2005/gmd"
+xmlns:gco="http://www.isotc211.org/2005/gco"
+xmlns:gml="http://www.opengis.net/gml"
+xmlns:xlink="http://www.w3.org/1999/xlink"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.isotc211.org/2005/gmd http://www.isotc211.org/2005/gmd/metadataEntity.xsd">
+
+  <fileIdentifier>
+    <gco:CharacterString>
+    de.dataprovider.localid</gco:CharacterString>
+  </fileIdentifier>
+  <parentIdentifier>
+    <gco:CharacterString>optional - Identifier of parent metadata
+    set (used for dataset to collection (e.g. experiment)
+    reference) if omitted: dataset level</gco:CharacterString>
+  </parentIdentifier>
+  <hierarchyLevel>
+    <MD_ScopeCode codeListValue="series"
+    codeList="http://wis.wmo.int/2006/catalogues/gmxCodelists.xml#MD_ScopeCode">
+    </MD_ScopeCode>
+  </hierarchyLevel>
+  <hierarchyLevelName>
+    <gco:CharacterString>
+    Context:LevelName:AdditionalInfo</gco:CharacterString>
+  </hierarchyLevelName>
+  <contact>
+    <CI_ResponsibleParty>
+      <iso:individualName>
+        <gco:CharacterString>
+        gco:CharacterString</gco:CharacterString>
+      </iso:individualName>
+      <organisationName>
+        <gco:CharacterString>WDCC, DWD,
+        etc....</gco:CharacterString>
+      </organisationName>
+      <contactInfo>
+        <CI_Contact>
+          <address>
+            <CI_Address>
+              <electronicMailAddress>
+                <gco:CharacterString>
+                data@dataprovider.de</gco:CharacterString>
+              </electronicMailAddress>
+            </CI_Address>
+          </address>
+          <onlineResource>
+            <CI_OnlineResource>
+              <linkage>
+                <URL>http://dataprovider.de</URL>
+              </linkage>
+              <iso:function>
+                <iso:CI_OnLineFunctionCode codeList="http://wis.wmo.int/2006/catalogues/gmxCodelists.xml#CI_OnLineFunctionCode"
+                codeListValue="information">
+                information</iso:CI_OnLineFunctionCode>
+              </iso:function>
+            </CI_OnlineResource>
+          </onlineResource>
+        </CI_Contact>
+      </contactInfo>
+      <role>
+        <CI_RoleCode codeListValue="distributor, originator, etc. ....."
+        codeList="http://wis.wmo.int/2006/catalogues/gmxCodelists.xml#CI_RoleCode">
+        distributor</CI_RoleCode>
+      </role>
+    </CI_ResponsibleParty>
+  </contact>
+  <dateStamp>
+    <gco:DateTime>2000-01-01T00:00:00</gco:DateTime>
+  </dateStamp>
+  <metadataStandardName>
+    <gco:CharacterString>ISO 19115</gco:CharacterString>
+  </metadataStandardName>
+  <metadataStandardVersion>
+    <gco:CharacterString>ISO 19139 / C3Grid Profile
+    V1.0</gco:CharacterString>
+  </metadataStandardVersion>
+  <dataSetURI>
+    <gco:CharacterString>optional - reference to dataset
+    metadata/info at data provider, not interpreted in context of
+    C3Grid (distributionInfo tags used)</gco:CharacterString>
+  </dataSetURI>
+  <locale>
+    <PT_Locale id="de">
+      <languageCode>
+        <LanguageCode codeList="http://wis.wmo.int/2006/catalogues/ML_gmxCodelists.xml#LanguageCode"
+        codeListValue="de">de</LanguageCode>
+      </languageCode>
+      <country>
+        <Country codeList="http://wis.wmo.int/2006/catalogues/ML_gmxCodelists.xml#Country"
+        codeListValue="Germany">Germany</Country>
+      </country>
+      <characterEncoding>
+        <MD_CharacterSetCode codeList="http://wis.wmo.int/2006/catalogues/ML_gmxCodelists.xml#MD_CharacterSetCode"
+        codeListValue="8859part1">8859part1</MD_CharacterSetCode>
+      </characterEncoding>
+    </PT_Locale>
+  </locale>
+  <referenceSystemInfo>
+    <!-- info on Reference System (RS), optional, not used in version 0.x to 1.0 of C3Grid -->
+    <MD_ReferenceSystem>
+      <referenceSystemIdentifier>
+        <RS_Identifier>
+          <code>
+            <gco:CharacterString>CRS:Cartesian, Gaussian, Spectral,
+            Hybrid .. (.. here C3 conventions
+            !?)</gco:CharacterString>
+          </code>
+          <codeSpace>
+            <gco:CharacterString>naming convention used for coord.
+            system definition etc. - optional
+            -</gco:CharacterString>
+          </codeSpace>
+        </RS_Identifier>
+      </referenceSystemIdentifier>
+    </MD_ReferenceSystem>
+  </referenceSystemInfo>
+  <!--============= Identification Info Section ===============-->
+  <identificationInfo>
+    <!-- info defining "identity card" of described data, the detail of filling these iso tags and the choice of optional tags is up to the responsibility of the data                              ider -->
+    <MD_DataIdentification>
+      <citation>
+        <!-- information on how the described data is cited -->
+        <CI_Citation id="experiment.cite1">
+          <title>
+            <gco:CharacterString>generic
+            Title</gco:CharacterString>
+          </title>
+          <alternateTitle>
+            <gco:CharacterString>more specific Title / instead of
+            "Characterstring" "ISSN" etc. can be used includes
+            short notice of processing done for C3-processed
+            data</gco:CharacterString>
+          </alternateTitle>
+          <date>
+            <CI_Date>
+              <date>
+                <gco:Date>2000-11-01</gco:Date>
+              </date>
+              <dateType>
+                <!-- characterization of date info, e.g. : -->
+                <CI_DateTypeCode codeList="http://wis.wmo.int/2006/catalogues/gmxCodelists.xml#CI_DateTypeCode_publication"
+                codeListValue="publication">
+                publication</CI_DateTypeCode>
+              </dateType>
+            </CI_Date>
+          </date>
+          <identifier>
+            <MD_Identifier>
+              <code>
+                <gco:CharacterString>e.g.
+                doi:article1</gco:CharacterString>
+              </code>
+            </MD_Identifier>
+          </identifier>
+          <citedResponsibleParty>
+            <CI_ResponsibleParty id="experiment.author1">
+              <individualName>
+                <gco:CharacterString>Name,
+                Forename</gco:CharacterString>
+              </individualName>
+              <organisationName>
+                <gco:CharacterString>e.g. MPI</gco:CharacterString>
+              </organisationName>
+              <contactInfo>
+                <CI_Contact>
+                  <address>
+                    <CI_Address>
+                      <electronicMailAddress>
+                        <gco:CharacterString>e.g.
+                        author1@institute.de</gco:CharacterString>
+                      </electronicMailAddress>
+                    </CI_Address>
+                  </address>
+                </CI_Contact>
+              </contactInfo>
+              <role>
+                <CI_RoleCode codeListValue="http://wis.wmo.int/2006/catalogues/gmxCodelists.xml#CI_RoleCode_author"
+                codeList="http://wis.wmo.int/2006/catalogues/gmxCodelists.xml#CI_RoleCode">
+                author</CI_RoleCode>
+              </role>
+            </CI_ResponsibleParty>
+          </citedResponsibleParty>
+        </CI_Citation>
+      </citation>
+      <abstract>
+        <gco:CharacterString>freetext description of data which is
+        described in this metadata set : searchable in portal
+        !</gco:CharacterString>
+      </abstract>
+      <status>
+        <!-- C3 optional - can be omitted -->
+        <MD_ProgressCode codeListValue="http://wis.wmo.int/2006/catalogues/gmxCodelists.xml#MD_ProgressCode_completed"
+        codeList="http://wis.wmo.int/2006/catalogues/gmxCodelists.xml#MD_ProgressCode">
+        completed</MD_ProgressCode>
+      </status>
+      <pointOfContact>
+        <!-- responsible contact persons for resource (not metadata !!): multiple pointOfContact entries distinguished by codelist value:                                                               pointOfContact, author, principalInvestigator, originator                                                                                                                                       -->
+        <CI_ResponsibleParty id="rp1">
+          <individualName>
+            <gco:CharacterString>Name,
+            Forename</gco:CharacterString>
+          </individualName>
+          <organisationName>
+            <gco:CharacterString>data provider
+            name</gco:CharacterString>
+          </organisationName>
+          <contactInfo>
+            <CI_Contact>
+              <address>
+                <CI_Address>
+                  <electronicMailAddress>
+                    <gco:CharacterString>
+                    name@dkrz.de</gco:CharacterString>
+                  </electronicMailAddress>
+                </CI_Address>
+              </address>
+            </CI_Contact>
+          </contactInfo>
+          <role>
+            <CI_RoleCode codeListValue="http://wis.wmo.int/2006/catalogues/gmxCodelists.xml#CI_RoleCode_pointOfContact"
+            codeList="http://wis.wmo.int/2006/catalogues/gmxCodelists.xml#CI_RoleCode">
+            pointOfContact</CI_RoleCode>
+          </role>
+        </CI_ResponsibleParty>
+      </pointOfContact>
+      <graphicOverview>
+        <!-- optional reference to dataset related picture , http endpoint for picture download in fileName -->
+        <MD_BrowseGraphic>
+          <fileName>
+            <gco:CharacterString>
+            stormtrack1.jpg</gco:CharacterString>
+          </fileName>
+          <fileDescription>
+            <gco:CharacterString>e.g. stormtrack image of
+            ...</gco:CharacterString>
+          </fileDescription>
+          <fileType>
+            <gco:CharacterString>jpg</gco:CharacterString>
+          </fileType>
+        </MD_BrowseGraphic>
+      </graphicOverview>
+      <resourceFormat>
+        <!-- in c3 distribution Info tags are used !! - entries here are optional and not used in C3Grid -                                                                                              may be useful for publication to C3Grid external portals .. -->
+        <MD_Format>
+          <name>
+            <!-- C3 convention: grb for GRIB and nc for NetCDF -->
+            <gco:CharacterString>grb</gco:CharacterString>
+          </name>
+          <version>
+            <gco:CharacterString>WMO format Gridded Binary Data,
+            GRIB version ...</gco:CharacterString>
+          </version>
+        </MD_Format>
+      </resourceFormat>
+      <descriptiveKeywords>
+        <!-- list of keywords: very important for searching - no specific c3grid keyword catalogue(s) initially                                                                                         keywords of higher level data resources also characterize this resource ..                                                                                                                      -->
+        <MD_Keywords>
+          <keyword>
+            <gco:CharacterString>keyword1</gco:CharacterString>
+          </keyword>
+          <keyword>
+            <gco:CharacterString>keyword2, (add keyword "C3Grid
+            processed" for data processed within
+            C3Grid)</gco:CharacterString>
+          </keyword>
+          <type>
+            <MD_KeywordTypeCode codeListValue="theme"
+            codeList="http://wis.wmo.int/2006/catalogues/gmxCodelists.xml#MD_KeywordTypeCode">
+            theme</MD_KeywordTypeCode>
+          </type>
+        </MD_Keywords>
+      </descriptiveKeywords>
+      <resourceConstraints>
+        <MD_LegalConstraints>
+          <!-- accessConstraints, otherConstraints, useConstraints, useLimitation -> detailed def. in later c3grid versions -->
+          <accessConstraints>
+            <MD_RestrictionCode codeListValue="http://wis.wmo.int/2006/catalogues/gmxCodelists.xml#MD_RestrictionCode_copyright"
+            codeList="http://wis.wmo.int/2006/catalogues/gmxCodelists.xml#MD_RestrictionCode">
+            copyright</MD_RestrictionCode>
+          </accessConstraints>
+          <useConstraints>
+            <MD_RestrictionCode codeListValue="http://wis.wmo.int/2006/catalogues/gmxCodelists.xml#MD_RestrictionCode_restricted"
+            codeList="http://wis.wmo.int/2006/catalogues/gmxCodelists.xml#MD_RestrictionCode">
+            restricted</MD_RestrictionCode>
+          </useConstraints>
+        </MD_LegalConstraints>
+      </resourceConstraints>
+      <spatialRepresentationType>
+        <!-- spatialRepresentationTypeCode is 002 or grid for model data, others ...? -->
+        <MD_SpatialRepresentationTypeCode codeListValue="http://wis.wmo.int/2006/catalogues/gmxCodelists.xml#MD_SpatialRepresentationTypeCode_grid"
+        codeList="http://wis.wmo.int/2006/catalogues/gmxCodelists.xml#MD_SpatialRepresentationTypeCode">
+        grid</MD_SpatialRepresentationTypeCode>
+      </spatialRepresentationType>
+      <language>
+        <LanguageCode codeListValue="http://wis.wmo.int/2006/catalogues/ML_gmxCodelists.xml#LanguageCode_eng"
+        codeList="http://wis.wmo.int/2006/catalogues/ML_gmxCodelists.xml#LanguageCode">
+        eng</LanguageCode>
+      </language>
+      <topicCategory>
+        <!-- topicCategory: ocean or climatologyMeteorologyAtmosphere -->
+        <!--BUG in ISO schema ?: attributes codeList and codeListValue missing! so use just this: -->
+        <MD_TopicCategoryCode>
+        climatologyMeteorologyAtmosphere</MD_TopicCategoryCode>
+      </topicCategory>
+      <environmentDescription>
+        <!-- optional, should be filled for C3Grid processed data, to give information on processing environment etc. -->
+        <gco:CharacterString>compiler:xy, machine:ab,... should be
+        updated by metadata generation tools for c3 processed
+        data</gco:CharacterString>
+      </environmentDescription>
+      <extent>
+        <!-- information on geographic extent (spatial, temporal..) -->
+        <EX_Extent>
+          <!-- geographic (LON/LAT) coverage of data sets -->
+          <geographicElement>
+            <EX_GeographicBoundingBox>
+              <westBoundLongitude>
+                <gco:Decimal>0.0</gco:Decimal>
+              </westBoundLongitude>
+              <eastBoundLongitude>
+                <gco:Decimal>360.0</gco:Decimal>
+              </eastBoundLongitude>
+              <southBoundLatitude>
+                <gco:Decimal>-90.0</gco:Decimal>
+              </southBoundLatitude>
+              <northBoundLatitude>
+                <gco:Decimal>+90.0</gco:Decimal>
+              </northBoundLatitude>
+            </EX_GeographicBoundingBox>
+          </geographicElement>
+          <temporalElement>
+            <EX_TemporalExtent>
+              <extent>
+                <gml:TimePeriod gml:id="timePeriod.geocode1">
+                  <gml:beginPosition>
+                  1978-01-01T00:00:00</gml:beginPosition>
+                  <gml:endPosition>
+                  2200-01-01T00:00:00</gml:endPosition>
+                  <gml:timeInterval unit="hour" factor="6">
+                  6.0</gml:timeInterval>
+                </gml:TimePeriod>
+              </extent>
+            </EX_TemporalExtent>
+          </temporalElement>
+          <verticalElement>
+            <EX_VerticalExtent>
+              <minimumValue>
+                <gco:Real>1000</gco:Real>
+              </minimumValue>
+              <maximumValue>
+                <gco:Real>10</gco:Real>
+              </maximumValue>
+              <verticalCRS>
+                <gml:VerticalCRS gml:id="vertCRS.id1">
+                  <gml:identifier codeSpace="http://www.c3grid.de/metadata/codelists/to_be_defined/C3Grid_Models_Atm">
+                  to_be_defined</gml:identifier>
+                  <gml:scope>to_be_defined</gml:scope>
+                  <gml:verticalCS>
+                    <gml:VerticalCS gml:id="vertCS.geocode1">
+                      <gml:description>not known</gml:description>
+                      <gml:identifier codeSpace="C3Grid_Models_Atm">
+                      not known</gml:identifier>
+                      <gml:axis>
+                        <gml:CoordinateSystemAxis gml:id="vertCS.geocode1.axis"
+                        gml:uom="hPa">
+                          <gml:identifier codeSpace="C3Grid_Models_Atm">
+                          not known</gml:identifier>
+                          <gml:name>Altitude</gml:name>
+                          <gml:axisAbbrev>ALT</gml:axisAbbrev>
+                          <gml:axisDirection codeSpace="C3Grid_Models_Atm">
+                          up</gml:axisDirection>
+                        </gml:CoordinateSystemAxis>
+                      </gml:axis>
+                    </gml:VerticalCS>
+                  </gml:verticalCS>
+                  <gml:verticalDatum>
+                    <gml:VerticalDatum gml:id="vertDat.geocode1">
+                      <gml:identifier codeSpace="C3Grid_Models_Atm">
+                      not known</gml:identifier>
+                      <gml:scope>not known</gml:scope>
+                      <gml:anchorPoint codeSpace="C3Grid_Models_Atm">
+                      not known</gml:anchorPoint>
+                    </gml:VerticalDatum>
+                  </gml:verticalDatum>
+                </gml:VerticalCRS>
+              </verticalCRS>
+            </EX_VerticalExtent>
+          </verticalElement>
+        </EX_Extent>
+      </extent>
+      <supplementalInformation>
+        <gco:CharacterString>e.g. ??</gco:CharacterString>
+      </supplementalInformation>
+    </MD_DataIdentification>
+  </identificationInfo>
+  <!--============= Content Info Section =================-->
+  <contentInfo>
+    <!-- e.g variables in a dataset / experiment -->
+    <MD_CoverageDescription id="any-id">
+      <attributeDescription>
+        <gco:RecordType>CF_longname</gco:RecordType>
+      </attributeDescription>
+      <contentType>
+        <MD_CoverageContentTypeCode codeList="http://wis.wmo.int/2006/catalogues/gmxCodelists.xml#MD_CoverageContentTypeCode"
+        codeListValue="thematicClassification">
+        thematicClassification</MD_CoverageContentTypeCode>
+      </contentType>
+      <dimension>
+        <MD_RangeDimension>
+          <descriptor>
+            <gco:CharacterString>dim-characerizing-string, e.g. gpm
+            (geopotential meter) .. ; W/m**2
+            etc.</gco:CharacterString>
+          </descriptor>
+        </MD_RangeDimension>
+      </dimension>
+    </MD_CoverageDescription>
+  </contentInfo>
+  <contentInfo>
+    <MD_CoverageDescription>
+      <attributeDescription>
+        <gco:RecordType>geopotential_height</gco:RecordType>
+      </attributeDescription>
+      <contentType>
+        <MD_CoverageContentTypeCode codeList="http://wis.wmo.int/2006/catalogues/gmxCodelists.xml#MD_CoverageContentTypeCode"
+        codeListValue="thematicClassification">
+        thematicClassification</MD_CoverageContentTypeCode>
+      </contentType>
+      <dimension>
+        <MD_RangeDimension>
+          <descriptor>
+            <gco:CharacterString>gpm</gco:CharacterString>
+          </descriptor>
+        </MD_RangeDimension>
+      </dimension>
+    </MD_CoverageDescription>
+  </contentInfo>
+  <distributionInfo>
+    <!--important info for C3Grid middleware: service (data access) endpoints, data size, data format ...-->
+    <MD_Distribution>
+      <!-- distributionFormat are the formats which could be provided directly by data source for submission                                                                                          C3 convention: grb for GRIB files and netcdf for NetCDF files -->
+      <distributionFormat>
+        <MD_Format>
+          <name>
+            <gco:CharacterString>grb</gco:CharacterString>
+          </name>
+          <version>
+            <gco:CharacterString>WMO format GRIded Binary data,
+            version ??</gco:CharacterString>
+          </version>
+        </MD_Format>
+      </distributionFormat>
+      <transferOptions>
+        <MD_DigitalTransferOptions>
+          <onLine>
+            <CI_OnlineResource>
+              <!-- multiple online resources for the various access points - general + C3Grid specific + ..                                                                                                   for C3Grid Interfaces (Interface D + gridFTP uniform linkage,protocol,name and                                                                                                                  description tags should be used-->
+              <linkage>
+                <URL>doi.www-cera.dkrz.de/10.1594/CERA.81201</URL>
+              </linkage>
+              <function>
+                <CI_OnLineFunctionCode codeListValue="http://wis.wmo.int/2006/catalogues/gmxCodelists.xml#CI_OnLineFunctionCode_download"
+                codeList="http://wis.wmo.int/2006/catalogues/gmxCodelists.xml#CI_OnLineFunctionCode">
+                download</CI_OnLineFunctionCode>
+              </function>
+            </CI_OnlineResource>
+          </onLine>
+          <onLine>
+            <CI_OnlineResource>
+              <linkage>
+                <URL>
+                https://uranus.dkrz.de:9443/axis/services/C3ProviderSOAP</URL>
+              </linkage>
+              <protocol>
+                <gco:CharacterString>SOAP</gco:CharacterString>
+              </protocol>
+              <name>
+                <gco:CharacterString>C3Grid Data Staging
+                Interface</gco:CharacterString>
+              </name>
+              <description>
+                <gco:CharacterString>C3 Grid Data Access
+                Interface</gco:CharacterString>
+              </description>
+              <function>
+                <CI_OnLineFunctionCode codeList="http://wis.wmo.int/2006/catalogues/gmxCodelists.xml#CI_OnLineFunctionCode"
+                codeListValue="order">order</CI_OnLineFunctionCode>
+              </function>
+            </CI_OnlineResource>
+          </onLine>
+          <onLine>
+            <CI_OnlineResource>
+              <linkage>
+                <URL>
+                gsiftp://gridftp.dkrz.de/prj/bb0300/work/outdata/stagedBaseFile_deleteme-1087841344</URL>
+              </linkage>
+              <protocol>
+                <gco:CharacterString>gsiftp</gco:CharacterString>
+              </protocol>
+              <name>
+                <gco:CharacterString>GridFTP Data
+                Repository</gco:CharacterString>
+              </name>
+              <description>
+                <gco:CharacterString>C3 Grid Data Transfer
+                Interface</gco:CharacterString>
+              </description>
+              <function>
+                <CI_OnLineFunctionCode codeList="http://wis.wmo.int/2006/catalogues/gmxCodelists.xml#CI_OnLineFunctionCode"
+                codeListValue="download">
+                download</CI_OnLineFunctionCode>
+              </function>
+            </CI_OnlineResource>
+          </onLine>
+        </MD_DigitalTransferOptions>
+      </transferOptions>
+    </MD_Distribution>
+  </distributionInfo>
+  <dataQualityInfo>
+    <DQ_DataQuality>
+      <scope>
+        <DQ_Scope>
+          <!-- optional - can be filled by DB systems which provide this info -->
+          <level>
+            <MD_ScopeCode codeListValue="dataset"
+            codeList="http://wis.wmo.int/2006/catalogues/gmxCodelists.xml#MD_ScopeCode">
+            dataset</MD_ScopeCode>
+          </level>
+        </DQ_Scope>
+      </scope>
+      <!-- track processing history of data set here-->
+      <lineage>
+        <!-- data processing history                                                                                                                                                                    1. data production (i.e. ECHAM5.x.y run on date with parameters on machine/compiler)                                                                                                            2. precessing step (i.e. afterburner)                                                                                                                                                           3. ....                                                                                                                                                                                          -->
+        <LI_Lineage>
+          <statement>
+            <gco:CharacterString>free text lineage (e.g. processing
+            history) knowledge description e.g. "C3Grid
+            preprocessed data from CERA /
+            DKRZ"</gco:CharacterString>
+          </statement>
+          <processStep>
+            <!-- multiple process Steps possible, add new process steps subsequently                                                                                                                        should include number to document sequencing info, besides date..(e.g. using id tag) -->
+            <LI_ProcessStep id="process1">
+              <description>
+                <gco:CharacterString>description of processing done
+                e.g. "Initial data preprocessing of CERA / DKRZ
+                files</gco:CharacterString>
+              </description>
+              <rationale>
+                <gco:CharacterString>additional info on description
+                field info</gco:CharacterString>
+              </rationale>
+              <dateTime>
+                <gco:DateTime>2000-01-01T01:01:01</gco:DateTime>
+              </dateTime>
+              <processor>
+                <!--optional info on responsible party of processing-->
+                <CI_ResponsibleParty>
+                  <role></role>
+                </CI_ResponsibleParty>
+              </processor>
+              <source>
+                <LI_Source>
+                  <description>
+                    <!-- Reference to the source(s) of (pre-)processing                                                                                                                                             Initially in the form: Tag:id is a fileidentifier of an ISO metadata description -->
+                    <gco:CharacterString>
+                    DataId:de.dataprovider.metadataid</gco:CharacterString>
+                  </description>
+                </LI_Source>
+              </source>
+            </LI_ProcessStep>
+          </processStep>
+        </LI_Lineage>
+      </lineage>
+    </DQ_DataQuality>
+  </dataQualityInfo>
+  <series>
+    <!-- optional, all lower hierarchy level datasets can be referenced here: only differences to high level metadata are described                                                                 e.g. 1) temporal extent (in case of temporal aggregation)                                                                                                                                       2) variables (in case of variable separation)                                                                                                                                                   3) names (e.g. in DB), filename (e.FlatFiles) -> distributionInfo                                                                                                                               -->
+    <DS_Series>
+      <composedOf>
+        <DS_DataSet>
+          <has>
+            <MD_Metadata>
+              <contact />
+              <dateStamp />
+              <identificationInfo>
+                <MD_DataIdentification>
+                  <citation />
+                  <abstract />
+                  <language />
+                  <extent>
+                    <EX_Extent>
+                      <temporalElement>
+                        <EX_TemporalExtent>
+                          <extent>
+                            <gml:TimePeriod gml:id="timePeriod.geocode2">
+
+                              <gml:beginPosition>
+                              1978-01-01T00:00:00</gml:beginPosition>
+                              <gml:endPosition>
+                              2200-01-01T00:00:00</gml:endPosition>
+                            </gml:TimePeriod>
+                          </extent>
+                        </EX_TemporalExtent>
+                      </temporalElement>
+                    </EX_Extent>
+                  </extent>
+                  <supplementalInformation>
+                    <gco:CharacterString>filename:... in case of
+                    experiments from archive
+                    !?</gco:CharacterString>
+                  </supplementalInformation>
+                </MD_DataIdentification>
+              </identificationInfo>
+              <contentInfo>
+                <!-- z.B. Variablen im Datensatz -->
+                <MD_CoverageDescription id="name">
+                  <attributeDescription>
+                    <gco:RecordType>CF_longname</gco:RecordType>
+                  </attributeDescription>
+                  <contentType>
+                    <MD_CoverageContentTypeCode codeListValue="air_temperature"
+                    codeList="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/standard_name.html">
+                    air_temperature</MD_CoverageContentTypeCode>
+                  </contentType>
+                </MD_CoverageDescription>
+              </contentInfo>
+            </MD_Metadata>
+          </has>
+        </DS_DataSet>
+      </composedOf>
+      <seriesMetadata />
+    </DS_Series>
+  </series>
+</MD_Metadata>

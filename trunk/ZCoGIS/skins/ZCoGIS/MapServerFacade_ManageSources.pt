@@ -1,0 +1,132 @@
+<html metal:use-macro="here/main_template/macros/master">
+    <body>
+        <div metal:fill-slot="main">
+			<style>					
+			td{
+				text-align:left;
+			}
+
+			.tdBorder{
+				border:thin solid silver;				
+			}
+
+			.tdBorderGreen{
+				border:thin solid silver;	
+				color:green;
+			}
+
+			.tdNotRunning{
+				border:thin solid red;
+				color: red;
+			}
+
+			.tableBorder{
+				border:thin solid gray;
+			}
+			</style>			
+			<script src="" tal:attributes="src python: context.absolute_url() + '/js/utils.js'"> </script>
+			<script src="" tal:attributes="src python: context.absolute_url() + '/js/iframePost.js'"> </script>
+			<div tal:define="global sources here/getFilteredSourceStructure"></div>
+			<div tal:define="global sourcesTimeout here/getTimeoutStructure"></div>
+			<div tal:define="global thePath here/absolute_url"></div>
+			<div id="thePath" value="" tal:attributes="value here/absolute_url"></div>
+
+			<div tal:condition="not: python:sources">
+				<p>There are currently <b>no sources</b> assigned to the Universal Map Server</p>
+			</div>		
+							
+			<div tal:repeat="source sources">
+				<table class="tableBorder">					
+					<tr>
+						<td class="tdBorder" style="color:green;font-weight: bold;" tal:content="python: source[2]"></td>
+					</tr>
+					
+					<tr>
+						<td class="tdBorder" tal:content="python: source[0]"></td>						
+					</tr>
+					<tr>
+						<td class="tdBorder" tal:content="python: source[1]"></td>
+					</tr>
+					<tr>
+						<td>
+							<input type="button" value="Delete" onclick="" tal:attributes="onclick python: 'doDeleteSource(\'%s\',\'%s\',\'%s\')' %(source[0],source[1],source[2])"> 
+							<input type="button" value="Update" onclick="" tal:attributes="onclick python: 'doUpdateSource(\'%s\',\'%s\',\'%s\')' %(source[0],source[1],source[2])">
+							<!--<div tal:condition="python: sourcesTimeout.has_key(source[1]) and sourcesTimeout[source[1]] != '' "> -->
+							<div tal:condition="python: context.hasTimeout(source[1]) and context.getTimeout(source[1]) != '' ">
+								<p style="color:red;font-size:8pt;" tal:content="python: context.getTimeout(source[1])"></p>
+							</div>
+							<div tal:condition="python: context.hasTimeout(source[0]) and context.getTimeout(source[0]) != '' ">
+								<p style="color:red;font-size:8pt;" tal:content="python: context.getTimeout(source[0])"></p>
+							</div>							
+						</td>						
+					</tr>
+				</table>	
+				<br>
+			</div>	
+			<div id="lTestLayer" style="border:medium solid gray;background-color:silver;position:absolute;top:300px;left:300px;visibility:hidden;width:85px;">
+				<img src="globe4.gif">
+				<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Wait...</p>
+			</div>
+			
+			<table style="border-top: 22px;float: none">
+				
+			</table>
+						
+			<SCRIPT LANGUAGE="JavaScript">
+			<!--
+			var path = document.getElementById('thePath').getAttribute('value')					
+			
+			function showWait()
+			{
+				document.getElementById("lTestLayer").style.visibility = 'visible'
+			}
+			
+			function hideWait()
+			{
+				document.getElementById("lTestLayer").style.visibility = 'hidden'
+			}			
+			
+			function doUpdateSource(wfs,wms,organization)
+			{					
+				var theUrl = path + "/updateSingleSource?wfs=" + wfs + "&wms=" + wms + "&organization=" + organization				
+				showWait()
+				var tDict = {}
+				tDict['wms'] = wms
+				tDict['wfs'] = wfs
+				tDict['organization'] = organization
+				var cont2 = new Container('ttt',handleUpdateLayersResponse)
+				cont2.sendPostForm(path + "/updateSingleSource",tDict)											
+			}					
+			
+			function doDeleteSource(wfs,wms,organization)
+			{									
+				showWait()
+				var tDict = {}
+				tDict['wms'] = wms
+				tDict['wfs'] = wfs
+				tDict['organization'] = organization
+				var cont2 = new Container('ttt',handleDeleteSourceResponse)
+				cont2.sendPostForm(path + "/deleteSourceViaURL",tDict)				
+			}
+			
+			function handleDeleteSourceResponse(res)
+			{
+				if ((res != 1) && (res != undefined))
+				{
+					alert(res)
+				}
+				hideWait()
+				document.location.href = path + "/MapServerFacade_CurrentLayers"							
+			}
+			
+			function handleUpdateLayersResponse(res)
+			{				
+				hideWait()
+				document.location.href = path + "/MapServerFacade_CurrentLayers"		
+			}
+			//-->
+			</SCRIPT>
+        </div>
+    </body>
+</html>
+

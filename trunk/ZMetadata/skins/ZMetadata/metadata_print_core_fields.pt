@@ -1,0 +1,25 @@
+<html> 
+<style>
+    table.core{border:thin solid gray;width:490px;}
+    td.core{text-align:right;}
+    input.core{width:240px;}
+</style>
+
+<body onload="getHTML()">
+<div id="paste">
+</div>
+</body>
+<script>
+    function getHTML()
+    {
+        var theHTML = window.opener.document.getElementById("core_fields_form").innerHTML
+        document.getElementById("paste").innerHTML = theHTML
+        openPrintDlg()
+    }
+    
+    function openPrintDlg()
+    {
+        window.print()
+    }
+</script>
+</html>

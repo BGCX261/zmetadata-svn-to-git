@@ -1,0 +1,94 @@
+function getURLContent(url)
+{		
+	fElm.onreadystatechange = this.onDocLoaded
+	fElm.setAttribute('src',url)			
+}
+
+function sendPostForm(url,params)
+//url is the location or method to post to
+//params is a dictionary of post form parameter --> key,value pairs to post to the url
+{		
+	str = ""
+	var doc = this.container.document
+	doc.open();
+	str += '<html><body>'
+	doc.write('<html><body>');
+	str += '<form name="theForm" method="POST"'
+	doc.write('<form name="theForm" method="POST"');
+	str+= ' action="' + url + '">'
+	doc.write(' action="' + url + '">');
+
+	for (x in params)
+	{	
+		str+= "<input type='hidden' name="+x+" value="+"'"+params[x]+"'"+" />"
+		doc.write("<input type='hidden' name="+x+" value="+"'"+params[x]+"'"+" />")			
+	}	
+	str+= '</form></body></html>'	
+	doc.write('</form></body></html>');
+	doc.close();
+	
+	
+	fElm.onload = this.onDocLoaded	
+	fElm.onreadystatechange = this.onDocLoaded	
+	doc.forms['theForm'].submit();		
+	
+}
+
+function onDocLoaded()
+{	
+	
+	if (fElm.readyState == "complete" || fElm.readyState == undefined)
+	{	
+		try
+		{
+			//alert(window.frames[this.id].document.body.innerHTML)		
+			var content = window.frames[this.id].document.body.innerText			
+			//var content = eval('document.'+this.id+'.document.body.innerHTML')
+			
+			if (content != "")
+			{
+				call(content)
+			}	
+		}
+		catch(e)
+		{		
+			Error = e.description
+			alert(Error)
+		}
+	}
+
+}
+
+function Container(id,callBack)
+{
+	this.id = id 
+	this.name = id
+	this.onDocLoaded = onDocLoaded
+	this.getURLContent = getURLContent
+	this.sendPostForm = sendPostForm
+	call = callBack
+	this.container = false;
+	var sSpan = document.createElement('span')
+	sSpan.style.visibility = 'hidden';
+	sSpan.style.position = 'absolute'
+	var frameText = "<iframe name='"+id+"' id='"+id+"' ></iframe>"	
+	
+	sSpan.innerHTML = frameText	
+	document.body.appendChild(sSpan)	
+	fElm = document.getElementById(id)	
+	this.container =  window.frames[this.id];	
+}
+
+//sample usage 
+
+
+/*var cont = new Container('testst',myCall)
+cont.getURLContent('http://teora:9000/test/test2')
+
+
+var tDict = {}
+tDict['name'] = 'magnus'
+tDict['tel'] ='bla bla lbaa'
+
+var cont2 = new Container('ttt',myCall)
+cont2.sendPostForm('http://teora:9000/test/test',tDict)*/

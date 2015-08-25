@@ -1,0 +1,184 @@
+<metal:page define-macro="master"><metal:doctype define-slot="doctype"><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"></metal:doctype>
+<metal:block define-slot="top_slot" />
+<metal:block use-macro="here/global_defines/macros/defines" />
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xml:lang="en"
+      lang="en"
+      tal:define="lang language"
+      tal:attributes="lang lang;
+                      xml:lang lang">
+
+  <tal:cache tal:define="charset site_properties/default_charset|string:utf-8">
+    <metal:cache use-macro="here/global_cache_settings/macros/cacheheaders">
+      Get the global cache headers located in global_cache_settings.
+    </metal:cache>
+  </tal:cache>
+
+  <head>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"
+          tal:define="charset site_properties/default_charset|string:utf-8"
+          tal:attributes="content string:text/html;;charset=${charset}" />
+
+    <metal:baseslot define-slot="base">
+      <base tal:attributes="href here/renderBase" /><!--[if lt IE 7]></base><![endif]-->
+    </metal:baseslot>
+
+    <meta name="generator" content="Plone - http://plone.org" />
+
+    <div tal:replace="structure provider:plone.htmlhead" />
+
+    <meta tal:define="metatags python:putils.listMetaTags(here).items()"
+          tal:condition="metatags"
+          tal:repeat="keyval metatags"
+          tal:attributes="name python:keyval[0];
+                          content python:keyval[1];" />
+
+    <!-- Internet Explorer CSS Fixes -->
+    <tal:iefixstart replace="structure string:&lt;!--[if IE]&gt;" />
+        <style type="text/css" media="all" tal:condition="exists: portal/IEFixes.css"
+               tal:content="string:@import url($portal_url/IEFixes.css);">
+        </style>
+    <tal:iefixend replace="structure string:&lt;![endif]--&gt;" />
+
+    <link tal:replace="structure provider:plone.htmlhead.links" />
+
+    <!-- Disable IE6 image toolbar -->
+    <meta http-equiv="imagetoolbar" content="no" />
+    
+    <tal:comment replace="nothing"> A slot where you can insert elements in the header from a template </tal:comment>
+    <metal:headslot define-slot="head_slot" />
+
+    <tal:comment replace="nothing"> A slot where you can insert CSS in the header from a template </tal:comment>
+    <metal:styleslot define-slot="style_slot" />
+
+    <tal:comment replace="nothing"> This is deprecated, please use style_slot instead. </tal:comment>
+    <metal:cssslot define-slot="css_slot" />
+
+    <tal:comment replace="nothing"> A slot where you can insert javascript in the header from a template </tal:comment>
+    <metal:javascriptslot define-slot="javascript_head_slot" />
+
+  </head>
+
+  <body tal:attributes="class string:${here/getSectionFromURL} template-${template/id};
+                        dir python:test(isRTL, 'rtl', 'ltr')">	
+	
+	<h2 tal:content="here/title_or_id">
+		
+	</h2>
+	<div style="border:thin solid gray;">
+	<table width="100%">
+		<tr>
+			<td>
+				<table>
+					<tr>
+						<th align="left">Type</th><td tal:content="here/getMetadatatype"></td>			
+					</tr>
+					<tr tal:condition="here/getMetadatacategory">
+						<th align="left">Category</th><td tal:content="here/getMetadatacategory"></td>			
+					</tr>
+					<tr>
+						<th align="left">Metadata Title</th><td tal:content="here/mTitle"></td>			
+					</tr>
+					<tr>
+						<th align="left">Date</th><td tal:content="here/mDate"></td>
+					</tr>
+					<tr>
+						<th align="left">Organization</th><td tal:content="here/mOrganization"></td>
+					</tr>
+					<tr>
+						<th align="left">Abstract</th><td tal:content="here/mAbstract"></td>
+					</tr>
+					<tr>
+						<th align="left">Keywords</th><td tal:content="here/mKeywords"></td>
+					</tr>
+					<tr tal:condition="python: context.mBounds">
+						<th align="left">Bounds</th><td tal:content="python: 'West:' + str(context.mBounds[0]) + ' South:' + str(context.mBounds[1]) + ' East:'+ str(context.mBounds[1]) + ' North: ' + str(context.mBounds[3]) "></td>
+					</tr>
+					
+					<span tal:condition="python: context.mOnlineResource">
+						<tr>
+							<th align="left">Online Resource</th>
+							<td>
+							<span tal:repeat="resource here/mOnlineResource">
+								<a href="" tal:attributes="href resource"><b tal:content="resource"></b></a> <br>
+							</span>
+							</td>
+						</tr>
+					</span>
+					<tr>
+						<th align="left">Scale</th><td tal:content="here/mScale"></td>
+					</tr>
+					<tr tal:define="custodian python:here.metadata_tool.getMetadataCustodian(here)">
+						<tal:hasCustodian condition="custodian">
+							<th align="left">Custodian</th>
+							<td>
+								<a tal:attributes="href custodian/absolute_url" tal:content="custodian/title_or_id">
+								</a>
+							</td>
+						</tal:hasCustodian>
+						<tal:hasNoCustodian condition="not: custodian">
+							<th align="left">Custodian</th>
+							<td>No Parent Custodian found</td>
+						</tal:hasNoCustodian>
+					</tr>
+					<tr tal:condition="python:hasattr(here, 'mOwner')">
+						<th align="left">Contact Person</th><td tal:content="here/mOwner"></td>
+					</tr>
+					<tal:contact define="creator context/Creator;author python:here.portal_membership.getMemberInfo(creator)">
+						<span tal:condition="python:context.portal_membership.getHomeFolder(creator)">						
+							<tr>
+								<th align="left">Portal Contact</th>
+								<td>
+									<a tal:attributes="href python:context.portal_membership.getHomeFolder(creator).absolute_url()"
+									   tal:content="python:author and author['fullname'] or creator"
+									             tal:omit-tag="not:author">
+									            Bob Dobalina
+									          </a>
+								</td>
+							</tr>
+						</span>
+					</tal:contact>
+					
+					<tr>
+						<td>
+							<a href="" tal:attributes="href python: context.absolute_url() + '/view_metadata'">View</a>
+							<a tal:condition="python: here.metadata_tool.hasPermission(context, 'Modify portal content')" tal:attributes="href python: context.absolute_url() + '/edit_metadata'">Edit</a>
+							<a href="" tal:attributes="href python: context.absolute_url() + '/downloadXML'">Download</a>
+							
+							<a tal:attributes="href context/map-inspector-url">
+									Open Map Inspector
+								</a>
+							<a tal:attributes="href context/map-viewer-url">
+									Open Map Viewer
+								</a>
+							
+						</td>
+					</tr>
+					
+				</table>
+			</td>			
+			<td align="right">
+				<span tal:condition="here/hasValidBounds">					
+					<img src="" tal:attributes="src python: context.absolute_url() + '/getMapSmall'" width="200" height="180"> 								
+				</span>
+				<span tal:condition="not: here/hasValidBounds">					
+					<img src="no_image.jpg" width="200" height="180"> 								
+				</span>
+			</td>
+		</tr>
+	</table>	
+	<div metal:use-macro="here/document_relateditems/macros/relatedItems">
+		show related items if they exist
+	</div>	
+</div>
+	
+	
+<a href="javascript:window.close()">
+	Close Window
+</a>
+
+</body>
+</html>
+</metal:page>

@@ -1,0 +1,661 @@
+var httpRequestDict = {}
+
+function callMethod(url, callback)
+{
+  callbackMethod = callback;
+  getContentDynamic(url,callMethodHandler,'callMethod');
+}
+
+function callMethodHandler()
+{
+  if (httpRequestDict['callMethod'].readyState == 4)
+  {      
+     var res = httpRequestDict['callMethod'].responseText;         
+     callbackMethod(res);         
+  }  
+}
+
+function getContentDynamic(url,handlerFunction,key)
+{
+    // branch for native XMLHttpRequest object
+    if (window.XMLHttpRequest)
+	{
+        httpRequestDict[key] = new XMLHttpRequest();         
+        httpRequestDict[key].onreadystatechange = handlerFunction;
+        httpRequestDict[key].open("GET", url, true);
+        httpRequestDict[key].send(null);
+    // branch for IE/Windows ActiveX version
+    }
+	else if (window.ActiveXObject)
+	{
+        isIE = true;
+        httpRequestDict[key] = new ActiveXObject("Microsoft.XMLHTTP");
+        if (httpRequestDict[key]) 
+		{
+            httpRequestDict[key].onreadystatechange = handlerFunction;
+            httpRequestDict[key].open("GET", url, true);
+            httpRequestDict[key].send();
+        }
+    }
+}
+
+/*
+@summary: Populates a combobox with a list of values   
+@param cbxName: The id of the combobox elements
+@param valuesArray:  a list of values to use for population
+*/
+function populateCombobox(cbxName,valuesArray)
+{
+	deleteOptions(cbxName)
+	var cbxElm = document.getElementById(cbxName)
+	//create new option elements
+
+	var opElm = document.createElement("option")	
+	opElm.innerText = ""
+	cbxElm.appendChild(opElm)
+	for (var x=0;x<valuesArray.length;x++)
+	{
+		var opElm = document.createElement("option")	
+		opElm.innerText = valuesArray[x]
+		cbxElm.appendChild(opElm)
+	}
+}
+
+/*
+@summary: Deletes all the values from a combobox
+@param elmId:  The id of the combobox elements
+*/
+function deleteOptions(elmId)
+{		
+	var elm = document.getElementById(elmId)
+	elmLength = elm.options.length
+	elm.options.length = 0	
+}
+
+/*
+@summary: Creates a xml dom object from an xml string
+@param xmlStr:  xml string to create dom from
+@return: an xml dom instance
+*/
+function createDOM(xmlStr)
+{
+	re = /#/g
+	re2 = /&/g
+	xmlStr = xmlStr.replace(re,"")
+	xmlStr = xmlStr.replace(re2,"And")
+
+	//delete theDOM
+	if (window.ActiveXObject)
+	{
+		var xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+		xmlDoc.async = false;
+		xmlDoc.resolveExternals = false;
+		xmlDoc.loadXML(xmlStr);
+		return xmlDoc;
+	}
+	else
+	{
+		Parser = new DOMParser();
+		var DOM = Parser.parseFromString(xmlStr, 'text/xml');
+		return DOM;
+	}
+}
+
+/*
+	@summary: returns a list of selected values from the given cbx id
+*/
+function getSelectedValues(cbxId)
+{
+	var resList = new Array()
+	var elm = document.getElementById(cbxId)
+	var optionsElms = elm.options
+	var counter = 0;
+	for (var x=0;x<optionsElms.length;x++)
+	{
+		if (optionsElms.item(x).selected)
+		{
+			//var tmpOpVal = optionsElms.item(x).innerText
+			var tmpOpVal = optionsElms.item(x).innerHTML
+			
+            resList[counter] = tmpOpVal 
+            counter += 1;             
+		}
+	}
+	return resList
+}
+
+/*
+@summary: Returns the selected value from aa combobox
+@param selectBoxId: the id of the combobox
+@return: The selected value in the combobox  	
+*/
+function getSelectedValue(selectBoxId)
+{
+	var elm = document.getElementById(selectBoxId)
+	var sIndex = elm.selectedIndex
+	var selectedValue = elm.options[sIndex].innerText	
+	return selectedValue;
+}
+
+
+/*
+@summary: Returns the selected value from a combobox
+@param selectBoxId: the id of the combobox
+@return: The selected value in the combobox  	
+*/
+function getSelectedValueAttribute(selectBoxId)
+{
+	var elm = document.getElementById(selectBoxId)
+	var sIndex = elm.selectedIndex
+	var selectedValue = elm.options[sIndex].value	
+	return selectedValue;
+}
+
+
+/*
+@summary: Gets the index in a list of a given item
+@param theItem:  the items index to find
+@param theList: the list to search for the item
+@return: The index of the given item in the list  	
+*/
+function getIndex(theItem,theList)
+{
+	for (var x=0;x<theList.length ;x++ )
+	{
+		if (theItem == theList[x])
+		{
+			return x
+		}
+	}
+	return -1
+}
+
+
+function Trim(TRIM_VALUE)
+{
+	if(TRIM_VALUE.length < 1){
+		return"";
+	}
+	TRIM_VALUE = RTrim(TRIM_VALUE);
+	TRIM_VALUE = LTrim(TRIM_VALUE);
+	if(TRIM_VALUE==""){
+	return "";
+	}
+	else{
+	return TRIM_VALUE;
+	}
+} 
+
+function RTrim(VALUE)
+{
+	var w_space = String.fromCharCode(32);
+	var v_length = VALUE.length;
+	var strTemp = "";
+	if(v_length < 0){
+	return"";
+	}
+	var iTemp = v_length -1;
+
+	while(iTemp > -1){
+	if(VALUE.charAt(iTemp) == w_space){
+	}
+	else{
+	strTemp = VALUE.substring(0,iTemp +1);
+	break;
+	}
+	iTemp = iTemp-1;
+
+	} //End While
+	return strTemp;
+} 
+
+function LTrim(VALUE)
+{
+	var w_space = String.fromCharCode(32);
+	if(v_length < 1){
+	return"";
+	}
+	var v_length = VALUE.length;
+	var strTemp = "";
+
+	var iTemp = 0;
+
+	while(iTemp < v_length){
+	if(VALUE.charAt(iTemp) == w_space){
+	}
+	else{
+	strTemp = VALUE.substring(iTemp,v_length);
+	break;
+	}
+	iTemp = iTemp + 1;
+	} //End While
+	return strTemp;
+} 
+
+/*
+   Function: setSelectedIndex   
+	Set the selected value for a given combobox id
+
+   Parameters:
+     selectBoxId - the id of the combobox to set value on
+	 index - the index value of the entries in the combobox to set active/selected
+
+   Returns:
+     Nothing  		 
+*/
+function setSelectedIndex(selectBoxId,index)
+{
+	var elm = document.getElementById(selectBoxId)
+	elm.options[index].setAttribute('selected','true')
+}
+
+/*
+   Function: setSelectedValue   
+	Sets the value of a combobox
+
+   Parameters:
+     cbxId - the id of the combobox
+	 value - the value to be set in the combobox
+
+   Returns:
+     Nothing  	
+*/
+function setSelectedValue(cbxId,value)
+{
+	var elm = document.getElementById(cbxId)
+	var ops = elm.options
+
+	for (var x=0;x<ops.length ;x++)
+	{
+		if (ops[x].innerText == value)
+		{			
+			ops[x].setAttribute('selected','true')
+		}
+	}
+}
+
+function getPostContent(url,params,handler)
+{	
+	if (window.XMLHttpRequest)
+	{
+        req = new XMLHttpRequest();        
+    }
+	else if (window.ActiveXObject)
+	{
+        isIE = true;
+        req = new ActiveXObject("Microsoft.XMLHTTP");        
+    }	
+	req.open('POST', url, true);
+	req.onreadystatechange = handler		
+	req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+	req.send(params);	
+} 
+
+/*
+@summary: does a request to a given url to get its contents
+@param url: the url to open
+@param handlerFunction: the function to handle the url content
+*/
+function getContent(url,handlerFunction)
+{
+    // branch for native XMLHttpRequest object    
+	if (window.XMLHttpRequest)
+	{        
+		req = new XMLHttpRequest();
+        req.onreadystatechange = handlerFunction;
+        req.open("GET", url, true);
+        req.send(null);		   
+    }
+	else if (window.ActiveXObject)
+	{	
+        isIE = true;
+        req = new ActiveXObject("Microsoft.XMLHTTP");
+        if (req) 
+		{
+            req.onreadystatechange = handlerFunction;
+            req.open("GET", url, true);
+            req.send();
+        }
+    }
+}
+
+/*
+   Function: getCurrentDateStr   
+	 Generates a date string for the current date and time
+
+   Parameters:
+     Nothing
+
+   Returns:
+     The current date string in the format yyyy-mm-dd hh:mm:ss  	
+*/
+function getCurrentDateStr()
+{
+	newDate = new Date()
+	var newTimeStr = newDate.getHours()+ ":" + newDate.getMinutes()+ ":" + newDate.getSeconds()
+	var month = newDate.getMonth()+1
+	var month = (month.toString().length ==1) ? ("0"+month.toString()) : (month.toString())
+	var day = (newDate.getDate().toString().length ==1) ? ("0"+newDate.getDate().toString()) : (newDate.getDate().toString())	
+
+	var newDateStr = newDate.getFullYear() + "-" + month + "-" + day
+	var newTimeStr = newDate.getHours()+ ":" + newDate.getMinutes()+ ":" + newDate.getSeconds() 
+	var compStr = newDateStr + " " + newTimeStr
+	return compStr
+}
+
+function isValidNumeric(numStr)
+//This function checks that the string passed is a valid numeric value
+{
+	var nanCheck = parseFloat(numStr)
+
+	if (nanCheck <= 0)
+	{			
+		return false;
+	}
+	
+	if (isNaN(nanCheck))
+	{		
+		return false;
+	}
+
+	ss = parseFloat(numStr)
+	if (ss.toString() != numStr)
+	{		
+		return false;
+	}
+	return true;	
+}
+
+/*
+   Function: inList   
+	Checks whether a value is in a list
+
+   Parameters:
+     item - the item in the list to search for
+	 list - the list to search through
+
+   Returns:
+     Boolean - whether the item is in the list  	
+*/
+function inList(item,list)
+{	
+	//checks if item is in the list
+	for (var q=0;q<list.length;q++)
+	{
+		if (item == list[q])
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+function CopyToClipboard()
+{	
+	if (parent.MapFrame.document.all.mapman)
+	{
+		alert("The map exists")
+		alert(parent.MapFrame.document.all.mapman)
+	}
+	copyTo()	
+	alert("Copied the map mage to the clipboard")
+}
+
+function copyTo()
+{ 
+	var oControlRange = parent.MapFrame.document.body.createTextRange();
+	alert("hier")
+	oControlRange.moveToElementText(parent.MapFrame.document.all.mapman);
+	alert("hier2")
+	oControlRange.execCommand("copy");
+}
+
+function IsNumeric(sText)
+{
+   var ValidChars = "0123456789.-,";
+   var IsNumber=true;
+   var Char;
+
+ 
+   for (i = 0; i < sText.length && IsNumber == true; i++) 
+      { 
+      Char = sText.charAt(i); 
+      if (ValidChars.indexOf(Char) == -1) 
+         {
+         IsNumber = false;
+         }
+      }
+   return IsNumber;
+   
+ }
+
+ function isValidEmail(str)
+ {
+   return (str.indexOf(".") > 2) && (str.indexOf("@") > 0);
+}
+
+
+function isDate(DateToCheck)
+{
+	if(DateToCheck=="")
+	{
+		return true;
+	}
+	var m_strDate = FormatDate(DateToCheck);
+	if(m_strDate=="")
+	{
+		return false;
+	}
+	var m_arrDate = m_strDate.split("/");
+	var m_DAY = m_arrDate[0];
+	var m_MONTH = m_arrDate[1];
+	var m_YEAR = m_arrDate[2];
+	if(m_YEAR.length > 4)
+	{return false;}
+	m_strDate = m_MONTH + "/" + m_DAY + "/" + m_YEAR;
+	var testDate=new Date(m_strDate);
+
+	if(testDate.getMonth()+1==m_MONTH)
+	{
+		return true;
+	} 
+	else{
+	return false;
+	}
+}//end function
+
+
+
+
+function FormatDate(DateToFormat,FormatAs)
+{
+	if(DateToFormat=="")
+	{return"";}
+	if(!FormatAs)
+	{FormatAs="dd/mm/yyyy";}
+
+	var strReturnDate;
+	FormatAs = FormatAs.toLowerCase();
+	DateToFormat = DateToFormat.toLowerCase();
+	var arrDate
+	var arrMonths = new Array("January","February","March","April","May","June","July","August","September","October","November","December");
+	var strMONTH;
+	var Separator;
+
+	while(DateToFormat.indexOf("st")>-1){
+	DateToFormat = DateToFormat.replace("st","");
+	}
+
+	while(DateToFormat.indexOf("nd")>-1){
+	DateToFormat = DateToFormat.replace("nd","");
+	}
+
+	while(DateToFormat.indexOf("rd")>-1){
+	DateToFormat = DateToFormat.replace("rd","");
+	}
+
+	while(DateToFormat.indexOf("th")>-1){
+	DateToFormat = DateToFormat.replace("th","");
+	}
+
+	if(DateToFormat.indexOf(".")>-1){
+	Separator = ".";
+	}
+
+	if(DateToFormat.indexOf("-")>-1){
+	Separator = "-";
+	}
+
+
+	if(DateToFormat.indexOf("/")>-1){
+	Separator = "/";
+	}
+
+	if(DateToFormat.indexOf(" ")>-1){
+	Separator = " ";
+	}
+
+	arrDate = DateToFormat.split(Separator);
+	DateToFormat = "";
+		for(var iSD = 0;iSD < arrDate.length;iSD++){
+			if(arrDate[iSD]!=""){
+			DateToFormat += arrDate[iSD] + Separator;
+			}
+		}
+	DateToFormat = DateToFormat.substring(0,DateToFormat.length-1);
+	arrDate = DateToFormat.split(Separator);
+
+	if(arrDate.length < 3){
+	return "";
+}
+
+var DAY = arrDate[0];
+var MONTH = arrDate[1];
+var YEAR = arrDate[2];
+
+if(parseFloat(arrDate[1]) > 12)
+{
+DAY = arrDate[1];
+MONTH = arrDate[0];
+}
+
+if(parseFloat(DAY) && DAY.toString().length==4){
+YEAR = arrDate[0];
+DAY = arrDate[2];
+MONTH = arrDate[1];
+}
+
+
+for(var iSD = 0;iSD < arrMonths.length;iSD++){
+var ShortMonth = arrMonths[iSD].substring(0,3).toLowerCase();
+var MonthPosition = DateToFormat.indexOf(ShortMonth);
+	if(MonthPosition > -1){
+	MONTH = iSD + 1;
+		if(MonthPosition == 0){
+		DAY = arrDate[1];
+		YEAR = arrDate[2];
+		}
+	break;
+	}
+}
+
+var strTemp = YEAR.toString();
+if(strTemp.length==2){
+
+	if(parseFloat(YEAR)>40){
+	YEAR = "19" + YEAR;
+	}
+	else{
+	YEAR = "20" + YEAR;
+	}
+
+}
+
+
+	if(parseInt(MONTH)< 10 && MONTH.toString().length < 2){
+	MONTH = "0" + MONTH;
+	}
+	if(parseInt(DAY)< 10 && DAY.toString().length < 2){
+	DAY = "0" + DAY;
+	}
+	switch (FormatAs){
+	case "dd/mm/yyyy":
+	return DAY + "/" + MONTH + "/" + YEAR;
+	case "mm/dd/yyyy":
+	return MONTH + "/" + DAY + "/" + YEAR;
+	case "dd/mmm/yyyy":
+	return DAY + " " + arrMonths[MONTH -1].substring(0,3) + " " + YEAR;
+	case "mmm/dd/yyyy":
+	return arrMonths[MONTH -1].substring(0,3) + " " + DAY + " " + YEAR;
+	case "dd/mmmm/yyyy":
+	return DAY + " " + arrMonths[MONTH -1] + " " + YEAR;	
+	case "mmmm/dd/yyyy":
+	return arrMonths[MONTH -1] + " " + DAY + " " + YEAR;
+	}
+
+return DAY + "/" + strMONTH + "/" + YEAR;;
+
+} //End Function
+
+/*
+@summary:
+@param url: is the url to post the parameters to
+@param parameters: a dict objects with key value pairs of data to post
+@return: a list of 2 elms, the xml reposnse and the text response				
+*/
+/*function getPostContent(url,parameters)
+{					
+	if (parameters == undefined)
+	{
+		sParam = "t=1"
+	}
+	else
+	{
+		sParam = "";
+		for (x in parameters)
+		{
+			sParam += x + "=" + parameters[x] + "&"						
+		}
+		sParam = sParam.slice(0,-1)					
+	}
+
+	if (window.XMLHttpRequest){
+        req = new XMLHttpRequest();        
+    }
+	else if (window.ActiveXObject){
+        isIE = true;
+        //req = new ActiveXObject("Msxml2.XMLHTTP");
+        req = new ActiveXObject("Microsoft.XMLHTTP");
+    }				
+	req.open('POST', url, false);				
+	req.onreadystatechange = dummyHandler;						
+	req.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');	
+	req.send(sParam);				
+	
+	ss = 0
+	while (req.readyState != 4)
+	{						
+		e = wait()						
+	}										
+	response = req.responseXML;					
+	response1 = req.responseText;					
+	resList = new Array()
+	resList[0] = response
+	resList[1] = response1
+	return resList										
+}*/
+				
+function wait()	{					
+	if (req.readyState != 4){
+		alert('waiting')
+		window.setTimeout("wait()",500)
+	}
+	else{
+		return
+	}
+}
+
+function dummyHandler()	{
+	return 1;					
+}
+

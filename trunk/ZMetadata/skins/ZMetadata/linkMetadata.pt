@@ -1,0 +1,98 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+<body>
+<div metal:fill-slot="main">
+<script type="text/javascript" charset="utf-8">
+	var setItemValue = function (fieldName, uid, url, desc) {
+		jq('#'+fieldName).val(uid);
+		jq('#'+fieldName+'-label').val(desc);
+		jq('#'+fieldName+'-view').attr('href', url);
+		jq('#'+fieldName+'-view').text('View');
+	}
+</script>
+
+
+	<h3>
+		Link to existing Metadata.
+	</h3>
+	
+	<p>
+		Link meta-data for one or more meta-data standards, as applicable
+	</p>
+	
+	<form tal:attributes="action string:metadata_tool/linkMetadataSave" method="post" accept-charset="utf-8">
+		<table border="0" tal:define="standards python: ['ISO19115', 'ISO19115p2', 'ISO19139', 'SANS1878', 'EML', 'DublinCore'];
+                                      relatedItems python:[item for item in [x for x in context.getRelatedItems() if x] if item.meta_type == 'Metadata'];
+                                      usedStandards python:[standard for standard in standards if standard in [item.metadatatype for item in relatedItems]];
+                                      standards python: [standard for standard in standards if standard not in usedStandards]">
+			<input type="hidden" name="UID" tal:attributes="value context/UID" id="UID">
+			<tal:relatedItems repeat="item relatedItems">
+				<tal:standard define="standard item/metadatatype">
+					<tr tal:attributes="class string:${standard}-container">
+						<td>
+							<input type="hidden" name="standard" tal:attributes="id item/UID; value item/UID">
+							<label tal:attributes="for string:${item/UID}-label" >
+								<tal:std replace="standard"/>
+							</label>
+						</td>
+						<td>
+							<input type="text" tal:attributes="name string:${item/UID}-label; id string:${item/UID}-label; value item/title_or_id" disabled>
+						</td>
+						<td>
+							<a tal:attributes="href item/absolute_url; id string:${item/UID}-view" target="viewer">
+								View
+							</a>
+						</td>
+						<td>
+							<a tal:attributes="href string:${portal_url}/metadata_tool/modal_search_metadata?fieldName=${item/UID}&recordType=${standard}" target="search">
+								Insert
+							</a>
+						</td>
+						<td>
+							<a tal:attributes="href string:javascript: void(jq('#${item/UID}').val(''));;void(jq('#${item/UID}-label').val(''));;void(jq('#${item/UID}-view').text(''));;">
+								Clear
+							</a>
+						</td>
+					</tr>
+				</tal:standard>
+			</tal:relatedItems>
+			<tal:standards repeat="standard standards">
+				<tr tal:attributes="id string:${standard}-container">
+					<td>
+						<input type="hidden" name="standard" tal:attributes="id standard" value="">
+						<label tal:attributes="for string:${standard}-label" >
+							<tal:std replace="standard"/>
+						</label>
+					</td>
+					<td>
+						<input type="text" tal:attributes="name string:${standard}-label; id string:${standard}-label" value="" disabled>
+					</td>
+					<td>
+						<a href='' tal:attributes="id string:${standard}-view" target="viewer">
+							
+						</a>
+					</td>
+					<td>
+						<a tal:attributes="href string:${portal_url}/metadata_tool/modal_search_metadata?fieldName=${standard}&recordType=${standard}" target="search">
+							Insert
+						</a>
+					</td>
+					<td>
+						<a tal:attributes="href string:javascript: void(jq('#${standard}').val(''));;void(jq('#${standard}-label').val(''));;void(jq('#${standard}-view').text(''));;">
+							Clear
+						</a>
+					</td>
+				</tr>
+			</tal:standards>
+		</table>
+		<p>
+			<input class="context" type="submit" name="form_submit" value="Save">
+			<input class="standalone" type="submit" name="form.button.cancel" value="Cancel">
+		</p>
+	</form>
+	
+</div>
+</body>
+</html>

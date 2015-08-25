@@ -1,0 +1,273 @@
+<html metal:use-macro="here/main_template/macros/master">
+    <body>
+        <div metal:fill-slot="main">
+
+
+		<style>
+			.listBox{
+				width:160px;
+				height:200px;
+			}
+			.navButton{
+				width:20px;
+			}
+			.orderButton{
+				width:45px;
+			}
+			.mainTable{
+				border:thin solid black;
+			}
+			.functionButton{
+				width:55px;
+			}
+			.smallListBox{
+				width:140px;
+				height:70px;
+			}	
+			.largeListBox{
+				width:320px;
+				height:150px;
+			}
+			.tbx{
+				width:180px;
+			}
+			.boldRed{
+				color:red;
+				font-weight:bolder;
+			}
+
+		</style>
+
+	<script src="" tal:attributes="src python: context.absolute_url() + '/utils.js'"> </script>	
+	<script src="" tal:attributes="src python: context.absolute_url() + '/vcXMLRPC.js'"> </script>					
+	<div id="thePath" value="" tal:attributes="value python:context.absolute_url()"></div>		
+
+	<TABLE class="mainTable">
+		<tr>
+			<th colspan="2">Search Layers</th>
+		</tr>
+		<TR>
+			<TD class="boldRed">*Keyword</TD>
+			<TD><input type="text" class="tbx" id="tbxKeywords" value=""></TD>
+		</TR>
+		<TR>
+			<TD>MinX  ></TD>
+			<TD><INPUT TYPE="text" id="tbxMinX"></TD>
+		</TR>
+		<TR>
+			<TD>MinY  ></TD>
+			<TD><INPUT TYPE="text" id="tbxMinY"></TD>
+		</TR>
+		<TR>
+			<TD>MaxX  <</TD>
+			<TD><INPUT TYPE="text" id="tbxMaxX"></TD>
+		</TR>
+		<TR>
+			<TD>MaxY  <</TD>
+			<TD><INPUT TYPE="text" id="tbxMaxY"></TD>
+		</TR>
+		<tr>
+			<td colspan="2"><input type="button" value="Search" onclick="doSearch()"></td>
+		</tr>
+	</TABLE>
+
+	<br>
+
+	<table class="mainTable">
+		<TR>
+			<Th>Results</Th>
+			<TD></TD>
+		</TR>
+		<TR>
+			<TD colspan="2"><SELECT class="largeListBox" id="cbxResults" onchange="displayLayerInfo()" multiple></SELECT></TD>
+			<TD></TD>
+		</TR>
+		<TR>
+			<TD><input type="button" value="Add" onclick="addNewLayer()"></TD>
+			<TD></TD>
+		</TR>
+	</TABLE>
+
+	<table>
+	<tr>
+		<td valign="top">
+			<TABLE class="mainTable">
+			<TR>
+				<Th>Name</Th>
+				<TD id="tdLayerName">Empty</TD>
+			</TR>
+			<TR>
+				<Th>Title</Th>
+				<TD id="tdTitle">Empty</TD>
+			</TR>
+			<TR>
+				<Th>Type</Th>
+				<TD id="tdType">Empty</TD>
+			</TR>
+			<TR>
+				<Th>Extent</Th>
+				<TD id="tdExtent">Empty</TD>
+			</TR>
+			<TR>
+				<Th>SRS</Th>
+				<TD id="tdSRS">Empty</TD>
+			</TR>
+			</TABLE>
+		</td>
+	</tr>
+	</table>
+
+	<SCRIPT LANGUAGE="JavaScript">
+	<!--
+	var path = document.getElementById('thePath').getAttribute('value')
+	conn = XMLRPC.getService(path)			
+	conn.add("getSearchResults","getSearchResults")
+	conn.add("addLayer","addLayer")
+
+	
+	/*
+		@summary: triggers the search for layers in the mapserver facade
+	*/
+	function doSearch()
+	{
+		var keyword = document.getElementById('tbxKeywords').value
+		minx = document.getElementById('tbxMinX').value
+		miny = document.getElementById('tbxMinY').value
+		maxx = document.getElementById('tbxMaxX').value
+		maxy = document.getElementById('tbxMaxY').value		
+
+		if (!isParamsValid(keyword,minx,miny,maxx,maxy))
+		{
+			alert('Search parameters are not valid.');
+			return;
+		}		
+		
+		res = conn.getSearchResults(keyword,minx,miny,maxx,maxy)
+		
+		if (res.length == 0)
+		{
+			deleteOptions('cbxResults')
+			resetDetailsDisplay()
+			alert('No Results Found.')
+		}
+		else
+		{
+			populateResults(res)			
+		}
+	}
+
+	/*
+		@summary: Takes a list of records to populate the results combobox.
+				  This method is called after the search action has been performed
+		@param results: a list if dictionaries to use to populate the results combobox
+	*/
+	function populateResults(results)
+	{		
+		var nameList = new Array()
+		for (var x=0;x<results.length;x++)
+		{
+			nameList[x] = results[x]['name']
+		}
+		populateCombobox('cbxResults',nameList)	
+	}
+
+	function resetDetailsDisplay()
+	{
+		document.getElementById('tdLayerName').innerHTML = 'Empty'
+		document.getElementById('tdTitle').innerHTML = 'Empty'
+		document.getElementById('tdType').innerHTML = 'Empty'
+		document.getElementById('tdExtent').innerHTML = 'Empty'			
+		document.getElementById('tdSRS').innerHTML = 'Empty'		
+	}
+	
+	function displayLayerInfo()
+	{			
+		var layerName = getSelectedValue('cbxResults')
+		for (var x=0;x<res.length;x++)
+		{
+			if (layerName == res[x]['name'])
+			{
+				var name = res[x]['name']
+				var Title = res[x]['title']
+				var env = res[x]['env']				
+				var srs = res[x]['srs']
+				var type = res[x]['type']
+
+				document.getElementById('tdLayerName').innerHTML = name
+				document.getElementById('tdTitle').innerHTML = Title
+				document.getElementById('tdType').innerHTML = type
+				document.getElementById('tdExtent').innerHTML = env			
+				document.getElementById('tdSRS').innerHTML = srs			
+			}				
+		}	
+	}
+
+	function addNewLayer()
+	{
+		// get the selected  layer 
+		var layerName = getSelectedValue('cbxResults')
+		
+		for (var x=0;x<res.length;x++)
+		{
+			var name = res[x]['name']
+			if (name == layerName)
+			{
+				var Title = res[x]['title']
+				var env = res[x]['env']					
+				conn.addLayer(name,Title,env)		
+			}
+		}		
+	}
+
+	function isParamsValid(keyword,minx,miny,maxx,maxy)
+	{			
+		if (keyword == '')
+		{
+			return false;
+		}
+
+		var res = true;
+
+		if (minx != '')
+		{
+			if (!isValidNumeric(minx))
+			{
+				return false;	
+			}
+		}
+		if (miny != '')
+		{
+			if (!isValidNumeric(miny)) 
+			{
+				return false;	
+			}
+		}
+		if (maxx != '')
+		{
+			if (!isValidNumeric(maxx)) 
+			{
+				return false;	
+			}
+		}
+		if (maxy != '')
+		{
+			if (!isValidNumeric(maxy)) 
+			{
+				return false;	
+			}
+		}
+
+		if (!res)
+		{
+			return false;
+		}
+		return true;
+
+	}	
+
+	//-->
+	</SCRIPT>
+
+	</div>
+</BODY>
+</HTML>

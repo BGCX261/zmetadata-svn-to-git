@@ -1,0 +1,67 @@
+<html metal:use-macro="here/main_template/macros/master">
+    <body>
+        <div metal:fill-slot="main">
+			<style>
+			td{
+				text-align:left;
+			}
+
+			.tdBorder{
+				border:thin solid silver;				
+			}
+
+			.tdBorderGreen{
+				border:thin solid silver;	
+				color:green;
+			}
+
+			.tdNotRunning{
+				border:thin solid red;
+				color: red;
+			}
+
+			.tableBorder{
+				border:thin solid gray;
+			}
+			</style>			
+			
+			<div tal:define="global abURL python: context.absolute_url()"></div>
+
+
+			<TABLE>
+				<TR>
+					<TD>Title</TD>
+					<TD tal:content="here/title"></TD>
+				</TR>
+				<TR>
+					<TD>Abstract</TD>
+					<TD tal:content="here/abstract"></TD>							
+				</TR>
+				<TR>
+					<TD>Keywords</TD>
+					<TD tal:content="here/keywords"></TD>							
+				</TR>
+				<TR>
+					<TD>Bounding Box</TD>
+					<TD tal:content="here/wmsBoundingBox"></TD>							
+				</TR>
+				<TR>							
+					<TD>Spatial Reference System</TD>
+					<TD tal:content="here/wmsSRS"></TD>
+				</TR>
+				<TR>
+					<TD>Geometry Type</TD>
+					<TD tal:content="here/geometryType"></TD>
+				</TR>
+				<TR>
+					<TD>Sample</TD>
+					<TD>
+						<img src="" tal:attributes="src python: abURL + '/getSampleImage'"> 						
+					</TD>
+				</TR>
+			</TABLE>			
+
+        </div>
+    </body>
+</html>
+

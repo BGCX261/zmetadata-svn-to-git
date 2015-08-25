@@ -1,0 +1,26 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+<body>
+
+<div metal:fill-slot="main">
+	
+	<span tal:condition="python: options.has_key('response')">
+		<p tal:content="structure options/response"></p>
+		<br>
+	</span>
+	
+	<form form method="post" action="" tal:attributes="action string:${here/absolute_url}">
+		<input type="hidden" name="harvestAll" value="harvestAll">
+		<input type="submit" value="Trigger all harvesters" name="triggerAllHarvesters:method">	
+	</form>
+	
+	<br>
+	<br>
+	<a href="" tal:attributes="href python: context.absolute_url() + '/harvester_ping_times'">Show harvesters ping times</a>
+    
+</div>
+
+</body>
+</html>

@@ -1,0 +1,87 @@
+<html metal:use-macro="here/main_template/macros/master">
+    <body>
+        <div metal:fill-slot="main">
+			<style>
+			td{
+				text-align:left;
+			}
+
+			.smallText{
+				font-size:8pt;
+			}
+
+			.td{
+				border:thin solid gray;
+			}
+			.th{
+				border:thin solid gray;
+				background-color:silver;
+			}
+			</style>
+			<div id="thePath1" tal:attributes="value request/URL1"></div>
+			<div id="thePath" tal:attributes="value python: context.absolute_url()"></div>
+			
+			<div tal:define="global enableLicense here/enableLicenseAgreement"></div>
+			<div tal:define="global licenseText here/licenseAgreement"></div>
+			
+			<h3>License Agreement for MapServer</h3>
+			<br><br>
+			
+            <form name="theForm" id="myForm" action="" tal:attributes="action python:context.absolute_url()+'/updateLicenseAgreement?'">
+            <div tal:condition="enableLicense">
+                <input type="checkbox" name="enableIt" id="chbEnableAgreement" checked><b>Enable License Agreement</b>
+			</div>
+            <div tal:condition="not:enableLicense">
+                <input type="checkbox" name="enableIt" id="chbEnableAgreement"><b>Enable License Agreement</b>
+			</div>			
+			
+			<br><br>
+			
+			<b>Set License Agreement Content</b>
+			
+			<textarea id="tbxLicense" name="licenseText" tal:content="here/licenseAgreement" style="width:400px;height:350px;"></textarea>
+            <br>
+            <input type="submit" value="Submit"> 
+            </form>			
+			
+			<SCRIPT LANGUAGE="JavaScript">
+            <!--
+            	var pathElm = document.getElementById('thePath')
+            	var path = pathElm.getAttribute('value')
+                //alert(path)				
+            
+            	function updateLicense()
+            	{
+            	   var enable = 0;
+                   var license = document.getElementById("tbxLicense").value;       	  
+                   alert(license)
+                   var isChecked = document.getElementById("chbEnableAgreement").checked;
+                   alert(isChecked)
+                   if (isChecked)
+                   {
+                        enable = 1;
+                   }
+                   else
+                   {
+                        enable = 0;
+                   }
+                   document.location.href = "updateLicenseAgreement?enable="+enable+"&licenseText=" + license;
+            	}
+            	
+            //-->
+            </SCRIPT>
+			
+			
+        </div>
+    </body>
+</html>
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>  
+  <title></title>
+  </head>
+  <body>
+
+  </body>
+</html>

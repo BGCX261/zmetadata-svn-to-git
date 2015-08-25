@@ -1,0 +1,188 @@
+body{
+	border:0px;
+	margin:0px;
+	padding:0px;
+	background-color: #d6e7ef;
+	color: #214973;
+}
+
+.zeroSpaces{
+	border:0px;
+	margin:0px;
+	padding:0px;
+}
+
+#main{
+	position:relative;	
+	border:0px;
+	margin:0px;
+	padding:0px;
+}
+
+#top{
+	position:absolute;
+	border:0px;
+	margin:0px;
+	padding:0px;
+}
+
+.zoomBox{
+	visibility:hidden;
+	position:absolute;
+	border:thick solid red;
+	width:0px;height:0px;	
+	z-index:32;	
+}
+
+#feedback{
+	visibility:hidden;
+	position:absolute;
+	border:thick dotted black;
+	left:0px;
+	top:0px;
+	width:50px;height:50px;	
+	overflow:hidden;
+	z-index:5;
+}
+
+#toolbar{
+	background-color:#214973;
+	height: 30px;	
+	width: 100%;	
+	position:absolute;
+	top:0px;
+	left:0px;
+	border:1px ridge silver;	
+	margin:0px;
+	padding:0px;
+}
+
+#map{
+	margin:0px;
+	padding:0px;
+	position:absolute;
+	top:33px;
+	left:0px;	
+	height:30%;
+	width:70%;
+	border:1px ridge silver;
+	/*z-index:4;*/
+	overflow:hidden;
+}
+#legendLayer{
+	margin:0px;
+	padding:0px;
+	position:absolute;
+	right:0px;
+	top:33px;	
+	width:30%;
+	height:100%;
+	border:1px ridge silver;
+	overflow:auto;
+}
+
+#legend{
+	position:absolute;
+	visibility:hidden;
+	top:26px;
+	left:2px;
+	width:100%;
+	height:100%;		
+}
+
+#layers{
+	position:absolute;	
+	visibility:visible;
+	top:23px;
+	width:100%;
+	height:100%;
+	overflow:auto;
+	margin:0px;
+	padding:0px;	
+}
+#toggle{
+	position:absolute;
+	top:0px;
+	height:50px;
+}
+
+#wait{
+	position:absolute;
+	visibility:hidden;
+	margin:0px;
+	padding:0px;
+	left:100px;
+	top:200px;
+	z-index:2;
+}
+
+#results{
+	border:thin solid gray;
+	position:absolute;
+	visibility:hidden;
+	margin:0px;
+	padding:0px;
+	left:10px;
+	top:95px;
+	z-index:2;	
+	width:640px;
+	height:480px;
+	background-color:#d6e7ef;
+	overflow:auto;
+}
+
+#farmSearchResults{
+	border:thin solid gray;
+	position:absolute;
+	visibility:hidden;
+	margin:0px;
+	padding:0px;
+	left:10px;
+	top:95px;
+	z-index:2;	
+	width:640px;
+	height:480px;
+	background-color:#d6e7ef;
+	overflow:auto;
+}
+
+#lLocality{
+	border:thin solid gray;
+	position:absolute;
+	visibility:hidden;
+	margin:0px;
+	padding:0px;
+	z-index:3;	
+	background-color:#d6e7ef;
+	overflow:auto;	
+	top:20px;
+	left:20px;
+}
+
+.smallText{
+	font-size: 8pt;
+	color: #214973;
+	margin:0px;
+	padding:0px;
+}
+
+.clearBorder{
+	margin:0px;
+	padding:0px;
+	border:0px;
+}
+
+.legendTD{
+	padding:4px;
+	border:thin solid black;
+}
+
+td{
+	font-size:8pt;	
+}
+
+th{
+	font-size:8pt;
+}
+
+

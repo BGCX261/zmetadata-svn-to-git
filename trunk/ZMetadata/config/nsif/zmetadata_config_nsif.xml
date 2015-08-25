@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="windows-1250"?>
+<zmetadata>	
+	<metadata>		
+		<show_spatial_search_link>1</show_spatial_search_link>	
+        <upload_metadata_action>1</upload_metadata_action>	
+	</metadata>	
+    <standards>
+        <standard>ISO19115</standard>
+        <standard>ISO19115p2</standard>
+        <standard>ISO19139</standard>
+        <standard>SANS1878</standard>        
+    </standards>
+    <mapserver>
+        <address>http://127.0.0.1/cgi-bin/mapserv.exe?MAP=c:/ms4w/apps/wms_client.map&amp;</address>
+        <mapextent>
+			<minx>-68</minx>
+			<miny>-52</miny>
+			<maxx>125</maxx>
+			<maxy>57</maxy>
+		</mapextent>  
+		<layers>
+            <layer>World</layer>
+            <layer>Country</layer>
+            <layer>Province</layer>
+            <layer>Municipality</layer>
+            <layer>Cities</layer>
+            <layer>myrect</layer>            
+        </layers>
+    </mapserver>
+    <recordsperfolder>25</recordsperfolder>
+    <metadatacategories>
+        <category>Administrative and Political Boundaries</category>
+        <category>Agriculture and Farming</category>
+        <category>Atmospheric and Climatic Data</category>
+        <category>Base Maps, Scanned Maps, and Charts</category>
+        <category>Biologic and Ecologic Information</category>
+        <category>Business and Economic Information</category>
+        <category>Cadastral and Legal Land Descriptions</category>
+        <category>Earth Surface Characteristics &amp; Land Cover</category>
+        <category>Elevation and Derived Products</category>
+        <category>Environmental Monitoring and Modeling</category>
+        <category>Facilities, Buildings and Structures</category>
+        <category>Geodetic Networks and Control Points</category>
+        <category>Geologic and Geophysical Information</category>
+        <category>Human Health and Disease</category>
+        <category>Imagery and Aerial Photographs</category>
+        <category>Inland Water Resources and Characteristics</category>
+        <category>Ocean and Estuarine Resources and Characteristics</category>
+        <category>Society, Cultural and Demographic Information</category>
+        <category>Tourism and Recreation</category>
+        <category>Transportation Networks and Models</category>
+        <category>Utility Distribution Networks</category>        
+    </metadatacategories> 
+	<namedextents>
+		<namedextent name="Eastern Cape" extent="22.7357425689697,-34.2138671875,30.1947231292725,-30.001802444458"/>
+        <namedextent name="Free State" extent="24.3466167449951,-30.6940822601318, 29.7851333618164,-26.668737411499"/>
+        <namedextent name="Gauteng" extent="27.4252166748047,-26.9238319396973,29.0984230041504,-25.1096076965332"/>
+        <namedextent name="KwaZulu-Natal" extent="28.873477935791,-31.0826320648193,32.9449844360352,-26.8044166564941"/>
+        <namedextent name="Mpumalanga" extent="28.2434768676758,-27.5061531066895,32.0335960388184,-23.981237411499"/>
+        <namedextent name="Northern Cape" extent="16.4519023895264,-32.944995880127,25.5493335723877,-24.7658576965332"/>
+        <namedextent name="Limpopo" extent="26.4075374603271,-25.4227924346924,31.8838424682617,-22.1250267028809"/>
+        <namedextent name="North West" extent="22.6290264129639,-28.1132221221924,28.2983531951904,-24.6366271972656"/>
+        <namedextent name="Western Cape" extent="17.7573566436768,-34.8341751098633,24.222412109375,-30.4302577972412"/>		
+	</namedextents>	
+</zmetadata>
+
+

@@ -1,0 +1,125 @@
+<html metal:use-macro="here/main_template/macros/master">
+    <body>
+        <div metal:fill-slot="main">
+			<style>
+			td{
+				text-align:left;
+			}
+
+			.smallText{
+				font-size:8pt;
+			}
+
+			.td{
+				border:thin solid gray;
+			}
+			.th{
+				border:thin solid gray;
+				background-color:silver;
+			}
+			</style>
+
+			<script src="" tal:attributes="src python: context.absolute_url() + '/vcXMLRPC.js'"> </script>			
+			<div tal:define="global thePath here/absolute_url"></div>
+			<div id="thePath" value="" tal:attributes="value here/absolute_url"></div>				
+			<div tal:define="global roles python: context.validRoles()"></div>
+			<div tal:define="global security python: context.getSecurity()"></div>
+
+			<table>
+				<tr>
+					<th class="th">Roles</th>
+					<th class="th">Permission</th>					
+				</tr>
+			<div tal:repeat="r roles">
+				<tr>
+					<td class="td" tal:content="r"></td>
+					<!-- fill checkboxes -->
+					<td class="td">Render <INPUT TYPE="checkbox" name="chbSecurity"  id="" tal:attributes="id python: r + '__Render'"> </td>					
+				</tr>
+			</div>
+				<tr>
+					<td colspan="2"><input type="button" value="Submit" onclick="doSetPermissions()"></td>
+				</tr>
+			</table>
+
+			<SCRIPT LANGUAGE="JavaScript">
+			<!--
+			var path = document.getElementById('thePath').getAttribute('value')		
+			conn = XMLRPC.getService(path);			
+			conn.add("validRoles","validRoles")			
+			conn.add("setSecurity","setSecurity")				
+			conn.add("getSecurity","getSecurity")	
+			conn.add("getParentSecurity","getParentSecurity")
+			
+			var allRoles = conn.validRoles()
+			var security = conn.getSecurity()			
+			
+			function fillPermissions()
+			{
+				for (var x in security)		
+				{
+					if (x != 'toXMLRPC')
+					{
+						tmpDict = security[x]
+						var rVal = tmpDict['Render']						
+						document.getElementById(x + "__Render").checked = parseInt(rVal)						
+					}					
+				}
+			}
+			
+			function doSetPermissions()
+			{
+				var security = {}
+
+				for (var x=0;x<allRoles.length;x++)
+				{
+					var renderElm = document.getElementById(allRoles[x] + "__Render" )					
+					//var tmpList = new Array(renderElm.checked.toString())
+					var tmpDict = {}
+					tmpDict['Render'] = renderElm.checked.toString()
+					security[allRoles[x]] = tmpDict
+				}				
+				conn.setSecurity(security)		
+				alert('Permissions Have Been Set.')
+			}
+
+			function disableAllCheckboxes()
+			{
+				var elms = document.getElementsByName("chbSecurity") 
+				for (var x=0;x<elms.length;x++)
+				{
+					elms[x].disabled = true;
+				}
+
+			}
+			
+			function enableValidCheckboxes()
+			{
+				var layerSecurity = conn.getParentSecurity()
+				for (role in layerSecurity)
+				{
+					if (role != 'toXMLRPC')
+					{
+						var renderVal = layerSecurity[role]['Render']						
+						
+						if (renderVal == 1)
+						{
+							var enElm = document.getElementById(role + "__Render")
+							enElm.disabled = false;							
+						}										
+					}	
+					
+				}
+			}
+			disableAllCheckboxes()
+			enableValidCheckboxes()
+			fillPermissions()
+			
+			//-->
+			</SCRIPT>
+			
+			
+        </div>
+    </body>
+</html>
+

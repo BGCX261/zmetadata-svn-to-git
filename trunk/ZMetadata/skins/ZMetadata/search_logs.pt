@@ -1,0 +1,117 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+<body>
+<div metal:fill-slot="main"> 
+	<style>
+		.searchField{width:150px;}
+		.requiredField{color:red;}
+	</style>
+ 
+    <link rel="stylesheet" type="text/css" href="calendar-win2k-1.css"/>      
+    <script type="text/javascript" src="calendar.js"></script>
+    <script type="text/javascript" src="calendar-en.js"></script>
+    <script type="text/javascript" src="calendar-setup.js"></script>
+    <script type="text/javascript" src="utils.js"></script>
+	
+	<div tal:define="global thePath here/absolute_url"></div>
+	<div id="thePath" value="" tal:attributes="value here/absolute_url"></div>
+	   
+    <script language='Javascript'>  
+	var path = document.getElementById('thePath').getAttribute('value')		    
+    </script>	
+	
+	<table>
+		<tr>
+			<td>Keyword</td>
+			<td><input type="text" class="searchField" id="tbxKeyword" name="keyword"></td>
+		</tr>
+		<tr>
+			<td class="requiredField">From Date</td>
+			<td><form action="#" method="get"><input type="text" class="searchField" value="" id="tbxFromDate" name="fromDate" disabled><button type="reset" id="btnFromDate">...</button></form></td>
+		</tr>
+		<tr>
+			<td class="requiredField">To Date</td>
+			<td><form action="#" method="get"><input type="text" class="searchField" value="" id="tbxToDate" name="toDate" disabled><button type="reset" id="btnToDate">...</button></form></td>
+		</tr>
+		<tr>
+			<td>Message Type</td>
+			<td>
+				<select class="searchField" id="cbxLogType" name="logType">
+					<option>-Any-</option> <option>Warning</option> <option>Info</option> <option>Error</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2"><input type="button" value="Search" onclick="doSearch()"></td>
+		</tr>
+	</table>	
+    	
+		
+    <script type="text/javascript">
+	var searchData = "";
+	
+	function doSearch()
+	{
+		var keyword = document.getElementById("tbxKeyword").value
+		var fromDate = document.getElementById("tbxFromDate").value
+		var toDate = document.getElementById("tbxToDate").value
+		var logType = getSelectedValue("cbxLogType")
+				
+		if (fromDate.length == 0)
+		{
+			alert("Please give a from date")
+			return;
+		}
+		if (toDate.length == 0)
+		{
+			alert("Please give a to date")
+			return;
+		}
+		searchData = "keyword="+keyword +"&fromDate="+fromDate +"&toDate="+ toDate + "&logType=" + logType
+		search();		
+	}
+	
+	function search(res)
+	{
+		if (res == undefined)
+		{			
+			var params = searchData
+			getPostContent(path +"/search",params,search)					
+		}
+		else
+		{			
+			if (res.indexOf("1") != -1)
+			{				
+				window.location = path + "/log_search_result_display";				
+			}
+			else
+			{
+				alert(res);
+			}			
+		}
+	}
+    
+    Calendar.setup({
+        inputField     :    "tbxFromDate",      
+        ifFormat       :    "%Y-%m-%d",//"%m/%d/%Y %I:%M %p",
+        showsTime      :    false,            
+        button         :    "btnFromDate",   
+        singleClick    :    true,           
+        step           :    1               
+    });
+    Calendar.setup({
+        inputField     :    "tbxToDate",      
+        ifFormat       :    "%Y-%m-%d",//"%m/%d/%Y %I:%M %p",
+        showsTime      :    false,            
+        button         :    "btnToDate",   
+        singleClick    :    true,           
+        step           :    1               
+    });
+	
+	
+    </script>    
+</div>
+</body>
+</html>

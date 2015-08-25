@@ -1,0 +1,628 @@
+var clickDownX = 0;
+var clickDownY = 0;
+var clickMoveX = 0;
+var clickMoveY = 0;
+var clickUpX = 0;
+var clickUpY = 0;
+
+var clickDownCoord = null;
+var clickMoveCoord = null;
+var clickUpCoord = null;
+
+function getMetadata(layer)
+{	
+		
+	var tmpAddress = wmsServerAddress.replace("/wfswms?","")
+	tmpAddress += "/getLayerMetadata?uniqueLayerName="+layer;
+	var res = $.ajax({ 
+	  url: tmpAddress, 
+	  async: false 
+	 }).responseText;
+	 
+	 var win = window.open("","tmpWin","width=450,height=350,resizable=1,scrollbars=1,status=1,menubar=1")
+	 win.document.write(res)
+	 win.document.close()	
+}
+
+/*
+@summary: checks and stores the current map image src url
+*/
+function checkImageSource()
+{
+	imgSource = document.getElementById('mapImage').getAttribute('src')
+}
+
+/*
+@summary: given an id and image name, this will change the elements image source to the new iamge name
+@param id: the element id of the image to change
+@param imgName: the name of the image to change to
+*/
+function changeImageTo(id,imgName)
+{
+	document.getElementById(id).setAttribute('src',imgName)
+}
+
+/*
+@summary: this sets the print options layer to visible to allow for printing
+*/
+function openPrintOptions()
+{	
+	document.getElementById('printOptions').style.visibility = 'visible';
+}
+
+/*
+@summary: this triggeres a getmap request with the current extent
+@param e: event object from the broser, this is not used and is optional
+*/
+function refreshMap(e)
+{	
+	doGetMap()
+}
+
+/*
+@summary: this does a getmap request with the ful extent as gotten from the wms getCapabilities
+*/
+function zoomtoFullExtent()
+{	
+	currentExtent = globalEnvelope;
+	doGetMap();	
+}
+
+/*
+@summary: this is triggered when the user clicks on the map image in the browser,
+and if the toolMode is identify then a getFeatures request will be triggered
+*/
+function onMapClick(e)
+{	
+    if(isIEBrowser())
+	{	
+       
+	   if(e.button == 2)
+	   {	      
+           return;
+	   }
+	}
+	else
+	{	   
+	   if(e.button == 2)
+	   {	       
+	       return;
+	   }
+	}
+
+
+	if (e.offsetX != undefined)
+	{
+		var x = e.offsetX;
+		var y = e.offsetY;
+	}
+	else{
+		var x = e.layerX;
+		var y = e.layerY;	
+	}
+	
+	if (toolMode == "identify")
+	{
+		doGetFeatureInfo(x,y)		
+	}	
+}
+
+/*
+@summary: this is triggered from the print options interface and takes the entered values from that interface
+and opens a new window for the print map 
+*/
+function generatePrint()
+{
+
+	var mapTitle = document.getElementById('tbxTitle').value
+	var mapAuthor = document.getElementById('tbxAuthor').value		
+	var isLandscape = document.getElementById('rbtnLandscape').checked
+
+	if (isLandscape)
+	{
+		theOrientation = 'landscape'
+	}
+	else
+	{
+		theOrientation = 'portrait'
+	}
+	//document.location.href = "print.html?title="+mapTitle+"&author="+mapAuthor+"&orientation="+theOrientation
+	document.getElementById('printOptions').style.visibility = 'hidden';
+	var winRef = window.open("print.html?title="+mapTitle+"&author="+mapAuthor+"&orientation="+theOrientation,'print')
+	winRef.currentExtent = currentExtent;	
+	
+}
+	
+/*
+@summary: this shows the "retrieving image" animated gif that is shown while the image is loaded
+*/
+function showWait()
+{	
+	var x = (getMapSize()[0] / 2) - 108
+	var y = (getMapSize()[1] / 2) - 25
+	document.getElementById("wait").style.visibility = 'visible';
+	document.getElementById("wait").style.left = x+'px';
+	document.getElementById("wait").style.top = y+'px';
+}
+
+/*
+@summary: this hides the "retrieving image" animated gif after the image has been loaded
+*/
+function hideWait()
+{
+	document.getElementById("wait").style.visibility = 'hidden';	
+}
+
+/*
+@summary: gets the map size and returns an array
+@return: an array defining the width and the height of the map image e.g [width,height]
+*/
+function getMapSize()
+{
+	var width = document.getElementById("map").offsetWidth;
+	var height = document.getElementById("map").offsetHeight;
+	var coords = new Array(width-12,height-16);
+	//var coords = new Array(width-12,height-16);
+	return coords;
+}
+
+/*
+@summary: this is triggered at browser startup and hadles the layout of the browser elements
+like the TOC and the toolbar and the map image
+*/
+function doLayout()
+{
+	document.getElementById('mapImage').style.width = "100%"
+	document.getElementById('mapImage').style.height = "100%"
+	document.getElementById('map').style.width = "70%"
+	document.getElementById('map').style.height = document.body.clientHeight - 45;
+	document.getElementById('legendLayer').style.height = document.body.clientHeight - 41;
+	document.getElementById('legend').style.height = document.body.clientHeight - 43 - 23;
+	document.getElementById('layers').style.height = document.body.clientHeight - 43 - 23;
+}
+
+/*
+@summary: sets the new toolMode for the browser
+@param mode: the new toolMode to be used
+*/
+function setToolMode(mode)
+{	
+	toolMode = mode;	
+	changeToolImage();
+}
+
+/*
+@summary: this is triggered when ever a new toolmode is set and changes the image on the toolbar
+*/
+function changeToolImage()
+{
+	resetToolImages()
+	if (toolMode == "zoomin")
+	{
+		document.getElementById("zoominImage").setAttribute("src","img/zoomin_3.png")		
+	}
+	if (toolMode == "zoomout")
+	{
+		document.getElementById("zoomoutImage").setAttribute("src","img/zoomout_3.png")
+	}
+	if (toolMode == "pan")
+	{
+		document.getElementById("panImage").setAttribute("src","img/pan_3.png")
+	}
+	if (toolMode == "identify")
+	{
+		document.getElementById("identifyImage").setAttribute("src","img/query_3.png")
+	}
+	if(toolMode == "select")
+	{
+		//tool_roi_rectangle_off.png
+		document.getElementById("rectangleImage").setAttribute("src","img/tool_roi_rectangle_on.png")
+	}
+}
+
+/*
+@summary: this sets all the tool images on the toolbar to the original images
+*/
+function resetToolImages()
+{	
+	document.getElementById("zoominImage").setAttribute("src","img/zoomin_1.png")
+	document.getElementById("zoomoutImage").setAttribute("src","img/zoomout_1.png")
+	document.getElementById("panImage").setAttribute("src","img/pan_1.png")
+	document.getElementById("identifyImage").setAttribute("src","img/query_1.png")
+	document.getElementById("rectangleImage").setAttribute("src","img/tool_roi_rectangle_off.png")
+}
+
+/*
+@summary: this toggles the visibility of the legend and the tobal of cntents
+*/
+function toggleLayers()
+{	
+	if ((document.getElementById("layers").style.visibility == 'visible') || (document.getElementById("layers").style.visibility == ''))
+	{		
+		document.getElementById('toggleImage').setAttribute('src','img/legend_3.png')
+		document.getElementById("layers").style.visibility = 'hidden'
+		document.getElementById("legend").style.visibility = 'visible'
+	}
+	else{
+		document.getElementById('toggleImage').setAttribute('src','img/legend_1.png')
+		document.getElementById("layers").style.visibility = 'visible'
+		document.getElementById("legend").style.visibility = 'hidden'
+	}
+}
+
+/*
+@summary: this takes the event and gets the coord data from it to update the coordinate display in the broser toolbar window
+@param e: the browser event object
+*/
+function updateCoordDisplay(e)
+{		
+	if (e.offsetX != undefined)
+	{
+		var eX = e.offsetX;
+		var eY = e.offsetY;
+	}
+	else{
+		var eX = e.layerX;
+		var eY = e.layerY;	
+	}
+	var res = screenToMap(eX,eY)
+	var theX = formatNumber(res[0],3)
+	var theY = formatNumber(res[1],3)
+	document.getElementById('tbxCoords').setAttribute('value',"X : "+theX+"  Y: "+theY) // + '   posX: ' + eX + " posY:" +eY	)
+	
+}
+
+/*
+@summary: this formats a number to a given amount of decimal places
+@param number: the float/decimal number the format to a number of given decimal places
+@param numDecimals: the number of decimals to keep in the formatted number
+@return: the formated number
+*/
+function formatNumber(number,numDecimals)
+{
+	try{
+	var tmpNum = number.toString()
+	var parts = tmpNum.split(".")
+	return parts[0] + "." + parts[1].slice(0,numDecimals)
+	}
+	catch(e)
+	{
+		return number;
+	}
+}
+
+// ===========================Box handlers==========================
+
+
+/*
+@summary: this is triggered when the user starts zooming or panning and starts the creation of the zoombox feedback
+@param event: the browser event object
+*/
+function Map_onMouseDown(event)
+{	    
+	if(isIEBrowser())
+	{              
+	   if(event.button == 2)
+	   {    
+           return;
+	   }
+	   clickDownX = event.offsetX;
+	   clickDownY = event.offsetY;	  
+	   clickDownCoord = screenToMap(clickDownX,clickDownY); 
+	}
+	else
+	{	   
+	   if(event.button == 2)
+	   {	       
+	       return;
+	   }
+	   clickDownX = event.layerX;
+	   clickDownY = event.layerY;
+	   clickDownCoord = screenToMap(clickDownX,clickDownY);		   
+	}
+	
+    if (toolMode == "pan")
+	{		
+		handlePan(event)	
+	}
+
+	if (toolMode == "zoomin" || toolMode == "zoomout")
+	{
+		theBox = document.getElementById('theZoomBox')
+		rubberbander = new RubberRectangle(theBox, "red", "solid", "3px");
+		rubberbander.processEvent(event);		
+	}	
+
+	if (toolMode == "select")
+	{
+		theBox = document.getElementById('theZoomBox')
+		rubberbander = new RubberRectangle(theBox, "red", "solid", "3px");
+		rubberbander.processEvent(event);		
+	}
+}
+
+/*
+@summary: this is triggered when the user zooms or pans and issues the statekeeping and the drawing of visual feedback
+@param event: the browser event object
+*/
+function Map_onMouseMove(event)
+{
+    if(isIEBrowser())
+	{	       
+	   if(event.button == 2)
+	   {	      
+           return;
+	   }
+	   clickMoveX = event.offsetX;
+	   clickMoveY = event.offsetY;	
+	   clickMoveCoord = screenToMap(clickMoveX,clickMoveY);   
+	}
+	else
+	{	   
+	   if(event.button == 2)
+	   {	       
+	       return;
+	   }
+	   clickMoveX = event.layerX;
+	   clickMoveY = event.layerY;
+	   clickMoveCoord = screenToMap(clickMoveX,clickMoveY);
+	}
+
+	if (toolMode == "pan")
+	{
+		handlePan(event)
+	}
+	
+	if (toolMode == "zoomin" || toolMode == "zoomout")
+	{
+		if (rubberbander)
+		{
+			rubberbander.processEvent(event);
+		}
+	}	
+	
+	if (toolMode == "select")
+	{
+		if (rubberbander)
+		{
+			rubberbander.processEvent(event);
+		}
+	}
+}
+
+/*
+@summary: this is triggered when the user end the zooming or panning action and triggereds the getmap for a new map
+@param event: the browser event object
+*/
+function Map_onMouseUp(event)
+{
+    if(isIEBrowser())
+	{
+	   if(event.button == 2)
+	   {	       
+	       return;
+	   }
+	   clickUpX = event.offsetX
+	   clickUpY = event.offsetY	   
+	   clickUpCoord = screenToMap(clickUpX,clickUpY);
+	}
+	else
+	{
+	   if(event.button == 2)
+	   {	       
+	       return;
+	   }
+	   clickUpX = event.layerX
+	   clickUpY = event.layerY	   
+	   clickUpCoord = screenToMap(clickUpX,clickUpY);
+	}	
+
+	if (toolMode == "pan")
+	{
+		handlePan(event)
+	}
+
+	if (toolMode == "select")
+	{
+		if (rubberbander)
+		{
+			rubberbander.processEvent(event);
+		}
+		
+		var screenEnv = getLogicalEnvelope(clickDownX,clickDownY, clickMoveX, clickMoveY);		
+		doGetFeatureInfo(screenEnv[0],screenEnv[1],screenEnv[2],screenEnv[3])	
+	}
+
+	if (toolMode == "zoomin" || toolMode == "zoomout")
+	{
+		if (rubberbander)
+		{
+			rubberbander.processEvent(event);
+		}
+		
+		var startX = clickDownX;
+		var startY = clickDownY;
+		var endX = clickUpX;
+		var endY = clickUpY;		
+		var xDiff = Math.abs(endX - startX)
+		var yDiff = Math.abs(endY - startY)
+
+		var screenEnv = getLogicalEnvelope(startX,startY,endX,endY)				
+		var extent = getLogicalExtent(clickDownCoord, clickMoveCoord);
+		
+		var bottomCoord = new Array(extent[0],extent[1]);
+		var topCoord = new Array(extent[2],extent[3]);	
+		var iWidth = document.getElementById('mapImage').offsetWidth			
+		var iHeight = document.getElementById('mapImage').offsetHeight				
+		var xDistance = Math.abs(currentExtent[0] - currentExtent[2])
+		var yDistance = Math.abs(currentExtent[1] - currentExtent[3])
+		var xHalf = xDistance/2
+		var yHalf = yDistance/2					
+
+		if (toolMode == "zoomin")
+		{				
+			if ((endX == -1) || (endX == 0) || (xDiff <= pixelTolerance) || (yDiff <= pixelTolerance))
+			{									
+				var xCoord = topCoord[0]
+				var yCoord = bottomCoord[1]
+				currentExtent[0] = xCoord - (xHalf/zoomFactor);
+				currentExtent[1] = yCoord - (yHalf/zoomFactor);
+				currentExtent[2] = xCoord + (xHalf/zoomFactor);
+				currentExtent[3] = yCoord + (yHalf/zoomFactor);				
+				doGetMap();				
+			}
+			else
+			{						
+				currentExtent[0] = bottomCoord[0]
+				currentExtent[1] = bottomCoord[1]
+				currentExtent[2] = topCoord[0]
+				currentExtent[3] = topCoord[1]
+				doGetMap();				
+			}
+		}
+		if (toolMode == "zoomout")
+		{
+			if (!isExtentInFullExtent(currentExtent))
+				{					
+					currentExtent = globalEnvelope;
+					doGetMap();	
+					return;
+				}	
+			if ((endX == -1) || (endX == 0) || (xDiff <= pixelTolerance) || (yDiff <= pixelTolerance))
+			{				
+				var bottomCoord = screenToMap(startX,startY)					
+				var xCoord = bottomCoord[0]
+				var yCoord = bottomCoord[1]				
+
+				currentExtent[0] = xCoord - (xDistance);
+				currentExtent[1] = yCoord - (yDistance);
+				currentExtent[2] = xCoord + (xDistance);
+				currentExtent[3] = yCoord + (yDistance);
+				doGetMap();							
+			}
+			else
+			{				
+				if (!isExtentInFullExtent(currentExtent))
+				{					
+					currentExtent = globalEnvelope;
+					doGetMap();	
+					return;
+				}	
+
+				var xAddAmount = xDistance - Math.abs(topCoord[0] - bottomCoord[0])
+				var yAddAmount = yDistance - Math.abs(topCoord[1] - bottomCoord[1])
+
+				currentExtent[0] = bottomCoord[0] - xAddAmount
+				currentExtent[1] = bottomCoord[1] - yAddAmount
+				currentExtent[2] = topCoord[0] + xAddAmount
+				currentExtent[3] = topCoord[1] + yAddAmount
+				doGetMap();
+			}
+		}
+	}    
+}
+
+/*
+@summary: this is used by the zoom box and determines whether the user started zooming at the top or the bottom and organises the 
+passed x and y coords into an envelope that makes sense.
+@param startX: the x start location
+@param startY: the y start location
+@param endX: the x end location
+@param endY: the y end location
+@return: an array with the new envelepe [minx,miny,maxx,maxy]
+*/
+function getLogicalEnvelope(startX,startY,endX,endY)
+{	
+	if (startX < endX)
+	{
+		var sX = startX;
+		var eX = endX;
+	}
+	else{
+		var sX = endX;
+		var eX = startX;
+	}
+
+	if (startY > endY)
+	{
+		var sY = startY
+		var eY = endY
+	}
+	else{
+		var sY = endY
+		var eY = startY
+	}	
+
+	// make sure that the yDiff is the same as the xDiff
+	//var xDiff = eX - sX
+	//sY = eY + xDiff
+	var env = new Array(sX,sY,eX,eY)	
+	return env	
+}
+
+function getLogicalExtent(coord1, coord2)
+{
+	var retEnv = new Array();
+	var x1 = coord1[0];
+	var x2 = coord2[0];
+	var y1 = coord1[1];
+	var y2 = coord2[1];
+	// check x
+	if (x1 < x2){
+		retEnv[0] = x1;
+		retEnv[2] = x2;
+	}
+	else{	
+		retEnv[0] = x2;
+		retEnv[2] = x1;
+	}
+	//check y
+	if (y1 < y2){
+		retEnv[1] = y1;
+		retEnv[3] = y2;
+	}
+	else{
+		retEnv[1] = y2;
+		retEnv[3] = y1;
+	}	
+	return retEnv;
+}
+
+
+/*
+@summary: this hiden the zoombox when finished zooming
+@param event: browser event object
+*/
+function hideTheBox(event)
+{
+	rubberbander.rubberbanding = false;
+	document.getElementById('theZoomBox').style.visibility = "hidden";	
+	
+    Map_onMouseUp(event)    
+	// XXX remove 
+}
+
+function showSaveMapAsDocument()
+{
+	document.getElementById("saveMapOptions").style.visibility = 'visible';
+}
+
+function saveMapAsDocument()
+{	
+	var dTitle = document.getElementById('tbxDocumentTitle').value
+	
+	if (dTitle == "")
+	{
+		alert('A Valid Title must be given')
+		return
+	}	
+	document.getElementById("saveMapOptions").style.visibility = 'hidden';
+	var imgURL = document.getElementById("mapImage").src
+	var tmpAddress = wmsServerAddress.replace("/wfswms?","")
+	tmpAddress += "/saveURLContentAsDocument?docTitle="+dTitle + "&url="+imgURL;
+	var res = $.ajax({ 
+	  url: tmpAddress, 
+	  async: false 
+	 }).responseText;	
+	
+}

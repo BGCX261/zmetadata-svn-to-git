@@ -1,0 +1,14 @@
+// used for all config varaibles
+
+var wmsServerAddress = "http://teora:7070/plone/mapproject.2006-01-12.0961870978/wfswms?"
+//var wmsServerAddress = "http://atlas.gc.ca/cgi-bin/atlaswms_en?"
+//var wmsServerAddress = "http://eusoils.jrc.it:80/wmsconnector/com.esri.wms.Esrimap/Eusoils_WMS?"
+//var wmsServerAddress = "http://eusoils.jrc.it:80/wmsconnector/com.esri.wms.Esrimap/Pesera_WMS?"
+//var wmsServerAddress = "http://www2.dmsolutions.ca/cgi-bin/mswms_gmap?"
+//var wmsServerAddress = "http://teora:9080/cgi-bin/mapserv_44.exe?MAP=D:/ms4w/apps/region.map&"
+//var wmsServerAddress = "http://127.0.0.1:8080/geoserver/wms?"
+//var wmsServerAddress = "http://10.50.130.45:9080/geoserver/wms?"
+
+var pixelTolerance = 5;
+var globalEnvelope = new Array();
+var zoomFactor = 2;

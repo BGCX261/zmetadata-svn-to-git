@@ -1,0 +1,62 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+<body>
+
+<div metal:fill-slot="main">
+	<div tal:define="global thePath here/absolute_url"></div>
+	<div id="thePath" value="" tal:attributes="value here/absolute_url"></div>
+	<script src="utils.js"> </script>
+	
+	<p>
+		<a href="" tal:attributes="href python: context.absolute_url() + '/downloadXML'">Download xml document</a>
+	</p>
+	<br>
+	<p>
+		<b>Email Document</b>
+		<input type="text" value="" name="tbxEmail" id="tbxEmail" style="width:190px;" tal:attributes="value here/getLoggedInUserEmail">
+		<input type="button" value="Email" onclick="doEmail()">
+	</p>
+	
+	<script>
+	var path = document.getElementById('thePath').getAttribute('value')	
+	
+	function doEmail()
+	{
+		emailAddress = document.getElementById("tbxEmail").value
+		// check for valid address
+		if (!isValidEmail(emailAddress))
+		{
+			alert("Please give a valid address");
+			return;
+		}		
+		mailDoc();
+	}
+	
+	function mailDoc(res)
+		{
+			if(res == undefined)
+			{
+				
+				getPostContent(path +"/emailXMLDocument","address="+emailAddress,mailDoc);
+			}
+			else
+			{
+				if(res == "1")
+				{
+					alert("Email Successful");
+				}
+				else
+				{
+					alert("Problem occured during email.\n Please see logs")					
+				}
+			}	
+		}
+	
+	</script>
+    
+</div>
+
+</body>
+</html>

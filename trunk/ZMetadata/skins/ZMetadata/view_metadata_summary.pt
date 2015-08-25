@@ -1,0 +1,150 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+<body>
+
+<div metal:fill-slot="main"	tal:define="portal_type python:here.getPortalTypeName().lower().replace(' ', '_');
+	            base_macros here/base/macros;
+	            view_template python:'%s_view' % portal_type;
+	            view_macros python:path('here/%s/macros|nothing' % view_template);
+	            header_macro view_macros/header | header_macro | base_macros/header;
+	            body_macro view_macros/body | body_macro | base_macros/body;
+	            folderlisting_macro view_macros/folderlisting | folderlisting | base_macros/folderlisting;
+	            footer_macro view_macros/footer | footer_macro | base_macros/footer;
+	            errors python:request.get('errors', {})">	
+	<metal:use_header use-macro="header_macro" />
+	
+	<div>
+	<table width="100%">
+		<tr>
+			<td>
+				<table>
+					<tr>
+						<th align="left">Type</th><td tal:content="here/getMetadatatype"></td>			
+					</tr>
+					<tr tal:condition="here/getMetadatacategory">
+						<th align="left">Category</th><td tal:content="here/getMetadatacategory"></td>			
+					</tr>
+					<tr>
+						<th align="left">Metadata Title</th><td tal:content="here/mTitle"></td>			
+					</tr>
+					<tr>
+						<th align="left">Date</th><td tal:content="here/mDate"></td>
+					</tr>
+					<tr>
+						<th align="left">Organization</th><td tal:content="here/mOrganization"></td>
+					</tr>
+					<tr>
+						<th align="left">Abstract</th><td tal:content="here/mAbstract"></td>
+					</tr>
+					<tr>
+						<th align="left">Keywords</th><td tal:content="here/mKeywords"></td>
+					</tr>
+					<tr tal:condition="python: context.mBounds">
+						<th align="left">Bounds</th><td tal:content="python: 'North:' + str(context.mBounds[3]) + ' South:' + str(context.mBounds[1]) + ' East:'+ str(context.mBounds[2]) + ' West: ' + str(context.mBounds[0]) "></td>						
+					</tr>
+					
+					<span tal:condition="python: context.mOnlineResource">
+						<tr>
+							<th align="left">Online Resource</th>
+							<td>
+							<span tal:repeat="resource here/mOnlineResource">
+								<a href="" tal:attributes="href resource"><b tal:content="resource"></b></a> <br>
+							</span>
+							</td>
+						</tr>
+					</span>
+					<tr>
+						<th align="left">Scale</th><td tal:content="here/mScale"></td>
+					</tr>
+					<tr tal:define="custodian python:here.metadata_tool.getMetadataCustodian(here)">
+						<tal:hasCustodian condition="python: custodian != None">
+							<th align="left">Custodian</th>
+							<td>
+								<a tal:attributes="href custodian/absolute_url" tal:content="custodian/title_or_id">
+								</a>
+							</td>
+						</tal:hasCustodian>
+						<tal:hasNoCustodian condition="not: custodian">
+							<th align="left">Custodian</th>
+							<td>No Parent Custodian found</td>
+						</tal:hasNoCustodian>
+					</tr>
+					<tr tal:condition="python:hasattr(here, 'mOwner')">
+						<th align="left">Contact Person</th><td tal:content="here/mOwner"></td>
+					</tr>
+					<tal:contact define="creator context/Creator;author python:here.portal_membership.getMemberInfo(creator)">
+						<span tal:condition="python:context.portal_membership.getHomeFolder(creator)">						
+							<tr>
+								<th align="left">Portal Contact</th>
+								<td>
+									<a tal:attributes="href python:context.portal_membership.getHomeFolder(creator).absolute_url()"
+									   tal:content="python:author and author['fullname'] or creator"
+									             tal:omit-tag="not:author">
+									            Bob Dobalina
+									          </a>
+								</td>
+							</tr>
+						</span>
+					</tal:contact>
+					
+					<tr>
+						<td>
+&nbsp;
+						</td>
+						<td>
+<div class="documentActions">
+        <ul tal:define="openMapInNewWindow context/@@open-new-map-window">
+                <li>
+                        <a href="" tal:attributes="href python: context.absolute_url() + '/view_metadata'">View</a>
+                </li>
+                <li>
+                        <a tal:condition="python: here.metadata_tool.hasPermission(context, 'Modify portal content')" tal:attributes="href python: context.absolute_url() + '/ed
+it_metadata'">Edit</a>
+                </li>                <li>
+                        <a href="" tal:attributes="href python: context.absolute_url() + '/downloadXML'">Download</a>
+                </li>
+                <li id="document-action-addtofavorites">
+                        <a href="">
+                                Add to favorites
+                        </a>
+                </li>
+                <li id="document-action-open-inspector">
+                    <a tal:attributes="href context/@@map-inspector-url; target python: '_blank'*1 or '_self'">
+                            Open Inspector
+                    </a>
+                </li>
+                <li id="document-action-open-viewer">
+                    <a tal:attributes="href context/@@map-viewer-url; target python: '_blank'*1 or '_self'">
+                            Open Viewer
+                    </a>
+                </li>
+        </ul>
+</div>
+
+						</td>
+					</tr>
+					
+				</table>
+			</td>			
+			<td align="right">
+				<span tal:condition="here/hasValidBounds">					
+					<img src="" tal:attributes="src python: context.absolute_url() + '/getMapSmall'" width="200" height="180"> 								
+				</span>
+				<span tal:condition="not: here/hasValidBounds">					
+					<img src="no_image.jpg" width="200" height="180"> 								
+				</span>
+			</td>
+		</tr>
+	</table>
+	<div metal:use-macro="here/document_relateditems/macros/relatedItems">
+		show related items if they exist
+	</div>	
+</div>
+	
+	
+</div>
+
+</body>
+</html>

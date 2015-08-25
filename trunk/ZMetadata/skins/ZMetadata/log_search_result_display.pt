@@ -1,0 +1,32 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+<body>
+
+<div metal:fill-slot="main">
+
+	<style>
+		.data{border:thin solid gray;}
+	</style>
+	<span tal:define="global theSession python: context.REQUEST.SESSION"></span>	
+	<b tal:content="python: str(len(theSession['logSearchResults'])) + ' Matches found.' "></b>
+		
+	<p>Log Search Result</p>
+	
+	<table>	
+		<tr>
+			<th class="data">Type</th> <th class="data">Date</th> <th class="data">Link</th>
+		</tr>
+		<span tal:repeat="res python: theSession['logSearchResults']">		
+			<tr>
+				<td class="data" tal:content="python: res['type']"></td>
+				<td class="data" tal:content="python: res['date']"></td>
+				<td class="data"><a href="" tal:attributes="href python: res['url']">Goto</a></td>
+			</tr>
+		</span>
+	</table>	
+</div>
+
+</body>
+</html>

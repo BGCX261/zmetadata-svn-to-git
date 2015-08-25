@@ -1,0 +1,100 @@
+<html metal:use-macro="here/main_template/macros/master">
+    <body>
+        <div metal:fill-slot="main">
+			<style>
+			td{
+				text-align:left;
+			}
+
+			.smallText{
+				font-size:8pt;
+			}
+
+			.td{
+				border:thin solid gray;
+			}
+			.th{
+				border:thin solid gray;
+				background-color:silver;
+			}
+			</style>
+
+			<script src="" tal:attributes="src python: context.absolute_url() + '/vcXMLRPC.js'"> </script>			
+			<div tal:define="global thePath here/absolute_url"></div>
+			<div id="thePath" value="" tal:attributes="value here/absolute_url"></div>				
+			<div tal:define="global roles python: context.validRoles()"></div>
+			<div tal:define="global security python: context.getSecurity()"></div>
+
+			<table>
+				<tr>
+					<th class="th">Roles</th>
+					<th class="th">Permission</th>
+					<th class="th">Permission</th>
+				</tr>
+			<div tal:repeat="r roles">
+				<tr>
+					<td class="td" tal:content="r"></td>
+					<!-- fill checkboxes -->
+
+					<td class="td">Render <INPUT TYPE="checkbox"  id="" tal:attributes="id python: r + '__Render'"> </td>
+					<td class="td">Extract <INPUT TYPE="checkbox"  id="" tal:attributes="id python: r + '__Extract'"> </td>
+								
+				</tr>
+			</div>
+				<tr>
+					<td colspan="3"><input type="button" value="Submit" onclick="doSetPermissions()"></td>
+				</tr>
+			</table>			
+
+			<SCRIPT LANGUAGE="JavaScript">
+			<!--
+			var path = document.getElementById('thePath').getAttribute('value')		
+			conn = XMLRPC.getService(path);			
+			conn.add("validRoles","validRoles")			
+			conn.add("setSecurity","setSecurity")				
+			conn.add("getSecurity","getSecurity")	
+			
+			var allRoles = conn.validRoles()
+			var security = conn.getSecurity()			
+			
+			function fillPermissions()
+			{				
+				for (var x in security)		
+				{
+					if ((x != 'toXMLRPC') && (x != 'fields'))
+					{
+						tmpDict = security[x]
+						var rVal = tmpDict['Render']
+						var eVal = tmpDict['Extract']
+						document.getElementById(x + "__Render").checked = parseInt(rVal)
+						document.getElementById(x + "__Extract").checked = parseInt(eVal)
+					}					
+				}				
+			}
+			
+			function doSetPermissions()
+			{
+				var security = {}
+
+				for (var x=0;x<allRoles.length;x++)
+				{
+					var renderElm = document.getElementById(allRoles[x] + "__Render" )
+					var extractElm = document.getElementById(allRoles[x] + "__Extract" )
+					//var tmpList = new Array(renderElm.checked.toString(),extractElm.checked.toString())
+					var tmpDict = {}
+					tmpDict['Render'] = renderElm.checked.toString()
+					tmpDict['Extract'] = extractElm.checked.toString()
+					security[allRoles[x]] = tmpDict
+				}				
+				conn.setSecurity(security)		
+				alert('Permissions Have Been Set.')
+			}				
+			fillPermissions()
+			//-->
+			</SCRIPT>
+			
+			
+        </div>
+    </body>
+</html>
+

@@ -1,0 +1,390 @@
+<html metal:use-macro="here/main_template/macros/master">
+    <body>
+        <div metal:fill-slot="main">
+		<style>
+			.boldText{
+				font-weight: bold;
+			}
+			.listBox{
+				width:200px;
+				height:150px;
+				margin:0px;
+				padding:0px;
+			}
+			.navButton{
+				width:20px;
+			}
+			.navButtonLong{
+				width:85px;
+			}
+			.orderButton{
+				width:54px;
+			}
+			.mainTable{
+				border:thin solid black;
+				margin:0px;
+				padding:0px;
+			}
+			.functionButton{
+				width:55px;
+			}
+			.smallListBox{
+				width:140px;
+				height:70px;
+				margin:0px;
+				padding:0px;
+			}	
+			
+			.projectListBox{
+				width:200px;
+				height:256px;				
+				padding:0px;
+			}					
+
+		</style>
+	<link href="style_css.css" rel='stylesheet' type='text/css' />
+	<script src="" tal:attributes="src python: context.absolute_url() + '/utils.js'"> </script>	
+	<script src="" tal:attributes="src python: context.absolute_url() + '/vcXMLRPC.js'"> </script>					
+	<div id="thePath" value="" tal:attributes="value python:context.absolute_url()"></div>
+	
+	<table class="mainTable">
+		<tr>
+			<td class="boldText">Organizations</td>
+			<td>&nbsp;</td>
+			<td class="boldText">Project Layers</td>
+			<td>&nbsp;</td>
+		</tr>
+		<tr>
+			<td><SELECT id="cbxOrganizations" style="width:200px;" onchange="populateServers()"></SELECT></td>
+			<td>&nbsp;</td>
+			<td rowspan="5"><SELECT class="projectListBox" id="cbxProjectLayers" MULTIPLE onchange="displaySampleImage()"></SELECT></td>
+			<td>&nbsp;</td>
+		</tr>
+		<tr>
+			<td class="boldText">Servers</td>
+			<td>&nbsp;</td>			
+			<td>&nbsp;</td>
+		</tr>
+		<tr>
+			<td><SELECT id="cbxServers" style="width:200px;" onchange="populateServerLayers()"></SELECT></td>
+			<td>&nbsp;</td>			
+			<td>&nbsp;</td>
+		</tr>
+		<tr>
+			<td class="boldText">Layers</td>
+			<td>&nbsp;</td>			
+			<td>&nbsp;</td>
+		</tr>
+		<tr>
+			<td><SELECT class="listBox" id="cbxServerLayers" MULTIPLE onchange="displayLayerInfo()"></SELECT></td>
+			<td>
+				<input class="navButtonLong" type="button" value="Add" onclick="addLayer()"><br>
+				<input class="navButtonLong" type="button" value="AddAll" onclick="addAllLayers()"><br>
+				<input class="navButtonLong" type="button" value="RemoveAll" onclick="removeAllLayers()"><br>
+				<input class="navButtonLong" type="button" value="Remove" onclick="removeLayer()">
+			</td>			
+			<td>
+				<input class="orderButton" type="button" value="Top" onclick="moveTop()"><br>
+				<input class="orderButton" type="button" value="Up" onclick="moveUp()"><br>
+				<input class="orderButton" type="button" value="Down" onclick="moveDown()"><br>
+				<input class="orderButton" type="button" value="Bottom" onclick="moveBottom()">
+			</td>
+		</tr>	
+		
+		<tr>
+			<td colspan="2">
+				<TABLE class="mainTable">
+					<TR>
+						<Th align="left">Name</Th>
+						<TD id="tdLayerName">Empty</TD>
+					</TR>
+					<TR>
+						<Th align="left">Title</Th>
+						<TD id="tdTitle">Empty</TD>
+					</TR>
+					<TR>
+						<Th align="left">Type</Th>
+						<TD id="tdType">Empty</TD>
+					</TR>
+					<TR>
+						<Th align="left">Extent</Th>
+						<TD id="tdExtent">Empty</TD>
+					</TR>
+					<TR>
+						<Th align="left">SRS</Th>
+						<TD id="tdSRS">Empty</TD>
+					</TR>
+				</TABLE>			
+			</td>			
+			<td colspan="2">
+				<img src="" tal:attributes="src python:context.absolute_url() + '/earth.jpeg'" id="imgPreview" width=150 height=150>
+			</td>			
+		</tr>			
+	</table> 	
+	
+	<br>
+	<div id="layerFilter" >
+		<TABLE class="mainTable">
+			<tr>			
+				<th>Filters</th>
+			</tr>
+			<TR>
+				<TD colspan="2">
+					<SELECT class="smallListBox" id="cbxFilters" MULTIPLE>								
+					</SELECT>
+				</TD>			
+			</TR>
+			<TR>
+				<TD><input type="button" value="Apply" onclick="applyFilter()"></TD>
+				<TD><input type="button" value="Remove" onclick="removeFilter()"></TD>
+			</TR>
+		</TABLE>
+	</div> 	
+	
+	<SCRIPT LANGUAGE="JavaScript">		
+		populateFilterBox()
+		var path = document.getElementById('thePath').getAttribute('value')		
+		conn = XMLRPC.getService(path);
+		
+		conn.add("getOrganizationNames","getOrganizationNames")			
+		conn.add("getServerNamesForOrganization","getServerNamesForOrganization")			
+		conn.add("getAllFacadeLayers","getAllFacadeLayers")
+		conn.add("addLayer","addLayer")
+		conn.add("removeLayer","removeLayer")
+		conn.add("getLayerList","getLayerList")
+		conn.add("getServerNames","getServerNames")
+		conn.add("removeAllLayers","removeAllLayers")
+		conn.add("moveLayerUp","moveLayerUp")
+		conn.add("moveLayerDown","moveLayerDown")
+		conn.add("moveLayerTop","moveLayerTop")
+		conn.add("moveLayerBottom","moveLayerBottom")
+		conn.add("getLayersForWMSSource","getLayersForWMSSource")		
+		projectLayers = conn.getLayerList()			
+		populateProjectLayers()	
+		
+		organizationNames = conn.getOrganizationNames();	
+		
+		populateOrganizations();		
+		
+		function populateOrganizations()
+		{
+			populateCombobox('cbxOrganizations',organizationNames, "")
+		}
+
+		function populateFilterBox()
+		{
+			var typeList = new Array('LINE','POINT','POLYGON')
+			populateCombobox('cbxFilters',typeList)	
+		}
+		
+		function populateServers()
+		{
+			deleteOptions("cbxServers")
+			deleteOptions("cbxServerLayers")			
+			var organization = getSelectedValue('cbxOrganizations')			
+			var serverNames = conn.getServerNamesForOrganization(organization)
+			populateCombobox('cbxServers',serverNames, "")
+		}		
+		
+		function displayLayerInfo()
+		{			
+			var layerName = getSelectedValue('cbxServerLayers')
+			for (var x=0;x<allLayers.length;x++)
+			{
+				if (layerName == allLayers[x]['name'])
+				{
+					var name = allLayers[x]['name']
+					var Title = allLayers[x]['title']
+					var env = allLayers[x]['env']
+					var Abstract = allLayers[x]['abstract']
+					var srs = allLayers[x]['srs']
+					var type = allLayers[x]['type']
+
+					document.getElementById('tdLayerName').innerHTML = name;
+					document.getElementById('tdTitle').innerHTML = Abstract;
+					document.getElementById('tdType').innerHTML = type;
+					document.getElementById('tdExtent').innerHTML = env;		
+					document.getElementById('tdSRS').innerHTML = srs;			
+				}				
+			}	
+		}
+
+		function populateServerLayers()
+		{
+			var serverName = getSelectedValue('cbxServers');			
+			var organization = getSelectedValue('cbxOrganizations');
+			
+			if(serverName == "Select Server")
+			{
+				return;
+			}
+			allLayers = conn.getLayersForWMSSource(serverName,organization);			
+			var tmpList = new Array()
+			for (var x=0;x<allLayers.length;x++)
+			{
+				var name = allLayers[x]['name']
+				var Title = allLayers[x]['title']
+				var env = allLayers[x]['env']
+				var Abstract = allLayers[x]['abstract']
+				var srs = allLayers[x]['srs']
+				var type = allLayers[x]['type']
+				tmpList[x] = name
+			}			
+			populateCombobox('cbxServerLayers',tmpList)		
+		}
+
+		function populateWithFilter(filter)
+		{
+			var tmpList = new Array()
+			for (var x=0;x<allLayers.length;x++)
+			{
+				var type =  allLayers[x]['type']
+				var name = allLayers[x]['name']
+				if (type == filter)
+				{
+					tmpList[x] = name
+				}
+			}
+			populateCombobox('cbxServerLayers',tmpList)		
+		}
+		
+		function populateProjectLayers()
+		{
+			var tmpList = new Array()
+			for (var x=0;x<projectLayers.length;x++)
+			{
+				tmpList[x] = projectLayers[x]['name']
+			}
+			populateCombobox('cbxProjectLayers',tmpList)
+		}
+
+		function refreshProjectLayers()
+		{
+			projectLayers = conn.getLayerList()
+			populateProjectLayers()
+		}
+
+		function addLayer()
+		{			
+			var layerNames = getSelectedValues('cbxServerLayers')	
+			for (var y=0;y<layerNames.length;y++)
+			{
+				var layerName = layerNames[y]
+				for (var x=0;x<allLayers.length;x++)
+				{
+					var name = allLayers[x]['name']
+					if (name == layerName)
+					{
+						var Title = allLayers[x]['title']
+						var env = allLayers[x]['env']					
+						conn.addLayer(name,Title,env)		
+					}
+				}
+			}			
+			
+			// call add on the layer
+			refreshProjectLayers()
+		}
+
+		function displaySampleImage()
+		{	
+			var tmpPath = document.getElementById("thePath").getAttribute('value')			
+			var name = getSelectedValue('cbxProjectLayers')			
+			var imgElm = document.getElementById("imgPreview")
+			var imgPath = tmpPath + "/getLayerSampleImage?name="+name			
+			imgElm.setAttribute('src',imgPath)			
+		}
+
+		function addAllLayers()
+		{
+			for (var x=0;x<allLayers.length;x++)
+			{
+				var name = allLayers[x]['name']				
+				var Title = allLayers[x]['title']
+				var env = allLayers[x]['env']					
+				conn.addLayer(name,Title,env)				
+			}
+			refreshProjectLayers()
+		}
+
+		function removeLayer()
+		{
+			// get the selected layer and remove it
+			var layerNames = getSelectedValues('cbxProjectLayers')			
+			//var layerName = getSelectedValue('cbxProjectLayers')	
+			for (var x=0;x<layerNames.length;x++)
+			{		
+				conn.removeLayer(layerNames[x])
+			}
+			refreshProjectLayers()
+		}		
+
+		function removeAllLayers()
+		{
+			conn.removeAllLayers()
+			refreshProjectLayers()
+		}
+
+		function applyFilter()
+		{			
+			var filterList = new Array()
+			var filter = getSelectedValue('cbxFilters')	
+			var counter = 0
+			for (var x=0;x<allLayers.length;x++)
+			{
+				if (allLayers[x]['type'] == filter)
+				{
+					filterList[counter] = allLayers[x]['name']
+					counter += 1
+				}
+			}
+			populateCombobox('cbxServerLayers',filterList)				
+		}
+
+		function removeFilter()
+		{
+			populateServerLayers()
+		}
+
+		function moveUp()
+		{
+			var layerName = getSelectedValue('cbxProjectLayers')		
+			conn.moveLayerUp(layerName)
+			refreshProjectLayers()		
+			setSelectedProjectLayer(layerName)
+		}
+
+		function moveDown()
+		{
+			var layerName = getSelectedValue('cbxProjectLayers')		
+			conn.moveLayerDown(layerName)
+			refreshProjectLayers()
+			setSelectedProjectLayer(layerName)
+		}
+		
+		function moveTop()
+		{
+			var layerName = getSelectedValue('cbxProjectLayers')		
+			conn.moveLayerTop(layerName)
+			refreshProjectLayers()
+			setSelectedProjectLayer(layerName)
+		}
+		
+		function moveBottom()
+		{
+			var layerName = getSelectedValue('cbxProjectLayers')		
+			conn.moveLayerBottom(layerName)
+			refreshProjectLayers()
+			setSelectedProjectLayer(layerName)
+		}
+
+		function setSelectedProjectLayer(layerName)
+		{
+			setSelectedValue('cbxProjectLayers',layerName)
+		}
+		
+	</SCRIPT>
+
+	</div>
+</BODY>
+</HTML>

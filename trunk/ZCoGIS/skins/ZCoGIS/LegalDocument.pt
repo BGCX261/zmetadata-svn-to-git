@@ -1,0 +1,61 @@
+<html metal:use-macro="here/main_template/macros/master">	
+    <body>
+        <div metal:fill-slot="main">
+        
+        <script src="" tal:attributes="src python: context.absolute_url() + '/js/utils.js'"> </script>
+		<script src="" tal:attributes="src python: context.absolute_url() + '/js/iframePost.js'"> </script>
+
+<div style="border:thin solid gray;margin:2px;padding:5px;">
+<div tal:define="global theLayerName options/layerName"></div>
+<div tal:define="global redirectURL options/redirectURL"></div>
+<div id="redirectPath" value="" tal:attributes="value redirectURL"></div>
+<div id="theLayerName" value="" tal:attributes="value theLayerName"></div>
+
+<p tal:content="options/license"> </p>
+
+
+<input type="button" value="I Agree" onclick="setAgree()">
+
+<span id="thePath" tal:attributes="value python: context.absolute_url()"></span>
+
+</div>
+
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+	var pathElm = document.getElementById('thePath')
+	var path = pathElm.getAttribute('value')	
+    
+    var rPathElm = document.getElementById('redirectPath')
+    
+    //theLayerName
+    var layerNameElm = document.getElementById('theLayerName')	
+    var name = layerNameElm.getAttribute('value')
+
+	function setAgree()
+	{
+	   var tDict = {}
+       tDict['layerName'] = name
+      
+	   var cont2 = new Container('ttt',handler)
+	   cont2.sendPostForm(path + "/MapServer/acceptAgreementForLayer",tDict)	
+            
+        
+	}	
+	
+	function handler(res)
+	{
+	   document.location.href = rPathElm.getAttribute('value')
+	   
+	   	if ((res != 1) && (res != undefined))
+		{
+		  
+			alert(res)
+		}
+	}
+	
+//-->
+</SCRIPT>								
+				
+     </div>
+    </body>	
+</html>

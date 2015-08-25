@@ -1,0 +1,44 @@
+var isCGS = true;
+var maxFarmSearch = 70;
+var maxEnvelopeSearch = 70;
+
+var scannedImageBasePath = "http://teora/scanned/"
+// the base path to the report server
+var reportBaseURL = "http://teora/servlets-examples/servlet/ReportServer?";
+
+var reportMappings = {'lTestPits' : {'UQ_SAGEO' : reportBaseURL + 'report=geotechnical&UQ_SAGEOLIT_NO=', 'scan':scannedImageBasePath}} 
+reportMappings['lZoningPoly'] = {'UQ_SAGEO' : reportBaseURL + 'report=geotechnical_summary&UQ_SAGEOLIT_NO='}
+reportMappings['lGeotecnical'] = {'POLNO' : reportBaseURL + 'report=geohazard&POLNO='}
+
+reportMappings['attribute'] = {'UQ_REF' : reportBaseURL + 'report=samindabaAttributes&UQ_REF_NO='}
+reportMappings['locality'] = {'UQ_REF' : reportBaseURL + 'report=samindabaLocality&UQ_REF_NO='}
+reportMappings['exploitation'] = {'UQ_REF' : reportBaseURL + 'report=samindabaExploitation&UQ_REF_NO='}
+reportMappings['lMineralPoints'] = {'UQ_REF' : reportBaseURL + 'report=ind&UQ_REF_NO='}
+reportMappings['lBuffCadastre'] = {'ERF_NUMBER' : reportBaseURL + 'report=propInfo&erfNumber='}
+
+//ERF_NUMBER
+
+var LayerNameMapping = {}
+LayerNameMapping['Provinces'] = "lProvince"
+LayerNameMapping['mineralpoints'] = "lMineralPoints"
+LayerNameMapping['geotecpol'] = "lGeotecnical"
+LayerNameMapping['ZoningArea'] = "lZoningPoly"
+LayerNameMapping['Testpits'] = "lTestPits"
+LayerNameMapping['sa_parent_clk'] = "lFarms"
+LayerNameMapping['topo50'] = "lTopo50"
+LayerNameMapping['topo250'] = "lTopo250"
+
+LayerNameMapping['cadastre'] = "lBuffCadastre"
+
+SAGEO_REF = 90098033
+samindaba = 1027158
+
+/*
+	working ref numbers : 
+	samindaba : 1027158
+	SAGEO_REf : 90098023
+*/
+
+
+
+

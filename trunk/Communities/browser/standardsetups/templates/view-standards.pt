@@ -1,0 +1,51 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+<body>
+
+<div metal:fill-slot="main">
+	
+	<tal:standards define="standards view/selectedStandards">
+		    <metal:field use-macro="python:context.widget('description', mode='view')">
+		        [Human Subjects]
+		    </metal:field>
+		<table>
+			<tal:repeat repeat="standardId standards/keys">
+					<tr>
+						<td>
+							<h2 style="margin: 0 10px;">standard</h2>
+						</td>
+						<td>
+							<h2 style="margin: 0 10px;">used</h2>
+						</td>
+						<td>
+							<h2 style="margin: 0 10px;">fields</h2>
+						</td>
+						<td>
+							<h2 style="margin: 0 10px;">setup</h2>
+						</td>
+					</tr>
+				<tr tal:define="standard python: standards[standardId]">
+					<td><h3 tal:content="standard/title"></h3></td>
+					<td style="text-align: center;">
+						<img tal:condition="standard/display" tal:attributes="src string:${portal_url}/checked.png"/>
+						<img tal:condition="not: standard/display" tal:attributes="src string:${portal_url}/unchecked.png"/>
+					</td>
+					<td>
+						<ul tal:repeat="field standard/fields">
+							<li tal:condition="python: field in standard['showfields']" tal:content="field">
+							</li>
+							<li style="text-decoration: line-through;" tal:condition="python: field not in standard['showfields']" tal:content="field">
+							</li>
+						</ul>
+					</td>
+					<td><a tal:attributes="href string: ${standard/url}/edit">Edit Fields</a></td>
+				</tr>
+			</tal:repeat>
+	</tal:standards>
+
+</div>
+
+</body>
+</html>

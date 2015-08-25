@@ -1,0 +1,450 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+<body>
+
+<div metal:fill-slot="main"> 
+    <style>
+        table.core{border:thin solid gray;width:500px;}
+        td.core{text-align:right;}
+        input.core{width:240px;}
+    </style>
+
+    <form id="core_fields_form" name="core_fields" action="" method="post" tal:attributes="action python: context.absolute_url() + '/updateCoreFields'">
+    <table class="core">
+        <tr><th colspan="2">Dataset Information</th></tr>
+        <tr>
+            <td>Dataset Title</td>
+            <td class="core"><input class="core" type="text" name="tbxDatasetTitle" id="tbxDatasetTitle"></td>
+        </tr>
+        <tr>
+            <td>Dataset Reference Date (yyyy-mm-ddThh:mm:ss)</td>
+            <td class="core"><input class="core" type="text" name="tbxDatasetReferenceDate" id="tbxDatasetReferenceDate" value="2000-01-01T00:00:00"></td>
+        </tr>
+        <tr>
+            <td>Dataset Responsible Party</td>
+            <td class="core"><input class="core" type="text" name="tbxDatasetResponsibleParty" id="tbxDatasetResponsibleParty"></td>
+        </tr>
+		<tr>
+            <td>Dataset Responsible Party Organization</td>
+            <td class="core"><input class="core" type="text" name="tbxDatasetResponsiblePartyOrganization" id="tbxDatasetResponsiblePartyOrganization"></td>
+        </tr>
+		<tr>
+            <td>Dataset Responsible Party Position</td>
+            <td class="core"><input class="core" type="text" name="tbxDatasetResponsiblePartyPosition" id="DatasetResponsiblePartyPosition"></td>
+        </tr>
+        <tr>
+            <td>Dataset Language</td>
+            <td class="core"><input class="core" type="text" name="tbxDatasetLanguage" id="tbxDatasetLanguage" value="en"></td>
+        </tr>        
+        <tr>
+            <td>Dataset Character set</td>
+            <td class="core"><input class="core" type="text" name="tbxDatasetCharacterSet" id="tbxDatasetCharacterSet" value="utf8"></td>
+        </tr>        
+        <tr>
+            <td>Dataset Topic Category</td>
+            <td class="core"><input class="core" type="text" name="tbxDatasetTopicCategory" id="tbxDatasetTopicCategory"></td>
+        </tr>        
+        <tr>
+            <td>Dataset Scale</td>
+            <td class="core"><input class="core" type="text" name="tbxDatasetScale" id="tbxDatasetScale"></td>
+        </tr>        
+        <tr>
+            <td>Dataset Abstract</td>
+            <td class="core"><input class="core" type="text" name="tbxDatasetAbstract" id="tbxDatasetAbstract"></td>
+        </tr>        
+        <tr>
+            <td>Dataset Format Name</td>
+            <td class="core"><input class="core" type="text" name="tbxDatasetFormatName" id="tbxDatasetFormatName" value="shp"></td>
+        </tr>        
+        <tr>
+            <td>Dataset Format Version</td>
+            <td class="core"><input class="core" type="text" name="tbxDatasetFormatVersion" id="tbxDatasetFormatVersion" value="v1.0"></td>
+        </tr>        
+    </table>
+    
+    <br>
+    
+    <table class="core">
+        <tr><th colspan="2">Spatial Information</th></tr>
+        <tr>
+            <td>West Bound Longitude</td>
+            <td class="core"><input class="core" type="text" name="tbxSpatialWest" id="tbxSpatialWest" value="-180"></td>
+        </tr>
+        <tr>
+            <td>South Bound Latitude</td>
+            <td class="core"><input class="core" type="text" name="tbxSpatialSouth" id="tbxSpatialSouth" value="-90"></td>
+        </tr>
+        <tr>
+            <td>East Bound Longitude</td>
+            <td class="core"><input class="core" type="text" name="tbxSpatialEast" id="tbxSpatialEast" value="180"></td>
+        </tr>
+        <tr>
+            <td>North Bound Latitude</td>
+            <td class="core"><input class="core" type="text" name="tbxSpatialNorth" id="tbxSpatialNorth" value="90"></td>
+        </tr>        
+        <tr>
+            <td>Temporal Extent Begin Date (yyyy-mm-ddThh:mm:ss)</td>
+            <td class="core"><input class="core" type="text" name="tbxSpatialBeginDate" id="tbxSpatialBeginDate" value="2000-01-01T00:00:00"></td>
+        </tr>
+        <tr>
+            <td>Temporal Extent End Date (yyyy-mm-ddThh:mm:ss)</td>
+            <td class="core"><input class="core" type="text" name="tbxSpatialEndDate" id="tbxSpatialEndDate" value="2000-01-01T00:00:00"></td>
+        </tr>
+        <tr>
+            <td>Minimum Vertical Extent</td>
+            <td class="core"><input class="core" type="text" name="tbxSpatialVerticalExtentMinimum" id="tbxSpatialVerticalExtentMinimum" value="0"></td>
+        </tr>
+        <tr>
+            <td>Maximum Vertical Extent</td>
+            <td class="core"><input class="core" type="text" name="tbxSpatialMaximum" id="tbxSpatialMaximum" value="1"></td>
+        </tr>
+        <tr>
+            <td>Vertical Extent Units</td>
+            <td class="core"><input class="core" type="text" name="tbxSpatialVerticalExtentUnits" id="tbxSpatialVerticalExtentUnits" value="Meters"></td>
+        </tr>
+        <tr>
+            <td>Vertical Extent Datum</td>
+            <td class="core"><input class="core" type="text" name="tbxSpatialVerticalExtentDatum" id="tbxSpatialVerticalExtentDatum" value="SRS"></td>
+        </tr>        
+        <tr>
+            <td>Spatial Representation</td>
+            <td class="core"><input class="core" type="text" name="tbxSpatialRepresentation" id="tbxSpatialRepresentation" value="grid"></td>
+        </tr>
+        <tr>
+            <td>Spatial Reference System (SRS)</td>
+            <td class="core"><input class="core" type="text" name="tbxSpatialReferenceSystem" id="tbxSpatialReferenceSystem" value="SRS4326"></td>
+        </tr>
+        <tr>
+            <td>Linage Statement</td>
+            <td class="core"><input class="core" type="text" name="tbxSpatialLinageStatement" id="tbxSpatialLinageStatement" value=""></td>
+        </tr>
+        
+        <tr>
+            <td>Online Resource URL</td>
+            <td class="core"><input class="core" type="text" name="tbxSpatialOnlineResourceURL" id="tbxSpatialOnlineResourceURL" value="http://here.com"></td>
+        </tr>
+        <tr>
+            <td>Online Resource Protocol</td>
+            <td class="core"><input class="core" type="text" name="tbxSpatialOnlineResourceProtocol" id="tbxSpatialOnlineResourceProtocol" value="http"></td>
+        </tr>
+         <tr>
+            <td>Online Resource Name</td>
+            <td class="core"><input class="core" type="text" name="tbxSpatialOnlineResourceName" id="tbxSpatialOnlineResourceName" value=""></td>
+        </tr>
+         <tr>
+            <td>Online Resource Description</td>
+            <td class="core"><input class="core" type="text" name="tbxSpatialOnlineResourceDescription" id="tbxSpatialOnlineResourceDescription" value=""></td>
+        </tr>        
+    </table>
+    
+    <br>
+    
+    <table class="core">
+        <tr><th colspan="2">Metadata Information</th></tr>
+        <tr>
+            <td>File Identifier</td>
+            <td class="core"><input class="core" type="text" name="tbxMetadataFileIdentifier" id="tbxMetadataFileIdentifier"></td>
+        </tr>
+        <tr>
+            <td>Standard Name</td>
+            <td class="core"><input class="core" type="text" name="tbxMetadataStandardName" id="tbxMetadataStandardName" value="ISO 19139"></td>
+        </tr>
+        <tr>
+            <td>Standard Version</td>
+            <td class="core"><input class="core" type="text" name="tbxMetadataStandardVersion" id="tbxMetadataStandardVersion" value="V1.0"></td>
+        </tr>
+        <tr>
+            <td>Languange</td>
+            <td class="core"><input class="core" type="text" name="tbxMetadataLanguage" id="tbxMetadataLanguage" value="en"></td>
+        </tr>
+        <tr>
+            <td>Character set</td>
+            <td class="core"><input class="core" type="text" name="tbxMetadataCharacterSet" id="tbxMetadataCharacterSet" value="utf8"></td>
+        </tr>
+        <tr>
+            <td>Time Stamp (yyyy-mm-ddThh:mm:ss)</td>
+            <td class="core"><input class="core" type="text" name="tbxMetadataTimeStamp" id="tbxMetadataTimeStamp" value="2000-01-01T00:00:00"></td>
+        </tr>        
+        <tr>
+            <td>Point of Contact Individual Name</td>
+            <td class="core"><input class="core" type="text" name="tbxMetadataPointOfContactIndividualName" id="tbxMetadataPointOfContactIndividualName"></td>
+        </tr>
+        <tr>
+            <td>Point of Contact Organization Name</td>
+            <td class="core"><input class="core" type="text" name="tbxMetadataPointOfContactOrganizationName" id="tbxMetadataPointOfContactOrganizationName"></td>
+        </tr>
+        <tr>
+            <td>Point of Contact Position Name</td>
+            <td class="core"><input class="core" type="text" name="tbxMetadataPointOfContactPositionName" id="tbxMetadataPointOfContactPositionName"></td>
+        </tr>
+         <tr>
+            <td>Point of Contact Role</td>
+            <td class="core"><input class="core" type="text" name="tbxMetadataPointOfContactRole" id="tbxMetadataPointOfContactRole"></td>
+        </tr>
+    </table>    
+    
+    <input type="button" value="Submit" onclick="submitRecord()">
+  </body>
+  <script>  
+    function submitRecord()
+    {
+        if(validateFormValues())
+        {
+            document.getElementById("core_fields_form").submit()            
+        }
+        else
+        {
+            return;
+        }
+    }
+  
+    function isValidDate(theDate)
+    {
+        // 2001-12-12T00:00:00
+        var parts = theDate.split("T")
+        if (parts.length != 2)
+        {
+            return false;
+        }
+        var date = parts[0]
+        var time = parts[1]
+        if (date.split("-").length != 3) return false;
+        if (time.split(":").length != 3)return false;
+        var datePart = date.split("-")
+        var timePart = time.split(":")
+        if (datePart[0].length != 4) return false;
+        if (datePart[1].length != 2) return false;
+        if (datePart[2].length != 2) return false;
+        if (!isNumber(datePart[0])) return false;
+        if (!isNumber(datePart[1])) return false;
+        if (!isNumber(datePart[2])) return false;
+        
+        if (timePart[0].length != 2) return false;
+        if (timePart[1].length != 2) return false;
+        if (timePart[2].length != 2) return false;
+        if (!isNumber(timePart[0])) return false;
+        if (!isNumber(timePart[1])) return false;
+        if (!isNumber(timePart[2])) return false;        
+        return true;
+    }
+    
+    function isNumber(theNumber)
+    {
+        var num = parseFloat(theNumber)
+        if (isNaN(num))
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+  
+    function validateFormValues()
+    {
+        //dataset values
+        var DatasetTitle = document.getElementById("tbxDatasetTitle").value
+        var DatasetReferenceDate = document.getElementById("tbxDatasetReferenceDate").value
+        var DatasetResponsibleParty = document.getElementById("tbxDatasetResponsibleParty").value
+        var DatasetResponsiblePartyOrganization = document.getElementById("tbxDatasetResponsiblePartyOrganization").value
+        var DatasetResponsiblePartyPosition = document.getElementById("tbxDatasetResponsiblePartyPosition").value
+		
+        var DatasetLanguage = document.getElementById("tbxDatasetLanguage").value
+        var DatasetCharacterSet = document.getElementById("tbxDatasetCharacterSet").value
+        var DatasetTopicCategory = document.getElementById("tbxDatasetTopicCategory").value
+        var DatasetScale = document.getElementById("tbxDatasetScale").value
+        var DatasetAbstract = document.getElementById("tbxDatasetAbstract").value
+        var DatasetFormatName = document.getElementById("tbxDatasetFormatName").value
+        var DatasetFormatVersion = document.getElementById("tbxDatasetFormatVersion").value
+        
+        //validate dataset values  
+        if (DatasetTitle.length == 0){
+            alert("Please give a valid title.\nAll values need to be completed");return false;
+        } 
+        if (!isValidDate(DatasetReferenceDate)){
+            alert("Please give a valid reference date.\nAll values need to be completed");return false;
+        } 
+        if (DatasetResponsibleParty.length == 0){
+            alert("Please give a valid responsible party.\nAll values need to be completed");return false;
+        } 
+		if (DatasetResponsiblePartyOrganization.length == 0){
+            alert("Please give a valid responsible party organization.\nAll values need to be completed");return false;
+        } 
+		if (DatasetResponsiblePartyPosition.length == 0){
+            alert("Please give a valid responsible party position.\nAll values need to be completed");return false;
+        } 
+        if (DatasetLanguage.length == 0){
+            alert("Please give a valid data set language.\nAll values need to be completed");return false;
+        } 
+        if (DatasetCharacterSet.length == 0){
+            alert("Please give a valid data set character set.\nAll values need to be completed");return false;
+        } 
+        if (DatasetTopicCategory.length == 0){
+            alert("Please give a valid data set topic category.\nAll values need to be completed");return false;
+        }  
+        if (!isNumber(DatasetScale)){
+            alert("Please give a valid dataset scale.\nAll values need to be completed");return false;
+        }  
+        if (DatasetAbstract.length == 0){
+            alert("Please give a valid data set abstract.\nAll values need to be completed");return false;
+        }  
+        if (DatasetFormatName.length == 0){
+            alert("Please give a valid data set format name.\nAll values need to be completed");return false;
+        }  
+        if (DatasetFormatVersion.length == 0){
+            alert("Please give a valid data set format version.\nAll values need to be completed");return false;
+        }      
+        
+        //spatial fields
+        var SpatialWest = document.getElementById("tbxSpatialWest").value
+        var SpatialSouth = document.getElementById("tbxSpatialSouth").value
+        var SpatialEast = document.getElementById("tbxSpatialEast").value
+        var SpatialNorth = document.getElementById("tbxSpatialNorth").value
+        var SpatialBeginDate = document.getElementById("tbxSpatialBeginDate").value
+        var SpatialEndDate = document.getElementById("tbxSpatialEndDate").value
+        var SpatialVerticalExtentMinimum = document.getElementById("tbxSpatialVerticalExtentMinimum").value
+        var SpatialMaximum = document.getElementById("tbxSpatialMaximum").value
+        var SpatialVerticalExtentUnits = document.getElementById("tbxSpatialVerticalExtentUnits").value
+        var SpatialVerticalExtentDatum = document.getElementById("tbxSpatialVerticalExtentDatum").value
+        var SpatialRepresentation = document.getElementById("tbxSpatialRepresentation").value
+        var SpatialReferenceSystem = document.getElementById("tbxSpatialReferenceSystem").value
+        var SpatialLinageStatement = document.getElementById("tbxSpatialLinageStatement").value
+        var SpatialOnlineResourceURL = document.getElementById("tbxSpatialOnlineResourceURL").value
+        var SpatialOnlineResourceProtocol = document.getElementById("tbxSpatialOnlineResourceProtocol").value
+        var SpatialOnlineResourceName = document.getElementById("tbxSpatialOnlineResourceName").value
+        var SpatialOnlineResourceDescription = document.getElementById("tbxSpatialOnlineResourceDescription").value
+        
+        if (!isNumber(SpatialWest)){
+            alert("Please give a valid West Bound Longitude.\nAll values need to be completed");return false;
+        } 
+        if (!isNumber(SpatialSouth)){
+            alert("Please give a valid South Bound Longitude.\nAll values need to be completed");return false;
+        } 
+        if (!isNumber(SpatialEast)){
+            alert("Please give a valid East Bound Longitude.\nAll values need to be completed");return false;
+        } 
+        if (!isNumber(SpatialNorth)){
+            alert("Please give a valid North Bound Longitude.\nAll values need to be completed");return false;
+        } 
+        if (!isValidDate(SpatialBeginDate)){
+            alert("Please give a valid Temporal extent begin date.\nAll values need to be completed");return false;
+        } 
+        if (!isValidDate(SpatialEndDate)){
+            alert("Please give a valid Temporal extent end date.\nAll values need to be completed");return false;
+        } 
+        if (!isNumber(SpatialVerticalExtentMinimum)){
+            alert("Please give a valid Minimum Vertical Extent.\nAll values need to be completed");return false;
+        } 
+        if (!isNumber(SpatialMaximum)){
+            alert("Please give a valid Maximum Vertical Extent.\nAll values need to be completed");return false;
+        } 
+        if (SpatialVerticalExtentUnits.length == 0){
+            alert("Please give a valid Vertical Extent Units.\nAll values need to be completed");return false;
+        } 
+        if (SpatialVerticalExtentDatum.length == 0){
+            alert("Please give a valid Vertical Extent Datum.\nAll values need to be completed");return false;
+        } 
+        if (SpatialRepresentation.length == 0){
+            alert("Please give a valid Spatial Representation.\nAll values need to be completed");return false;
+        } 
+        if (SpatialReferenceSystem.length == 0){
+            alert("Please give a valid Spatial Reference System.\nAll values need to be completed");return false;
+        } 
+        if (SpatialLinageStatement.length == 0){
+            alert("Please give a valid Linage Statement.\nAll values need to be completed");return false;
+        } 
+        if (SpatialOnlineResourceURL.length == 0){
+            alert("Please give a valid Online Resource URL.\nAll values need to be completed");return false;
+        } 
+        if (SpatialOnlineResourceProtocol.length == 0){
+            alert("Please give a valid Online Resource Protocol.\nAll values need to be completed");return false;
+        } 
+        if (SpatialOnlineResourceName.length == 0){
+            alert("Please give a valid Online Resource Name.\nAll values need to be completed");return false;
+        } 
+        if (SpatialOnlineResourceDescription.length == 0){
+            alert("Please give a valid Online Resource Description.\nAll values need to be completed");return false;
+        } 
+        
+        //metadata values
+        var MetadataFileIdentifier = document.getElementById("tbxMetadataFileIdentifier").value
+        var MetadataStandardName = document.getElementById("tbxMetadataStandardName").value
+        var MetadataStandardVersion = document.getElementById("tbxMetadataStandardVersion").value
+        var MetadataLanguage = document.getElementById("tbxMetadataLanguage").value
+        var MetadataCharacterSet = document.getElementById("tbxMetadataCharacterSet").value
+        var MetadataTimeStamp = document.getElementById("tbxMetadataTimeStamp").value
+        var MetadataPointOfContactIndividualName = document.getElementById("tbxMetadataPointOfContactIndividualName").value
+        var MetadataPointOfContactOrganizationName = document.getElementById("tbxMetadataPointOfContactOrganizationName").value
+        var MetadataPointOfContactPositionName = document.getElementById("tbxMetadataPointOfContactPositionName").value
+        var MetadataPointOfContactRole = document.getElementById("tbxMetadataPointOfContactRole").value
+        
+        if (MetadataFileIdentifier.length == 0){
+            alert("Please give a valid File Identifier.\nAll values need to be completed");return false;
+        } 
+        if (MetadataStandardName.length == 0){
+            alert("Please give a valid Standard Name.\nAll values need to be completed");return false;
+        } 
+        if (MetadataStandardVersion.length == 0){
+            alert("Please give a valid Standard Version.\nAll values need to be completed");return false;
+        } 
+        if (MetadataLanguage.length == 0){
+            alert("Please give a valid Languange.\nAll values need to be completed");return false;
+        } 
+        if (MetadataCharacterSet.length == 0){
+            alert("Please give a valid Character set.\nAll values need to be completed");return false;
+        } 
+        if (!isValidDate(MetadataTimeStamp)){
+            alert("Please give a valid Time Stamp.\nAll values need to be completed");return false;
+        } 
+        if (MetadataPointOfContactIndividualName.length == 0){
+            alert("Please give a valid Point of Contact Individual Name.\nAll values need to be completed");return false;
+        } 
+        if (MetadataPointOfContactOrganizationName.length == 0){
+            alert("Please give a valid Point of Contact Organization Name.\nAll values need to be completed");return false;
+        } 
+        if (MetadataPointOfContactPositionName.length == 0){
+            alert("Please give a valid Point of Contact Position Name.\nAll values need to be completed");return false;
+        } 
+        if (MetadataPointOfContactRole.length == 0){
+            alert("Please give a valid Point of Contact Role.\nAll values need to be completed");return false;
+        } 
+        return true;        
+    }
+  </script> 
+	</div>
+	</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

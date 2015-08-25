@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<object name="portal_factory" meta_type="Plone Factory Tool">
+ <factorytypes>
+  <type portal_type="Communities"/>
+  <type portal_type="Community"/>
+  <type portal_type="Content"/>
+  <type portal_type="Ontology"/>
+  <type portal_type="STDSetup"/>
+  <type portal_type="CommonFields"/>
+  <type portal_type="CSIRUser"/>
+  <type portal_type="StandardSetups"/>
+  <type portal_type="Ontologies"/>
+  <type portal_type="SANSSetup"/>
+  <type portal_type="SANSFields"/>
+  <type portal_type="CommonSetup"/>
+  <type portal_type="Fields"/>
+  <type portal_type="ISO19139Fields"/>
+  <type portal_type="ISO19139Setup"/>
+  <type portal_type="ISO19115Setup"/>
+  <type portal_type="ISO19115Fields"/>
+  <type portal_type="EMLSetup"/>
+  <type portal_type="EMLFields"/>
+  <type portal_type="DCSetup"/>
+  <type portal_type="DCFields"/>
+  <type portal_type="CommunitySearch"/>
+  <type portal_type="MetadataCollection"/>
+  <type portal_type="MetadataContainer"/>
+ </factorytypes>
+</object>

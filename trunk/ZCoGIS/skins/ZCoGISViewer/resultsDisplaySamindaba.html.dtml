@@ -1,0 +1,130 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<LINK REL=StyleSheet HREF="samindaba.css" TYPE="text/css">
+<script src="js/RubberRectangle.js"></script>
+<script src="js/iframePost.js"></script>
+<script src="js/mapUtils.js"></script>
+<script src="js/templates.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/pan.js"></script>
+<script src="config.js"></script>
+<script src="reportMappings.js"></script>
+<style>
+.ttd{border:thin solid gray;}
+
+td{
+	border:thin solid gray;
+}
+th{
+	border: thin solid silver;
+	text-align:left;
+}
+.button{
+	border:thin solid gray;
+	width:70px;
+	font-size:8pt;
+}
+.buttonLarge{
+	border:thin solid gray;
+	width:170px;
+}
+table{
+	border:thin solid black;
+}
+</style>
+</HEAD>
+
+<BODY>
+	
+<div id="lLocality">
+	<TABLE>
+		<TR>
+			<TD>Host Rock</TD>
+			<TD><INPUT TYPE="checkbox" id="hostRock"></TD>
+		</TR>
+		<TR>
+			<TD>Ore Body</TD>
+			<TD><INPUT TYPE="checkbox" id="oreBody"></TD>
+		</TR>
+		<TR>
+			<TD>Sample</TD>
+			<TD><INPUT TYPE="checkbox" id="sample"></TD>
+		</TR>
+		<TR>
+			<TD>Data Reference</TD>
+			<TD><INPUT TYPE="checkbox" id="dataReference"></TD>
+		</TR>
+		<TR>
+			<TD>Synopsis</TD>
+			<TD><INPUT TYPE="checkbox" id="synopsis"></TD>
+		</TR>
+	</TABLE>
+	<input type="button" class="button" value="Get Report" onclick="getLocalityReportOptions()">
+</div>
+
+</BODY>
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+var str = window.opener.htmlStr
+document.body.innerHTML = document.body.innerHTML + str;
+
+function getLocalityReportOptions()
+{
+	document.getElementById('lLocality').style.visibility = 'hidden'
+	var hasHostRock = document.getElementById('hostRock').checked
+	var hasOreBody = document.getElementById('oreBody').checked
+	var hasSample = document.getElementById('sample').checked
+	var hasDataReference = document.getElementById('dataReference').checked
+	var hasSynopsis = document.getElementById('synopsis').checked
+
+	var hostRock = hasHostRock == true ? 1 : 0
+	var oreBody = hasOreBody == true ? 1 : 0
+	var sample = hasSample == true ? 1 : 0
+	var dataReference = hasDataReference == true ? 1 : 0	
+	var synopsis = hasSynopsis == true ? 1 : 0
+    var theURL = reportMappings['locality']['UQ_REF'] + referenceNumber + '&PRINT_DATA=' + dataReference + '&PRINT_HOSTROCK=' + hostRock + '&PRINT_OREBODY=' + oreBody + '&PRINT_SAMPLE=' + sample + '&PRINT_SYNOPSIS=' + synopsis    
+	
+	getReport(theURL)
+}
+
+function showLocality(event,SAM)
+{		
+	referenceNumber = SAM
+	if (window.document.body.scrollTop != undefined)
+	{
+		scrollHeight = window.document.body.scrollTop
+	}
+	else
+	{
+		scrollHeight = window.scrollY
+	}	
+	
+	if (window.document.body.scrollLeft != undefined)
+	{
+		scrollWidth = window.document.body.scrollLeft
+	}
+	else
+	{
+		scrollWidth = window.scrollX
+	}	
+	
+	if (event.target != undefined)
+	{
+		theTarget = event.target
+	}
+	else
+	{
+	theTarget = event.srcElement
+	}
+	theID = theTarget.getAttribute('id') 
+	
+	var xPos = event.clientX + scrollWidth
+	var yPos = event.clientY + scrollHeight
+	document.getElementById('lLocality').style.visibility = 'visible'
+	document.getElementById('lLocality').style.left = xPos
+	document.getElementById('lLocality').style.top = yPos
+}
+//-->
+</SCRIPT>
+</HTML>

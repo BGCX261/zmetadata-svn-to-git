@@ -1,0 +1,1 @@
+<tal:xml replace="python: here.downloadXML(request)"/>

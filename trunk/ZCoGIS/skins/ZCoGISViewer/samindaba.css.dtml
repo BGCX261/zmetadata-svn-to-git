@@ -1,0 +1,130 @@
+body {color:black; background-color:white; font-family:Verdana, Helvetica, sans-serif; font-size:8pt; width:100%; background-image: url (images/boek.jpg); background-repeat: no-repeat;}
+h3 {color:black; background:#99CCFF; font-family:Verdana, sans-serif, Helvetica; font-size:10pt; text-align:left; text-transform:uppercase;}
+h3.table {color:black; background:#99CCFF; font-family:Verdana, sans-serif, Helvetica; text-transform:uppercase; font-size:10pt;}
+h4 {color:#3366FF; background-color:white; font-family:Verdana, Helvetica, sans-serif; font-size:8pt; text-align:left}
+h6 {color:#1711ff; background-color:white; font-family:Verdana, Helvetica, sans-serif; font-size:7pt; text-align:left}
+ul {list-style-type: disc; font-family:Verdana, Helvetica, sans-serif; font-size:8pt; text-align:justify}
+ol {font-family:Verdana, Helvetica, sans-serif; font-size:8pt}
+li {list-style-type: circle; font-family:Verdana, Helvetica, sans-serif; font-size:8pt}
+li li {list-style-type: square; font-family:Verdana, Helvetica, sans-serif; font-size:8pt}
+li li li {list-style-type: circle; font-family:Verdana, Helvetica, sans-serif; font-size:8pt}
+table {font-family:Verdana, Helvetica, sans-serif; font-size:8pt;}
+td {
+	font-family:Verdana, Helvetica, sans-serif; font-size:8pt;
+	text-align:left; vertical-align:top;
+	border: thin solid silver;
+}
+td.seismo {font-family:Verdana, Helvetica, sans-serif; font-size:8pt; text-align:center;}
+td.logo {text-align:right;}
+td.navigation {background-image: url (images/boek.jpg); background-repeat: no-repeat;}
+p {font-family:Verdana, Helvetica, sans-serif; font-size:8pt; text-align:justify;}
+p.footer {font-family:Verdana, Helvetica, sans-serif; font-size:7pt; text-align:justify;}
+hr {color:#C0C0C0; background-color:white; height:2px;}
+blockquote {text-align:justify}
+a:active {background-color: #C0C0C0; color: black; text-decoration: none;}
+a:hover {background-color: #C38E4E; color: white; text-decoration: none;}
+img.flag {float:right;}
+img.logo {float:right;}
+p.info {color:red; background-color:white;}
+img.hrefimage {background-color: white;}
+td.date {border-color:#C0C0C0; border-width:1px; width:50%; border-style:solid; font-size:8pt; text-align:left; vertical-align:top; padding:5px;}
+p.date {color:#ffffff; background-color:#7b8c5a; font-weight:bold; font-style:italic; text-align:center; font-size:8pt;} 
+
+
+.example {
+	color:#3366FF; background-color:white; font-family:Verdana,Helvetica, sans-serif;
+	font-size:8pt;
+	text-align:left;
+	font-weight:bold;
+}
+
+#container{
+	position:relative;
+	/*border:thin solid gray;*/	
+}
+.tab{
+	/*background-color:#B0C4DE;*/
+	background-color:white;
+	position:absolute;
+	visibility:hidden;
+	border:thin solid #6D92C2;
+	width:452px;
+	height:160px;
+}
+.tabOn{
+	/*background-color:#B0C4DE;*/
+	background-color:white;
+	position:absolute;
+	visibility:visible;
+	border:thin solid #6D92C2;
+	width:452px;
+	height:160px;
+}
+
+.tabButton{
+	border:thin solid gray;
+	background-color:#778899;
+	color:white;
+	font-weight:bold;	
+}
+
+.button{
+	border:thin solid gray;
+	/*background-color:#778899;
+	color:white;
+	font-weight:bold;
+	font-size:8pt;*/
+}
+.plainButton{
+	border:thin solid gray;
+}
+.sizer{
+	width:110px;
+}
+
+.ttd{border:thin solid gray;}
+
+
+th{
+	border: thin solid silver;
+	text-align:left;
+}
+.buttonLarge{
+	border:thin solid gray;
+/*	background-color:#778899;
+	color:white;	
+	border:thin solid gray;*/
+	width:165px;
+}
+table{
+	border:thin solid black;
+}
+
+.header{
+	background-color: #FFC363;
+}
+
+.rows{	
+	background-color: #FFA642;
+}
+
+#lRefine{
+	position:absolute;
+	visibility:visible;
+	border:thin solid gray;
+	top:205px;
+	width:452px;
+}
+
+#lLocality{
+	border:thin solid gray;
+	position:absolute;
+	visibility:hidden;
+	margin:0px;
+	padding:0px;
+	z-index:6;	
+	background-color:#d6e7ef;
+	overflow:auto;	
+	top:20px;
+	left:20px;
+}

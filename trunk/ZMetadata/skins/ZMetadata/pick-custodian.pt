@@ -1,0 +1,71 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+<body>
+
+
+<div metal:fill-slot="main" tal:define="obj python:here.getObjectforUID(request['id']);
+                                        ">     
+	<h2>
+		Upload Metadata for "<tal:name replace="obj/title_or_id" />"
+	</h2>
+	
+	<p>You can upload metadata for this document in the custodians you belong to.</p>
+	<p>Please select a location where to upload metadata for this data object.</p>
+	<p tal:define="title obj/title_or_id;
+	               url obj/absolute_url;">
+		<a tal:attributes="href url"
+		   tal:content="string:Click here if you wish to go back to '${title}'">
+		</a>
+	</p>
+	
+	<h3>
+		Available Custodian Locations:
+	</h3>
+	
+	<form tal:attributes="action string:${portal_url}/metadata_tool/uploadMetadataFromPortalAction" method="get" accept-charset="utf-8">
+		<input type="hidden" name="id" tal:attributes="value request/id" id="id">
+		<tal:locations define="custodians python: here.metadata_tool.getAllMyMetadataLocations()">
+			<dl>
+				<ul tal:repeat="custodian custodians/keys">
+					<li>
+						<h3 tal:content="custodian/title_or_id">
+							 
+						</h3>
+					</li>
+					<ul>
+						<li tal:repeat="collection python:custodians[custodian]">
+							<!-- First ITem -->
+							<input tal:condition="python: custodian == custodians.keys()[0]" type="radio" name="collectionLocation" 
+									tal:attributes="value collection/UID" id="collectionLocation" checked>
+							<!-- Not First ITem -->
+							<input tal:condition="python: custodian != custodians.keys()[0]" type="radio" name="collectionLocation" 
+									tal:attributes="value collection/UID" id="collectionLocation">
+							<tal:name replace="collection/title_or_id">
+							</tal:name>
+							<!--a tal:attributes="href python: '/uploadMetadataFromPortalAction?id=%s&custodianLocation=%s'
+							                                      % (request.id, collection.absolute_url(1))">
+								<tal:name replace="collection/title_or_id">
+								</tal:name>
+							</a-->
+						</li>
+					</ul>
+				</ul>
+			</dl>
+		</tal:locations>
+		<label for="containerName">Metadata Container Name</label>
+		<input type="text" name="containerName" tal:attributes="value python:request['id'].split('/')[-1]" id="containerName">
+		<p class="discreet">
+			If there is no container available for this data object in the particular custodian, 
+			this name will be used to identify the folder, otherwise if there already
+			exists a container for this data object, this name will be ignored.
+		</p>
+		
+		<p><input type="submit" value="Submit"></p>
+	</form>
+
+	
+</div>
+</body>
+</html>

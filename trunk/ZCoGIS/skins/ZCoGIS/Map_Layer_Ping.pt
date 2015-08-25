@@ -1,0 +1,46 @@
+<html metal:use-macro="here/main_template/macros/master">
+    <body>
+        <div metal:fill-slot="main">
+			<style>
+			td{
+				text-align:left;
+			}
+
+			.smallText{
+				font-size:8pt;
+			}
+
+			.td{
+				border:thin solid gray;
+			}
+			.th{
+				border:thin solid gray;
+				background-color:silver;
+			}
+			</style>
+
+			
+			<div tal:define="global wmsTime here/pingWMSLayer"></div>
+			<div tal:define="global wfsTime here/pingWFSLayer"></div>
+			
+			<h3>Ping Times for layer</h3>
+			
+			<table border="1">
+                <tr>
+                    <th>WMS (sec)</th> <th>WFS (sec)</th>
+                </tr>
+                <tr>
+                    <td tal:content="wmsTime"></td>
+                    <td tal:content="wfsTime"></td>
+                </tr>
+			</table>
+			
+
+			
+		
+			
+			
+        </div>
+    </body>
+</html>
+

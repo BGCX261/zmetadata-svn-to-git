@@ -1,0 +1,35 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+<body>
+
+<div metal:fill-slot="main">
+
+	<h2 tal:content="here/title_or_id">
+	</h2>
+	
+	<p>
+		Here is a quick overview of the default values that will be populated in the search.
+	</p>
+
+	<p>
+		<a tal:attributes="href container/aq_parent/absolute_url">Click here to select which fields will be used during search for this standard.</a>
+	</p>
+
+	<tal:fields define="fields view/defaultValuesForFields">
+		<table>
+			<tal:field repeat="field fields">
+				<tr tal:define="name python: field[0];label python: field[1];value python: field[2];">
+					<td tal:content="label"></td>
+					<td>:&nbsp;</td>
+					<td style="border: 1px solid black;" tal:content="python: value or '<blank>'"></td>
+				</tr>
+			</tal:field>
+		</table>
+	</tal:fields>
+
+</div>
+
+</body>
+</html>

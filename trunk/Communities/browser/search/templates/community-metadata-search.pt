@@ -1,0 +1,379 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+<body>
+
+<div metal:fill-slot="main">
+	<style>
+		.divMainContainer{position:relative;visibility:visible; border:thin solid gray;}
+		.customSelect{width:300px;}
+		.customText{width:300px;}
+		.defaultDivHidden{position:absolute;visibility:hidden;border:thin solid gray;top:4px; left:0px;display:none;}
+		.defaultDivVisible{position:absolute;visibility:visible;border:thin solid gray;top:4px; left:0px;display:block;}		
+		.error{color:red;}
+	</style>
+    <script src="utils.js"> </script>	
+	<div tal:define="global thePath here/absolute_url"></div>
+	<div id="thePath" value="" tal:attributes="value here/absolute_url"></div>
+	
+	<div tal:define="global data view/data"></div>
+	<div tal:define="global standards python: data.keys()"></div>
+	
+	<h3>Search For Metadata</h3>
+	
+	<span tal:condition="python: options.has_key('errors')">
+		<span tal:define="global errorList options/errors">
+			<br>
+			<table>
+				<span tal:repeat="error errorList">
+					<tr>
+						<td class="error" tal:content="python: error.keys()[0]"></td>
+						<td class="error" tal:content="python: error.values()[0]"></td>
+					</tr>
+				</span>
+			</table>		
+			<br>
+		</span>
+		<!-- -render errors here-->
+	</span>
+	
+	<form method="post" action="" tal:attributes="action string:${here/absolute_url}">
+	<div id="divMainContainer" class="divMainContainer">
+		<div id="div_common">
+			<!-- COMMON render common fields-->
+			<span tal:condition="python: data.has_key('COMMON')">
+			<b>Common Metadata Fields</b> <br>
+			<table>
+				<span tal:repeat="reportField python: data['COMMON']">
+					<tr tal:define="fieldValue python: request.form.setdefault(reportField['name'], reportField['default'])">						
+						<td tal:content="python:reportField['label']"> </td>
+						<td>							
+						<!--  Special case for bounds -->
+						<span tal:condition="python: reportField['type'] == 'StringWidget' and reportField['name'] == 'common_Bounds'">						
+							<input class="customText" type="hidden" name="" value="" id="" tal:attributes="name python:reportField['name']; value fieldValue; id python:reportField['name']">
+														
+							<span tal:condition="python: 'common_Bounds_North' in request.form.keys()">
+								North<input type="text" name="common_Bounds_North" value="" id="common_Bounds_North" tal:attributes="value python: request.form['common_Bounds_North']">							
+							</span>
+							<span tal:condition="not: python: 'common_Bounds_North' in request.form.keys()">
+								North<input type="text" name="common_Bounds_North" value="" id="common_Bounds_North" >							
+							</span>
+							
+							<span tal:condition="python: 'common_Bounds_South' in request.form.keys()">
+								South<input type="text" name="common_Bounds_South" value="" id="common_Bounds_South" tal:attributes="value python: request.form['common_Bounds_South']">							
+							</span>
+							<span tal:condition="not: python: 'common_Bounds_South' in request.form.keys()">
+								South<input type="text" name="common_Bounds_South" value="" id="common_Bounds_South" >							
+							</span>
+							
+							<span tal:condition="python: 'common_Bounds_East' in request.form.keys()">
+								East<input type="text" name="common_Bounds_East" value="" id="common_Bounds_East" tal:attributes="value python: request.form['common_Bounds_East']">							
+							</span>
+							<span tal:condition="not: python: 'common_Bounds_East' in request.form.keys()">
+								East<input type="text" name="common_Bounds_East" value="" id="common_Bounds_East" >							
+							</span>
+							
+							<span tal:condition="python: 'common_Bounds_West' in request.form.keys()">
+								West<input type="text" name="common_Bounds_West" value="" id="common_Bounds_West" tal:attributes="value python: request.form['common_Bounds_West']">							
+							</span>
+							<span tal:condition="not: python: 'common_Bounds_West' in request.form.keys()">
+								West<input type="text" name="common_Bounds_West" value="" id="common_Bounds_West" >							
+							</span>
+							
+						</span>
+						
+						<span tal:condition="python: reportField['type'] == 'KeywordWidget'">						
+							<select class="customSelect" id="cbxOntology" name="cbxOntology" onchange="populateKeywords(this.id)">
+								<option></option>
+								<span tal:repeat="ont python: reportField['vocabulary'].keys()">
+									<option tal:content="ont" value="" tal:attributes="id ont; value python: '|'.join(reportField['vocabulary'][ont])"></option>
+								</span>								
+							</select>
+							
+							<select class="customSelect" id="common_Keywords_Filter" name="common_Keywords_Filter">
+								<option></option>								
+							</select>
+							<select class="customSelect" id="common_Keywords" name="common_Keywords" tal:attributes="name python:reportField['name']; id python:reportField['name']">
+								<option></option>								
+							</select>
+						</span>						
+						
+						<span tal:condition="python: reportField['type'] == 'StringWidget' and reportField['name'] != 'common_Bounds'">						
+							<input class="customText" type="text" name="" value="" id="" tal:attributes="name python:reportField['name']; value fieldValue; id python:reportField['name']">
+						</span>
+						<span tal:condition="python: reportField['type'] == 'SelectionWidget'">						
+							<select class="customSelect" id="" name="" tal:attributes="name python:reportField['name']; id python:reportField['name']">
+								<option></option>
+								<span tal:repeat="vocab python: reportField['vocabulary'].values()">
+									<option tal:content="vocab"></option>
+								</span>								
+							</select>
+						</span>
+						<span tal:condition="python: reportField['type'] == 'DateWidget'">
+							<input class="customText" type="text" name="" value="" id="" tal:attributes="name python:reportField['name']; value fieldValue; id python:reportField['name']">&nbsp;&nbsp;e.g yyyy-mm-dd
+						</span>
+						</td>
+					</tr>
+				</span>	
+			</table>
+			</span>				
+		</div>
+		
+		<br>		
+		
+		Select Standard &nbsp;<select id="cbxStandards" name="cbxStandards" class="customText" onchange="selectStandard()">						
+			<span tal:repeat="std options/standards">
+				<option tal:content="std"> </option>
+			</span>			
+		</select>		
+				
+		<div id="standardsContainer" class="divMainContainer">
+			<div id="div_dublincore" class="defaultDivVisible">
+				<!-- -DC  render the fields for the Dublin Core Standard -->
+				<span tal:condition="python: data.has_key('DublinCore')">
+				<table>
+					<span tal:repeat="reportField python: data['DublinCore']">
+						<tr tal:define="fieldValue python: request.form.setdefault(reportField['name'], reportField['default'])">							
+							<td tal:content="python:reportField['label']"> </td>
+							<td>						
+							<span tal:condition="python: reportField['type'] == 'StringWidget'">						
+								<input class="customText" type="text" name="" value="" id="" tal:attributes="name python:reportField['name']; value fieldValue; id python:reportField['name']">
+							</span>
+							<span tal:condition="python: reportField['type'] == 'SelectionWidget'">						
+								<select class="customSelect" id="" name="" tal:attributes="name python:reportField['name']; id python:reportField['name']">
+									<option></option>
+									<span tal:repeat="vocab python: reportField['vocabulary'].values()">
+										<option tal:content="vocab"></option>
+									</span>								
+								</select>
+							</span>
+							<span tal:condition="python: reportField['type'] == 'DateWidget'">
+								<input class="customText" type="text" name="" value="" id="" tal:attributes="name python:reportField['name']; value fieldValue; id python:reportField['name']">
+							</span>
+							</td>
+						</tr>
+					</span>	
+				</table>	
+				</span>					
+			</div>
+			
+			<div id="div_eml" class="defaultDivHidden">
+				<span tal:condition="python: data.has_key('EML')">
+				<table>
+					<span tal:repeat="reportField python: data['EML']">
+						<tr tal:define="fieldValue python: request.form.setdefault(reportField['name'], reportField['default'])">							
+							<td tal:content="python:reportField['label']"> </td>
+							<td>						
+							<span tal:condition="python: reportField['type'] == 'StringWidget'">						
+								<input class="customText" type="text" name="" value="" id="" tal:attributes="name python:reportField['name']; value fieldValue; id python:reportField['name']">
+							</span>
+							<span tal:condition="python: reportField['type'] == 'SelectionWidget'">						
+								<select class="customSelect" id="" name="" tal:attributes="name python:reportField['name']; id python:reportField['name']">
+									<option></option>
+									<span tal:repeat="vocab python: reportField['vocabulary'].values()">
+										<option tal:content="vocab"></option>
+									</span>								
+								</select>
+							</span>
+							<span tal:condition="python: reportField['type'] == 'DateWidget'">
+								<input class="customText" type="text" name="" value="" id="" tal:attributes="name python:reportField['name']; value fieldValue; id python:reportField['name']">
+							</span>
+							</td>
+						</tr>
+					</span>	
+				</table>	
+				</span>	
+			</div>		
+			
+			<div id="div_sans1878" class="defaultDivHidden">
+				<span tal:condition="python: data.has_key('SANS1878')">
+				<table>
+					<span tal:repeat="reportField python: data['SANS1878']">
+						<tr tal:define="fieldValue python: request.form.setdefault(reportField['name'], reportField['default'])">							
+							<td tal:content="python:reportField['label']"> </td>
+							<td>						
+							<span tal:condition="python: reportField['type'] == 'StringWidget'">						
+								<input class="customText" type="text" name="" value="" id="" tal:attributes="name python:reportField['name']; value fieldValue; id python:reportField['name']">
+							</span>
+							<span tal:condition="python: reportField['type'] == 'SelectionWidget'">						
+								<select class="customSelect" id="" name="" tal:attributes="name python:reportField['name']; id python:reportField['name']">
+									<option></option>
+									<span tal:repeat="vocab python: reportField['vocabulary'].values()">
+										<option tal:content="vocab"></option>
+									</span>								
+								</select>
+							</span>
+							<span tal:condition="python: reportField['type'] == 'DateWidget'">
+								<input class="customText" type="text" name="" value="" id="" tal:attributes="name python:reportField['name']; value fieldValue; id python:reportField['name']">
+							</span>
+							</td>
+						</tr>
+					</span>	
+				</table>	
+				</span>	
+			</div>
+			
+			<div id="div_iso19115" class="defaultDivHidden">
+				<span tal:condition="python: data.has_key('ISO19115')">
+				<table>
+					<span tal:repeat="reportField python: data['ISO19115']">
+						<tr tal:define="fieldValue python: request.form.setdefault(reportField['name'], reportField['default'])">							
+							<td tal:content="python:reportField['label']"> </td>
+							<td>						
+							<span tal:condition="python: reportField['type'] == 'StringWidget'">						
+								<input class="customText" type="text" name="" value="" id="" tal:attributes="name python:reportField['name']; value fieldValue; id python:reportField['name']">
+							</span>
+							<span tal:condition="python: reportField['type'] == 'SelectionWidget'">						
+								<select class="customSelect" id="" name="" tal:attributes="name python:reportField['name']; id python:reportField['name']">
+									<option></option>
+									<span tal:repeat="vocab python: reportField['vocabulary'].values()">
+										<option tal:content="vocab"></option>
+									</span>								
+								</select>
+							</span>
+							<span tal:condition="python: reportField['type'] == 'DateWidget'">
+								<input class="customText" type="text" name="" value="" id="" tal:attributes="name python:reportField['name']; value fieldValue; id python:reportField['name']">
+							</span>
+							</td>
+						</tr>
+					</span>						
+				</table>	
+				</span>	
+			</div>
+			
+			<div id="div_iso19115p2" class="defaultDivHidden">				
+				<span tal:condition="python: data.has_key('ISO19115p2')">
+				<table>
+					<span tal:repeat="reportField python: data['ISO19115p2']">
+						<tr tal:define="fieldValue python: request.form.setdefault(reportField['name'], reportField['default'])">							
+							<td tal:content="python:reportField['label']"> </td>
+							<td>						
+							<span tal:condition="python: reportField['type'] == 'StringWidget'">						
+								<input class="customText" type="text" name="" value="" id="" tal:attributes="name python:reportField['name']; value fieldValue; id python:reportField['name']">
+							</span>
+							<span tal:condition="python: reportField['type'] == 'SelectionWidget'">						
+								<select class="customSelect" id="" name="" tal:attributes="name python:reportField['name']; id python:reportField['name']">
+									<option></option>
+									<span tal:repeat="vocab python: reportField['vocabulary'].values()">
+										<option tal:content="vocab"></option>
+									</span>								
+								</select>
+							</span>
+							<span tal:condition="python: reportField['type'] == 'DateWidget'">
+								<input class="customText" type="text" name="" value="" id="" tal:attributes="name python:reportField['name']; value fieldValue; id python:reportField['name']">
+							</span>
+							</td>
+						</tr>
+					</span>	
+				</table>
+				</span>
+			</div>
+			
+			<div id="div_iso19139" class="defaultDivHidden">
+				<span tal:condition="python: data.has_key('ISO19139')">
+				<table>
+					<span tal:repeat="reportField python: data['ISO19139']">
+						<tr tal:define="fieldValue python: request.form.setdefault(reportField['name'], reportField['default'])">							
+							<td tal:content="python:reportField['label']"> </td>
+							<td>						
+							<span tal:condition="python: reportField['type'] == 'StringWidget'">						
+								<input class="customText" type="text" name="" value="" id="" tal:attributes="name python:reportField['name']; value fieldValue; id python:reportField['name']">
+							</span>
+							<span tal:condition="python: reportField['type'] == 'SelectionWidget'">						
+								<select class="customSelect" id="" name="" tal:attributes="name python:reportField['name']; id python:reportField['name']">
+									<option></option>
+									<span tal:repeat="vocab python: reportField['vocabulary'].values()">
+										<option tal:content="vocab"></option>
+									</span>								
+								</select>
+							</span>
+							<span tal:condition="python: reportField['type'] == 'DateWidget'">
+								<input class="customText" type="text" name="" value="" id="" tal:attributes="name python:reportField['name']; value fieldValue; id python:reportField['name']">
+							</span>
+							</td>
+						</tr>
+					</span>	
+				</table>	
+				</span>
+			</div>		
+		</div>			
+	</div>	
+	<br>
+	<input type="submit" value="Search" name="handleSearchForMetadataPost:method">
+	</form>		
+	
+	<script>
+	var standardList = new Array("div_eml","div_dublincore","div_sans1878","div_iso19115","div_iso19115p2","div_iso19139");	
+	
+	function populateKeywords(theId)
+	{		
+		var selectedOnt = getSelectedValue(theId)
+		if(selectedOnt != "")
+		{
+			var elm = document.getElementById(theId)		
+			var opElm = document.getElementById(selectedOnt)
+			var list = opElm.value
+			var parts = list.split("|")		
+			populateCombobox("common_Keywords_Filter", parts, "")	
+		}	
+		else		
+		{
+			populateCombobox("common_Keywords_Filter", new Array(""), "")	
+		}
+	}
+	
+	function selectStandard()
+	{		
+		var val = getSelectedValue("cbxStandards")		
+		showStandard("div_" + val.toLowerCase())				
+	}
+		
+	function showStandard(standardName)
+	{
+		hideAllStandarts()	
+		document.getElementById(standardName).style.visibility = "visible";
+		document.getElementById(standardName).style.display = "block";
+	}
+	
+	function hideAllStandarts()
+	{
+		for (var x=0;x<standardList.length;x++)
+		{
+			document.getElementById(standardList[x]).style.visibility = "hidden";
+			document.getElementById(standardList[x]).style.display = "none";
+		}
+	}	
+	
+	function getBigestWindow()
+	{
+		var width = 0;
+		var height = 0;		
+		for (var x=0;x<standardList.length;x++)
+		{
+			var elm = document.getElementById(standardList[x])
+			if (elm.offsetWidth > width)
+			{
+				width = elm.offsetWidth;
+			}
+			if(elm.offsetHeight > height)
+			{
+				height = elm.offsetHeight
+			}
+		}		
+		var size = new Array(width, height)
+		return size;
+	}
+	
+	function setContainerToMaxHeight()
+	{
+		document.getElementById("standardsContainer").style.height = (getBigestWindow()[1] + 10)+ "px";		
+	}
+	setContainerToMaxHeight();	
+	selectStandard();
+	
+</script>
+</div>
+
+</body>
+</html>

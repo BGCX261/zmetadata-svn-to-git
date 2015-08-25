@@ -1,0 +1,63 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+<body>
+<div metal:fill-slot="main">
+	<script language="Javascript" src="inc/WMSbrowsers.js"></script>
+	<script language="Javascript" src="inc/WMSlayer.js"></script>
+	<script language="Javascript" src="inc/WMSmap.js"></script>
+	<script language="Javascript" src="inc/WMStools.js"></script>
+	<script language="Javascript" src="inc/WMSquick.js"></script>
+	
+	<style>
+		.searchField{width:150px;}
+		.cBorder{border:thin solid gray;}
+		.coord{width:75px;}
+		.selectionLayer {border-style:dashed;border-width:2px;border-color:red;}
+        .zoomSelectionLayer {border-style:solid;border-width:2px;border-color:#5A8CB5;}
+        .defaultLayer {position:absolute}
+        .statusLayer{ cursor:hour}
+        .statusText { font-weight: bold; color:#2F455D; font-family: ARIAL; font-size: 8pt;}
+        .cancelText { font-weight: bold; color:#2F455D; font-family: ARIAL; font-size: 8pt; cursor:hand}
+        .text { color:black; font-family: ARIAL; font-size: 8pt;}			
+	</style>
+
+    <input type="text" value="" id="tbxDisplay" style="width:200px;">
+
+	<script language='Javascript'>
+	var server = "http://127.0.0.1/cgi-bin/mapserv.exe?MAP=c:/ms4w/apps/wms_client.map&";
+	var layers = "Country,Province,Municipality,Cities"
+	var extent = "16.45189, -34.83417, 32.94498, -22.124771045"
+	
+	function setDisplay(val)
+	{
+	   document.getElementById("tbxDisplay").value = val
+	}	
+
+	function setSearchBBox(x1,y1,x2,y2)
+	{
+	    alert(x1 +" "+ y1 +" "+ x2 +" "+ y2)    
+	}
+
+	function writeMaps()
+	{
+		var map = new quickWMS(-180, -90, 180, 90);	
+		map.addLayer(server, layers, "1.0.0");    	
+		map.writeDOM("myMap", 2, 26, 440, 250, "background-color:white;border-style:solid;border-width:1px;border-color:black;");
+		map.toolbar = new toolBar(map);
+		map.toolbar.writeDOM(2,2,true);
+		map.initialize() 
+		map.refresh();	
+	}
+	</script>		
+
+	<div style="position:relative;width:500px;height:350px;border: medium solid gray;top:30px;left:30px;">
+	<script>
+	    writeMaps()
+	</script>
+	</div>	
+
+</div>
+</body>
+</html>

@@ -1,0 +1,11 @@
+<html>
+<body>
+	<span tal:define="global dataList here/getMetadataCatalogueData"></span>
+	<h3>Metadata Catalogue</h3>
+	
+	<span tal:repeat="data dataList">
+		<span tal:content="structure data"></span>
+	</span>
+
+</body>
+</html>

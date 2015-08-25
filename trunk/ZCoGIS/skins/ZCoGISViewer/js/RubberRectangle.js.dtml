@@ -1,0 +1,224 @@
+/*
+<div id='map' name='map' onmousedown='document.rubberbander = new RubberRectangle(event, box, "red"); document.rubberbander.processEvent(event);' onmousemove='if (document.rubberbander){document.rubberbander.processEvent(event);}' onmouseup='if (document.rubberbander){document.rubberbander.processEvent(event);}'>
+   <input type='image' src='' height='100%' width='100%'>
+   <div id='box' name='box' style='visibility:hidden'>
+      <div style='visibility:hidden'></div>
+   </div>
+</div>
+*/
+
+var isIE = isIEBrowser()
+
+function getBrowserType()
+{
+	var theAppName = window.navigator.appName.toLowerCase();
+	if (theAppName.indexOf('internet') != -1)
+	{
+		return 'ie'
+	}
+	if (theAppName.indexOf('netscape') != -1)
+	{
+		return 'netscape'
+	}
+}
+
+function isIEBrowser()
+{
+	if (getBrowserType() == 'ie')
+	{
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+
+function RubberRectangle(box, borderColor, borderStyle, borderWidth)
+{   
+   if (box)
+   {      
+      this.box = box;      
+      this.box.style.borderColor = borderColor ? borderColor : "red";
+      this.box.style.borderStyle = borderStyle ? borderStyle : "solid";
+      this.box.style.borderWidth = borderWidth ? borderWidth : "13px";
+      this.box.style.position = "absolute";
+
+      //preset the rubberbanding flag
+      this.rubberbanding = false;
+   }
+}
+
+//main event handler function, this function handles all drawing based on events
+
+function RubberRectangle_processEvent(e)
+{	
+	//var leftButtonIn = false
+	/*if (isIE && e.button == 1)
+	{
+		leftButtonIn = true
+	}
+	if (!isIE && e.button == 0)
+	{
+		leftButtonIn = true
+	}*/
+
+	if (isIE)
+	{		
+		this.absDestX = e.clientX;
+		this.absDestY = e.clientY;
+		
+		this.relDestX = e.offsetX;
+		this.relDestY = e.offsetY;	
+	}
+	else
+	{		
+		this.absDestX = e.clientX;
+		this.absDestY = e.clientY;		
+		this.relDestX = e.layerX;
+		this.relDestY = e.layerY;
+		//this.relDestX = e.clientX;
+		//this.relDestY =  e.clientY;	
+	}  
+
+   switch (e.type)
+   {
+      case "mousedown":
+	  leftButtonIn = true
+
+	 //only respond to left mouse clicks
+	 if (!this.rubberbanding && leftButtonIn == true)
+	 {            
+            if (isIE)
+            {
+				this.absOrigX = e.clientX;
+				this.absOrigY = e.clientY;
+				this.absDestX = e.clientX;
+				this.absDestY = e.clientY;
+
+				this.relOrigX = e.offsetX;
+				this.relOrigY = e.offsetY;
+				this.relDestX = e.offsetX;
+				this.relDestY = e.offsetY;	
+            }
+			else
+			{
+				this.absOrigX = e.clientX;
+				this.absOrigY = e.clientY;
+				this.absDestX = e.clientX;
+				this.absDestY = e.clientY;
+
+				this.relOrigX = e.layerX;
+				this.relOrigY = e.layerY;
+				this.relDestX = e.layerX;
+				this.relDestY = e.layerY;
+			}          
+
+            //switch the rubberbanding flag so it will be rendered dynamically
+            this.rubberbanding = true;
+
+            //locate the div and initialize its dimensions
+            this.box.style.left = this.absOrigX;
+            this.box.style.top = this.absOrigY;
+            this.box.style.height = 0;
+            this.box.style.width = 0;
+            this.box.style.visibility = "visible";
+	 }
+         break;
+
+      case "mousemove":
+
+         if (this.rubberbanding && leftButtonIn == true)
+         {
+            //store the current cursor coordinates
+            this.absDestX = e.clientX;
+            this.absDestY = e.clientY;
+
+            //height and width will always be the absolute value of the difference in client coordinates
+			var height = Math.abs(this.absOrigY - this.absDestY);
+			var width = Math.abs(this.absOrigX - this.absDestX);
+            this.box.style.height = height;
+            this.box.style.width  = width;
+
+            //branch on the cartesian coordinate system quadrants relative to origin
+            if (this.absDestX > this.absOrigX && this.absDestY < this.absOrigY) // I
+            {
+               this.box.style.left = this.absOrigX;
+               this.box.style.top  = this.absDestY;
+
+			   this.relDestX = this.relOrigX + width;
+	           this.relDestY = this.relOrigY - height;
+            }
+            else if (this.absDestX < this.absOrigX && this.absDestY < this.absOrigY) // II
+            {
+               this.box.style.left = this.absDestX;
+               this.box.style.top  = this.absDestY;
+
+	           this.relDestX = this.relOrigX - width;
+	           this.relDestY = this.relOrigY - height;
+            }
+            else if (this.absDestX < this.absOrigX && this.absDestY > this.absOrigY) // III
+            {
+               this.box.style.left = this.absDestX;
+               this.box.style.top  = this.absOrigY;
+
+	           this.relDestX = this.relOrigX - width;
+	           this.relDestY = this.relOrigY + height;
+            }
+            else if (this.absDestX > this.absOrigX && this.absDestY > this.absOrigY) // IV
+            {
+               this.box.style.left = this.absOrigX;
+               this.box.style.top  = this.absOrigY;
+
+	           this.relDestX = this.relOrigX + width;
+	           this.relDestY = this.relOrigY + height;
+            }
+            else if (this.absDestX > this.absOrigX && this.absDestY == this.absOrigY) // 0 degrees
+            {
+               this.box.style.left = this.absOrigX;
+               this.box.style.top  = this.absOrigY;
+
+	           this.relDestX = this.relOrigX + width;
+	           this.relDestY = this.relOrigY;
+            }
+            else if (this.absDestX == this.absOrigX && this.absDestY < this.absOrigY) // 90 degrees
+            {
+               this.box.style.left = this.absOrigX;
+               this.box.style.top  = this.absDestY;
+
+	           this.relDestX = this.relOrigX;
+	           this.relDestY = this.relOrigY - height;
+            }
+            else if (this.absDestX < this.absOrigX && this.absDestY == this.absOrigY) // 180 degrees
+            {
+               this.box.style.left = this.absDestX;
+               this.box.style.top  = this.absOrigY;
+
+	           this.relDestX = this.relOrigX - width;
+	           this.relDestY = this.relOrigY;
+            }
+            else if (this.absDestX == this.absOrigX && this.absDestY > this.absOrigY) // 270 degrees
+            {
+               this.box.style.left = this.absOrigX;
+               this.box.style.top  = this.absOrigY;
+
+	           this.relDestX = this.relOrigX;
+	           this.relDestY = this.relOrigY + height;
+            }
+         }
+         break;
+
+      case "mouseup":			
+		 if (this.rubberbanding && leftButtonIn == true)
+		 {
+				this.rubberbanding = false;
+				this.box.style.visibility = "hidden";
+
+		 }
+		 leftButtonIn = false
+         break;
+   }
+}
+
+//force the creation of a prototype object for assigning instance methods
+//new RubberRectangle();
+RubberRectangle.prototype.processEvent = RubberRectangle_processEvent;

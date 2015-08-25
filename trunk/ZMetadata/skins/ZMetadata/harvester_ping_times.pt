@@ -1,0 +1,43 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+<body>
+	<div metal:fill-slot="main">
+	
+		<style>
+			.cb{border:thin solid gray;}
+			
+		</style>
+		
+		<span tal:define="global stats here/getHarvesterStats"></span>
+			
+		<span tal:condition="not: python: stats">
+			<p>No Stats Available</p>
+		</span>
+	    
+	    <span tal:condition="python: stats">	    		    		
+			<a href="" tal:attributes="href python: context.absolute_url() + '/harvester_ping_times'">Reload</a><br><br>
+			<a href="" tal:attributes="href python: context.absolute_url() + '/checkHarvesterPing'">Manual Start</a><br><br>	    	
+	    	
+	    	<table>
+	    		<tr>
+	    			<th class="cb">Address</th>
+	    			<th class="cb">Times Pinged</th>
+	    			<th class="cb">Average Time</th>
+	    			<th class="cb">Timeouts</th>
+	    		</tr>
+			    <span tal:repeat="theAddress python: stats.keys()">
+			    	<tr>
+			    	<td align="right" class="cb" tal:content="theAddress"></td>
+			    	<td align="right" class="cb" tal:content="python: stats[theAddress][0]"></td>
+			    	<td align="right" class="cb" tal:content="python: stats[theAddress][1]"></td>
+			    	<td align="right" class="cb" tal:content="python: stats[theAddress][2]"></td>
+			    	</tr>
+			    </span>
+		    </table>
+	    </span>
+    
+	</div>
+</body>
+</html>

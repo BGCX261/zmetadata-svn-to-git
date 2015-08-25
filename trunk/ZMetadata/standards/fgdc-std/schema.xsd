@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" blockDefault="#all">
+<xsd:include schemaLocation="fgdc-std-001-1998-sect01.xsd"/>
+<xsd:include schemaLocation="fgdc-std-001-1998-sect02.xsd"/>
+<xsd:include schemaLocation="fgdc-std-001-1998-sect03.xsd"/>
+<xsd:include schemaLocation="fgdc-std-001-1998-sect04.xsd"/>
+<xsd:include schemaLocation="fgdc-std-001-1998-sect05.xsd"/>
+<xsd:include schemaLocation="fgdc-std-001-1998-sect06.xsd"/>
+<xsd:include schemaLocation="fgdc-std-001-1998-sect07.xsd"/>
+<xsd:include schemaLocation="fgdc-std-001-1998-sect08.xsd"/>
+<xsd:include schemaLocation="fgdc-std-001-1998-sect09.xsd"/>
+<xsd:include schemaLocation="fgdc-std-001-1998-sect10.xsd"/>
+
+<xsd:element name="metadata" type="metadataType"/>
+<xsd:complexType name="metadataType">
+	<xsd:sequence>
+		<xsd:element ref="idinfo"/>
+		<xsd:element ref="dataqual" minOccurs="0"/>
+		<xsd:element ref="spdoinfo" minOccurs="0"/>
+		<xsd:element ref="spref" minOccurs="0"/>
+		<xsd:element ref="eainfo" minOccurs="0"/>
+		<xsd:element ref="distinfo" minOccurs="0" maxOccurs="unbounded"/>
+		<xsd:element ref="metainfo"/>
+	</xsd:sequence>
+</xsd:complexType>
+
+<xsd:simpleType name="FGDCdate">
+	<xsd:restriction base="xsd:token">
+		<xsd:pattern value="\d{4}(\d{2}(\d{2})?)?"/>
+		<xsd:pattern value="bc\d{4}(\d{2}(\d{2})?)?"/>
+		<xsd:pattern value="cc\d{5,}"/>
+		<xsd:pattern value="cd\d{5,}"/>
+	</xsd:restriction>
+</xsd:simpleType>
+<xsd:simpleType name="FGDCtime">
+	<xsd:restriction base="xsd:token">
+		<xsd:pattern value="\d{2}(\d{2}(\d{2,})?)?"/>
+		<xsd:pattern value="\d{2}(\d{2}(\d{2,})?)?[+\-]\d{4}"/>
+		<xsd:pattern value="\d{2}(\d{2}(\d{2,})?)?Z"/>
+	</xsd:restriction>
+</xsd:simpleType>
+<xsd:simpleType name="FGDCstring">
+	<xsd:restriction base="xsd:string">
+		<xsd:pattern value="\s*\S(.|\n|\r)*"/>
+	</xsd:restriction>
+</xsd:simpleType>
+<xsd:simpleType name="FGDClatitude">
+	<xsd:restriction base="xsd:double">
+		<xsd:minInclusive value="-90.0"/>
+		<xsd:maxInclusive value="90.0"/>
+	</xsd:restriction>
+</xsd:simpleType>
+<xsd:simpleType name="FGDClongitude">
+	<xsd:restriction base="xsd:double">
+		<xsd:minInclusive value="-180.0"/>
+		<xsd:maxInclusive value="180.0"/>
+	</xsd:restriction>
+</xsd:simpleType>
+</xsd:schema>

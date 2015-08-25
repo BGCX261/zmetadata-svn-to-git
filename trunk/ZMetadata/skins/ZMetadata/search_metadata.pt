@@ -1,0 +1,518 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+<body>
+<div metal:fill-slot="main">  
+    <link rel="stylesheet" type="text/css" href="calendar-win2k-1.css"/>  
+    <script language="Javascript" src="inc/WMSbrowsers.js"></script>
+    <script language="Javascript" src="inc/WMSlayer.js"></script>
+    <script language="Javascript" src="inc/WMSmap.js"></script>
+    <script language="Javascript" src="inc/WMStools.js"></script>
+    <script language="Javascript" src="inc/WMSquick.js"></script>    
+    <script type="text/javascript" src="calendar.js"></script>
+    <script type="text/javascript" src="calendar-en.js"></script>
+    <script type="text/javascript" src="calendar-setup.js"></script>
+    <script type="text/javascript" src="utils.js"></script>
+	
+	<div tal:define="global thePath here/absolute_url"></div>
+	<div id="thePath" value="" tal:attributes="value here/absolute_url"></div>
+	
+	<script tal:content="python: 'var mapServer = \'' + context.getMapserverUrl() + '\''"></script>
+	<script tal:content="python: 'var mapLayers = \'' + context.getMapLayers() + '\''"></script>
+	<script tal:content="python: 'var mapExtent = new Array('+context.getMapExtent()[0]+',' +context.getMapExtent()[1]+ ',' +context.getMapExtent()[2]+ ',' +context.getMapExtent()[3]+ ')'"></script>
+	   
+    <script language='Javascript'>  
+	var path = document.getElementById('thePath').getAttribute('value')				
+    var spatialOperations = new Array("Contains","Equals","Intersects","Touches","Within","Outside");
+    var provinceList = new Array("- Any -", "- User defined -", "Eastern Cape","Free State"  , "Gauteng" , "KwaZulu-Natal" , "Mpumalanga" , "Northern Cape" , "Limpopo", "North West", "Western Cape" );
+	var provinceMap = {}
+	provinceMap["Eastern Cape"] = "22.7357425689697,-34.2138671875,30.1947231292725,-30.001802444458"
+	provinceMap["Free State"] = "24.3466167449951,-30.6940822601318,29.7851333618164,-26.668737411499"
+	provinceMap["Gauteng"] = "27.4252166748047,-26.9238319396973,29.0984230041504,-25.1096076965332"
+	provinceMap["KwaZulu-Natal"] = "28.873477935791,-31.0826320648193,32.9449844360352,-26.8044166564941"
+	provinceMap["Mpumalanga"] = "28.2434768676758,-27.5061531066895,32.0335960388184,-23.981237411499"
+	provinceMap["Northern Cape"] = "16.4519023895264,-32.944995880127,25.5493335723877,-24.7658576965332"
+	provinceMap["Limpopo"] = "26.4075374603271,-25.4227924346924,31.8838424682617,-22.1250267028809"
+	provinceMap["North West"] = "22.6290264129639,-28.1132221221924,28.2983531951904,-24.6366271972656"
+	provinceMap["Western Cape"] = "17.7573566436768,-34.8341751098633,24.222412109375,-30.4302577972412"	
+		
+    //var mapServer =  "http://127.0.0.1/cgi-bin/mapserv.exe?MAP=c:/ms4w/apps/wms_client.map&";	
+    //var mapLayers = "Country,Province,Municipality,World,Cities"
+    //var mapExtent = new Array(16.45189, -34.83417, 32.94498, -22.124771045)
+	//var mapExtent = new Array(-35.98, -35.65, 86.84, 39.23)
+    
+    function onExtentChange()
+    {
+		setSelectedValue("cbxRegion","- User defined -");
+    }
+    
+    function setSearchBBox(x1,y1,x2,y2)
+    {
+        document.getElementById("tbxMinX").value = x1;
+        document.getElementById("tbxMinY").value = y1;
+        document.getElementById("tbxMaxX").value = x2;
+        document.getElementById("tbxMaxY").value = y2;
+		setSelectedValue("cbxRegion","- User defined -")		
+    }
+    
+    function writeMaps()
+    {
+    	var map = new quickWMS(mapExtent[0],mapExtent[1],mapExtent[2],mapExtent[3]);	
+    	map.addLayer(mapServer, mapLayers, "1.0.0");    	
+    	map.writeDOM("myMap", 0, 0, 330, 180, "background-color:white;border-style:solid;border-width:1px;border-color:black;");
+    	map.toolbar = new toolBar(map);
+    	map.toolbar.writeDOM(0,0,true);
+    	map.initialize() 
+    	map.refresh();	
+    }
+    </script>
+
+	<style>
+		.searchField{width:150px;}
+		.searchFieldDisabled{width:150px;background-color:gray;}
+		.cBorder{border:thin solid gray;}
+		.coord{width:75px;}
+		.selectionLayer {border-style:dashed;border-width:3;border-color:red;}
+        .zoomSelectionLayer {border-style:solid;border-width:2;border-color:#5A8CB5;}
+        .defaultLayer {position:absolute}
+        .statusLayer{ cursor:hour}
+        .statusText { font-weight: bold; color:#2F455D; font-family: ARIAL; font-size: 8pt;}
+        .cancelText { font-weight: bold; color:#2F455D; font-family: ARIAL; font-size: 8pt; cursor:hand}
+        .text { color:black; font-family: ARIAL; font-size: 8pt;}		
+	</style>  
+	
+	
+		
+	<script type="text/javascript">
+		jq(document).ready(function(){
+			jq(".menu > li, .menu > li > a").click(function(e){
+				switch(e.target.id){
+					case "what-tab": case "what":
+						//change status & style menu
+						jq("#what").addClass("active");
+						jq("#where").removeClass("active");
+						jq("#when").removeClass("active");
+						//display selected division, hide others
+						jq("div.what").fadeIn();
+						jq("div.where").css("display", "none");
+						jq("div.when").css("display", "none");
+					break;
+					case "where-tab": case "where":
+						//change status & style menu
+						jq("#what").removeClass("active");
+						jq("#where").addClass("active");
+						jq("#when").removeClass("active");
+						//display selected division, hide others
+						jq("div.where").fadeIn();
+						jq("div.what").css("display", "none");
+						jq("div.when").css("display", "none");
+					break;
+					case "when-tab": case "when":
+						//change status & style menu
+						jq("#what").removeClass("active");
+						jq("#where").removeClass("active");
+						jq("#when").addClass("active");
+						//display selected division, hide others
+						jq("div.when").fadeIn();
+						jq("div.what").css("display", "none");
+						jq("div.where").css("display", "none");
+					break;
+				}
+				//alert(e.target.id);
+				return false;
+			});
+			
+			jq("#where").addClass("active");
+			jq("#what").removeClass("active");
+			jq("#when").removeClass("active");
+			//display selected division, hide others
+			jq("div.what").css("display", "none");
+			jq("div.where").fadeIn();
+			jq("div.when").css("display", "none");
+
+		});
+
+		</script>
+		
+		<div id="container">
+			<ul class="menu">
+				<li id="where">
+                                        <p id="where-tab">
+                        			WHERE
+                    			</p>
+                		</li>
+				<li id="what" class="active">
+					<p id="what-tab">
+						WHAT
+					</p>
+				</li>
+				<li id="when">
+                	<p id="when-tab">
+                    	WHEN
+                    </p>
+                </li>
+			</ul>
+			<span class="clear"></span>
+			<!-- HERE BEGINS COMMON FIELDS -->
+			<div class="content what" style="padding-top:30px;">
+				<table>
+					<tr>
+						<td>Any Text</td>
+						<td><input type="text" class="searchField" value="" id="tbxAnyText" onchange="clearForAnyText()"></td>
+					</tr>
+					<tr>
+						<td>Abstract</td>
+						<td><input type="text" class="searchField" value="" id="tbxAbstract"></td>
+					</tr>
+					<tr>
+						<td>Title</td>
+						<td><input type="text" class="searchField" value="" id="tbxTitle"></td>
+					</tr>
+					<tr>
+						<td>Keywords</td>
+						<td><input type="text" class="searchField" value="" id="tbxKeywords"></td>
+					</tr>
+					<tr>
+						<td>Scale</td>
+						<td><input type="text" class="searchField" value="" id="tbxScale"></td>
+					</tr>
+					<tr>
+                                                <td>Category</td>
+                                                <td>
+                                                <select class="searchField" id="cbxCategory">
+                                                        <option>- Any -</option>
+                                                        <span tal:repeat="category here/getMetadataCategories">
+                                                                <option tal:content="category"></option>
+                                                        </span>
+                                                </select>
+                                                </td>
+                                        </tr>
+
+				</table>
+			</div>
+			<div class="content where" style="padding-top:30px;">
+				<table>		
+					<tr>
+						<td>&nbsp;</td>
+						<td align="center">MaxY <input type="text" class="coord" id="tbxMaxY" onchange="javascript: onExtentChange();"></td>
+						<td>&nbsp;</td>
+					</tr>
+					<tr>
+						<td align="right" valign="bottom">MinX</td>
+						<td rowspan="2">
+			                <div style="position:relative;width:330px;height:180px;">
+			                    <script>
+			                        writeMaps()
+			                    </script>
+			                </div>
+			            </td>
+						<td valign="bottom">MaxX</td>
+					</tr>
+					<tr>
+						<td valign="top"><input type="text" class="coord" id="tbxMinX" onchange="javascript: onExtentChange()"></td>
+
+						<td align="left" valign="top"><input type="text" class="coord" id="tbxMaxX" onchange="javascript: onExtentChange()"></td>
+					</tr>
+					<tr>
+						<td>&nbsp;</td>
+						<td align="center">MinY <input type="text" class="coord" id="tbxMinY" onchange="javascript: onExtentChange()"></td>
+						<td>&nbsp;</td>
+					</tr>
+					<tr>
+						<td>Spatial Type</td>
+						<td><select id="cbxSpatialType" class="searchField"></select></td>
+					</tr>
+					<tr>
+						<td>Region</td>
+						<td><select id="cbxRegion" class="searchField" onchange="onRegionChange()"></select></td>
+					</tr>		
+				</table>
+			</div>
+			<div class="content when" style="padding-top:30px;">
+				<table>
+					<tr>
+						<td><input type="radio" id="rbtnAnytime" name="timerange" onclick="switchDateRange()" checked></td>			
+						<td>Anytime</td>
+						<td></td>
+					</tr>
+					<tr>
+						<td><input type="radio" id="rbtnTimeRange" name="timerange" onclick="switchDateRange()"></td>
+						<td>From</td>
+						<td><form action="#" method="get"><input type="text" class="searchField" value="" id="tbxFromDate" name="tbxFromDate"><button type="reset" id="btnFromDate">...</button></form></td>			
+					</tr>
+					<tr>
+						<td></td>
+						<td>To</td>
+						<td>
+							<form action="#" method="get"><input type="text" class="searchField" value="" id="tbxToDate"><button type="reset" id="btnToDate">...</button></form>
+						</td>			
+					</tr>
+					
+					<tr>
+						<td style="padding-bottom:10px;">&nbsp;</td>			
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+					</tr>
+					
+				</table>
+			</div>
+		</div>
+
+		<script type="text/javascript" src="tabs.js"></script>
+	<input type="button" value="Search" onclick="doSearch()">
+	
+    <script type="text/javascript">
+	
+	var searchData = "";
+	
+	function clearForAnyText()
+	{		
+		document.getElementById("tbxAbstract").value = ""
+		document.getElementById("tbxTitle").value = ""
+		document.getElementById("tbxKeywords").value = ""
+		document.getElementById("tbxScale").value = ""
+	}
+	
+	function search(res)
+	{
+		if (res == undefined)
+		{
+			//var data = document.getElementById('xmlForm').innerHTML															
+			//var params = "html=" + escape(data)
+			var params = searchData;
+			getPostContent(path +"/doSearch",params,search)					
+		}
+		else
+		{	
+			if (res.indexOf("1") != -1)
+			{				
+				window.location = path + "/search_result_display";				
+			}
+			else
+			{
+				alert(res);
+			}			
+		}
+	}
+	
+	function doSearch()
+	{
+		searchData = "";
+		// get the values to post to the search interface
+		var anyTextVal = document.getElementById("tbxAnyText").value
+		var abstractVal = document.getElementById("tbxAbstract").value
+		var titleVal = document.getElementById("tbxTitle").value
+		var keywordsVal = document.getElementById("tbxKeywords").value
+		var scaleVal = document.getElementById("tbxScale").value
+		var fromDateVal = document.getElementById("tbxFromDate").value
+		var toDateVal = document.getElementById("tbxToDate").value
+		var categoryVal = getSelectedValue("cbxCategory")
+		var spatialTypeVal = getSelectedValue("cbxSpatialType")
+		var regionVal = getSelectedValue("cbxRegion")
+		
+		var anyTime = document.getElementById("rbtnAnytime").checked
+		
+		var minx = document.getElementById("tbxMinX").value
+		var miny = document.getElementById("tbxMinY").value
+		var maxx = document.getElementById("tbxMaxX").value
+		var maxy = document.getElementById("tbxMaxY").value	
+	
+		// build post string
+		if (regionVal != "- Any -")
+		{
+			if (minx != "" && miny != "" && maxx != "" && maxy != "")
+			{
+			    // check if all extent values are valid number
+			    var nMinx = parseFloat(minx)
+			    var nMiny = parseFloat(miny)
+			    var nMaxx = parseFloat(maxx)
+			    var nMaxy = parseFloat(maxy)
+                if (isNaN(nMinx) || isNaN(nMiny) || isNaN(nMaxx) || isNaN(nMaxy))
+			    {    
+			        alert("Spatial extent values must be numbers");
+			        return;
+			    }
+			    // check extent validity, minx must be smaller than maxx
+			    if ((nMinx >= nMaxx) || (nMiny >= nMaxy))
+			    {
+			        alert("Spatial extent values are not valid");
+			        return;
+			    }
+			    
+				// add extent to search
+				searchData += "&extent=" + minx +","+ miny +","+ maxx +","+ maxy;
+				searchData += "&spatialtype=" + spatialTypeVal;
+			}
+			else
+			{
+                alert("Spatial extent is not specified correctly")
+                return
+			}
+		}
+		if (anyTextVal != "")
+		{
+			if (anyTextVal.length < 2)
+			{
+				alert("Any Text must be at least 2 characters");
+				return;
+			}
+			searchData += "&anytext=" + anyTextVal;			
+		}
+		if(abstractVal != "")
+		{
+			if (abstractVal.length < 2)
+			{
+				alert("Abstract must be at least 2 characters");
+				return;
+			}
+			searchData += "&abstract=" + abstractVal;
+		}
+		if(titleVal != "")
+		{
+			if (titleVal.length < 2)
+			{
+				alert("Title must be at least 2 characters");
+				return;
+			}
+			searchData += "&title=" + titleVal;
+		}
+		if(keywordsVal != "")
+		{
+			if (keywordsVal.length < 2)
+			{
+				alert("Keywords must be at least 2 characters");
+				return;
+			}
+			searchData += "&keywords=" + keywordsVal;
+		}
+		if(scaleVal != "")
+		{
+			var res = parseInt(scaleVal)			
+			if (isNaN(res))
+			{
+				alert("Scale must be a number");
+				return;
+			}
+			searchData += "&scale=" + scaleVal;
+		}
+		
+		if (!anyTime)
+		{
+			if(fromDateVal != "")
+			{
+				searchData += "&fromdate=" + fromDateVal;
+			}
+			if(toDateVal != "")
+			{
+				searchData += "&todate=" + toDateVal;
+			}
+		}
+		
+		if(categoryVal != "- Any -")
+		{
+			searchData += "&category=" + categoryVal;
+		}
+
+		if (searchData == "")
+		{
+			alert("Please enter fields to search.")
+			return;
+		}
+		
+		searchData = searchData.slice(1,searchData.length)
+		search()	
+	}
+	
+	function switchDateRange()
+	{		
+		if (document.getElementById("rbtnAnytime").checked)
+		{
+			disableDateRange();
+		}
+		if (document.getElementById("rbtnTimeRange").checked)
+		{
+			enableDateRange();
+		}
+	}
+	
+	function enableDateRange()
+	{
+		document.getElementById("tbxFromDate").className = "searchField";
+		document.getElementById("tbxToDate").className = "searchField";
+		document.getElementById("tbxToDate").style.backgroundColor = "";
+		//document.getElementById("tbxFromDate").disabled = false;
+		//document.getElementById("tbxToDate").disabled = false;
+		document.getElementById("btnFromDate").disabled = false;
+		document.getElementById("btnToDate").disabled = false;
+	}
+	
+	function disableDateRange()
+	{		
+		document.getElementById("tbxFromDate").className = "searchFieldDisabled";
+		document.getElementById("tbxToDate").className = "searchFieldDisabled";
+		document.getElementById("tbxToDate").style.backgroundColor = "gray";
+		document.getElementById("tbxFromDate").disabled = true;
+		document.getElementById("tbxToDate").disabled = true;
+		document.getElementById("btnFromDate").disabled = true;
+		document.getElementById("btnToDate").disabled = true;
+	}
+	
+	function clearExtent()
+	{
+		document.getElementById("tbxMinX").value = "";
+		document.getElementById("tbxMinY").value = "";
+		document.getElementById("tbxMaxX").value = "";
+		document.getElementById("tbxMaxY").value = "";
+	}
+	
+	function setExtent(extent)
+	{
+		document.getElementById("tbxMinX").value = extent[0];
+		document.getElementById("tbxMinY").value = extent[1];
+		document.getElementById("tbxMaxX").value = extent[2];
+		document.getElementById("tbxMaxY").value = extent[3];
+	}	
+	
+	function onRegionChange()
+	{
+		var region = getSelectedValue("cbxRegion")
+		if (region == "- Any -")
+		{
+			clearExtent();
+			return;
+		}
+		if (region == "- User defined -")
+		{
+			return;
+		}
+		var extentString = provinceMap[region];
+		var extent = extentString.split(",");
+		setExtent(extent);		
+	}    
+    
+    Calendar.setup({
+        inputField     :    "tbxFromDate",      
+        ifFormat       :    "%Y-%m-%d",//"%m/%d/%Y %I:%M %p",
+        showsTime      :    false,            
+        button         :    "btnFromDate",   
+        singleClick    :    true,           
+        step           :    1               
+    });
+    Calendar.setup({
+        inputField     :    "tbxToDate",      
+        ifFormat       :    "%Y-%m-%d",//"%m/%d/%Y %I:%M %p",
+        showsTime      :    false,            
+        button         :    "btnToDate",   
+        singleClick    :    true,           
+        step           :    1               
+    });
+	
+	populateCombobox("cbxSpatialType", spatialOperations);
+    populateCombobox("cbxRegion", provinceList);	
+	disableDateRange()
+    </script>    
+</div>
+</body>
+</html>
+

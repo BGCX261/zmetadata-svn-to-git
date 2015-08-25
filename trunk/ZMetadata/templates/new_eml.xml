@@ -1,0 +1,190 @@
+<?xml version="1.0"?>
+<eml:eml packageId="nikkis.122.4" system="knb" xmlns:eml="eml://ecoinformatics.org/eml-2.0.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="eml://ecoinformatics.org/eml-2.0.1 eml.xsd">
+    <dataset>
+        <title>TITLE</title>
+        <creator id="1184653932671">
+            <individualName>
+                <salutation>Mr</salutation>
+                <givenName>NAME</givenName>
+                <surName>SURNAME</surName>
+            </individualName>
+            <organizationName>ORGANIZATION</organizationName>
+            <address>
+                <deliveryPoint>DELIVERY POINT</deliveryPoint>
+                <deliveryPoint>DELIVERY POINT</deliveryPoint>
+            </address>
+            <electronicMailAddress>EMAIL@EMAIL.COM</electronicMailAddress>
+        </creator>
+        <associatedParty id="1196845282109">
+            <individualName>
+                <salutation>Mr</salutation>
+                <givenName>NAME</givenName>
+                <surName>SURNAME</surName>                
+            </individualName>
+            <organizationName>SAEON</organizationName>
+            <positionName>POSITIONNAME</positionName>
+            <address>
+                <deliveryPoint>DELIVERY POINT</deliveryPoint>
+                <deliveryPoint>DELIVERY POINT</deliveryPoint>
+                <postalCode>POSTAL CODE</postalCode>
+                <country>COUNTRY</country>
+            </address>
+            <phone phonetype="voice">TELEPHONE</phone>
+            <phone phonetype="fax">FAX</phone>
+            <electronicMailAddress>EMAIL@EMAIL.COM</electronicMailAddress>
+            <role>ROLE</role>
+        </associatedParty>
+        <abstract>
+            <para>ABSTRACT</para>
+        </abstract>
+        <keywordSet>
+            <keyword>KEYWORD1</keyword>
+            <keyword>KEYWORD2</keyword>
+            <keyword>KEYWORD3</keyword>
+            <keyword>KEYWORD4</keyword>
+            <keyword>KEYWORD5</keyword>
+            <keyword>KEYWORD6</keyword>
+            <keyword>KEYWORD7</keyword>
+        </keywordSet>
+        <intellectualRights>
+            <para>RIGHTS</para>
+        </intellectualRights>
+        <coverage>
+            <taxonomicCoverage>
+              <taxonomicClassification>
+                <taxonRankName>Phylum</taxonRankName>
+                <taxonRankValue>Cordata</taxonRankValue>
+                <taxonomicClassification>
+                  <taxonRankName>Class</taxonRankName>
+                  <taxonRankValue>Aves</taxonRankValue>
+                  <commonName>Birds</commonName>
+                </taxonomicClassification>
+              </taxonomicClassification>
+            </taxonomicCoverage>
+            <temporalCoverage>
+                <rangeOfDates>
+                    <beginDate>
+                        <calendarDate>1983</calendarDate>
+                    </beginDate>
+                    <endDate>
+                        <calendarDate>2003</calendarDate>
+                    </endDate>
+                </rangeOfDates>
+            </temporalCoverage>
+            <geographicCoverage>
+                <geographicDescription>DESCRIPTION</geographicDescription>
+                <boundingCoordinates>
+                    <westBoundingCoordinate>-180.0</westBoundingCoordinate>
+                    <eastBoundingCoordinate>180.0</eastBoundingCoordinate>
+                    <northBoundingCoordinate>90.0</northBoundingCoordinate>
+                    <southBoundingCoordinate>-90.0</southBoundingCoordinate>
+                </boundingCoordinates>
+            </geographicCoverage>
+        </coverage>
+        <contact>
+            <individualName>
+                <salutation>Mr</salutation>
+                <givenName>NAME</givenName>
+                <surName>SURNAME</surName>                         
+            </individualName>            
+            <organizationName>SAEON</organizationName>            
+            <positionName>POSITIONNAME</positionName>                        
+        </contact>
+        <methods>
+            <methodStep>
+                <description>
+                    <section>
+                        <title>TITLE</title>
+                        <para>DESCRIPTION</para>
+                        <para>DESCRIPTION</para>
+                        <para>DESCRIPTION</para>
+                    </section>
+                </description>
+                <instrumentation>INSTRUMENT</instrumentation>
+            </methodStep>
+        </methods>
+        <access authSystem="knb" order="denyFirst">
+            <allow>
+                <principal>PRINCIPAL</principal>
+                <permission>PERMISSION</permission>
+            </allow>
+        </access>
+        <dataTable id="1216805916843">
+            <entityName>NAME</entityName>
+            <entityDescription>DESCRIPTION</entityDescription>
+            <physical id="1216805915531">
+                <objectName>NAME</objectName>
+                <size unit="byte">SIZE</size>
+                <dataFormat>
+                    <textFormat>
+                        <numHeaderLines>1</numHeaderLines>
+                        <recordDelimiter>#x0A</recordDelimiter>
+                        <attributeOrientation>column</attributeOrientation>
+                        <simpleDelimited>
+                            <fieldDelimiter>#x09</fieldDelimiter>
+                        </simpleDelimited>
+                    </textFormat>
+                </dataFormat>
+                <distribution>
+                    <online>
+                        <url>URL</url>
+                    </online>
+                </distribution>
+            </physical>
+            <attributeList>
+                <attribute id="1216805916859">
+                    <attributeName>NAME</attributeName>
+                    <attributeDefinition>DEFINITION</attributeDefinition>
+                    <measurementScale>
+                        <nominal>
+                            <nonNumericDomain>
+                                <textDomain>
+                                    <definition>DEFINITION</definition>
+                                </textDomain>
+                            </nonNumericDomain>
+                        </nominal>
+                    </measurementScale>
+                </attribute>
+                <attribute id="1216805916875">
+                    <attributeName>NAME</attributeName>
+                    <attributeDefinition>DEFINITION</attributeDefinition>
+                    <measurementScale>
+                        <interval>
+                            <unit>
+                                <standardUnit>number</standardUnit>
+                            </unit>
+                            <precision>5</precision>
+                            <numericDomain>
+                                <numberType>natural</numberType>
+                            </numericDomain>
+                        </interval>
+                    </measurementScale>
+                </attribute>
+                <attribute id="1216805916890">
+                    <attributeName>Year</attributeName>
+                    <attributeDefinition>Year in ehich count was done</attributeDefinition>
+                    <measurementScale>
+                        <datetime>
+                            <formatString>yyyy</formatString>
+                            <dateTimePrecision>0</dateTimePrecision>
+                        </datetime>
+                    </measurementScale>
+                </attribute>
+                <attribute id="1216805916906">
+                    <attributeName>Comments</attributeName>
+                    <attributeDefinition>COMMENT</attributeDefinition>
+                    <measurementScale>
+                        <nominal>
+                            <nonNumericDomain>
+                                <textDomain>
+                                    <definition>Comments</definition>
+                                </textDomain>
+                            </nonNumericDomain>
+                        </nominal>
+                    </measurementScale>
+                </attribute>
+            </attributeList>
+            <numberOfRecords>1</numberOfRecords>
+        </dataTable>
+    </dataset>
+</eml:eml>

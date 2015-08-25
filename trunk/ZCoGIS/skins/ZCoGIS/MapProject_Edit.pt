@@ -1,0 +1,67 @@
+<html metal:use-macro="here/main_template/macros/master">
+    <body>
+        <div metal:fill-slot="main">
+			<style>
+			td{
+				text-align:left;
+			}
+
+			.tdBorder{
+				border:thin solid silver;				
+			}
+
+			.tdBorderGreen{
+				border:thin solid silver;	
+				color:green;
+			}
+
+			.tdNotRunning{
+				border:thin solid red;
+				color: red;
+			}
+
+			.tableBorder{
+				border:thin solid gray;
+			}
+			.mediumSelect{
+				width:145px;
+			}
+			</style>	
+			
+			<div tal:define="global facadeList python: context.getMapServerFacadeList()"></div>
+
+			<b>Add Map Project</b>
+			<br><br>
+
+			<form name="postForm" action="" method="post" tal:attributes="action python: context.absolute_url() + '/mmanage_AddMapProject'">
+			<TABLE class="tableBorder">			
+			<TR>
+				<TD>Title</TD>
+				<TD><INPUT TYPE="text" NAME="title" value="" tal:attributes="value here/title"></TD>
+			</TR>
+			<TR>
+				<TD>Description</TD>
+				<TD><INPUT TYPE="text" NAME="description" value="" tal:attributes="value here/description"></TD>
+			</TR>
+			<TR>
+				<TD>Mapserver Facade</TD>
+				<TD>
+					<SELECT NAME="mapServerFacade" class="mediumSelect">
+						<option></option>
+					<div tal:repeat="facade facadeList">
+						<option tal:content="python: facade[0]" value="" tal:attributes="value python: facade[1]"></option>
+					</div>
+					</SELECT>
+				</TD>
+			</TR>
+			<TR>
+				<TD colspan="2"><input type="submit" value="Submit"></TD>				
+			</TR>
+			</TABLE>
+			</form>
+			
+			
+        </div>
+    </body>
+</html>
+

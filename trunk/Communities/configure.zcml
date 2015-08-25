@@ -1,0 +1,20 @@
+<configure xmlns="http://namespaces.zope.org/zope" 
+           xmlns:browser="http://namespaces.zope.org/browser" 
+           xmlns:five="http://namespaces.zope.org/five"
+           xmlns:i18n="http://namespaces.zope.org/i18n"
+           i18n_domain="Communities">
+  
+  <i18n:registerTranslations directory="locales" />
+
+  <include file="profiles.zcml" />
+
+
+  <include file="browser/community/browser.zcml"/>
+  <include file="browser/standardsetups/browser.zcml"/>
+  <include file="browser/searchsetup/browser.zcml"/>
+  <include file="browser/search/browser.zcml"/>
+
+  <!-- ##code-section configure.zcml -->
+  <!-- ##/code-section configure.zcml -->
+
+</configure>

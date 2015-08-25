@@ -1,0 +1,67 @@
+1 : title : //gmd:citation/gmd:CI_Citation/gmd:title/gco:CharacterString
+2 : reference date : //md:citation/gmd:CI_Citation/gmd:date/gco:DateTime
+3 : responsible party : //gmd:CI_ResponsibleParty/gmd:individualName/gco:CharacterString
+	//gmd:CI_ResponsibleParty/gmd:organisationName/gco:CharacterString
+	//gmd:CI_ResponsibleParty/gmd:positionName/gco:CharacterString	
+	
+4 : geographic location : //gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:westBoundLongitude/gco:Decimal
+						//gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:eastBoundLongitude/gco:Decimal
+						//gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:southBoundLatitude/gco:Decimal
+						//gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:northBoundLatitude/gco:Decimal
+						
+5 : dataset language : //gmd:language/gco:CharacterString
+6 : dataset character set : //gmd:characterSet/gmd:MD_CharacterSetCode/@codeListValue
+7 : topic category : //gmd:MD_DataIdentification/gmd:topicCategory/gmd:MD_TopicCategoryCode
+8 : scale of dataset : //gmd:spatialResolution/gmd:MD_Resolution/gmd:equivalentScale/gmd:MD_RepresentativeFraction/gmd:denominator/gco:Integer
+						//dataScale/scaleDist/value/Decimal
+						
+9 : Abstract : //gmd:MD_DataIdentification/gmd:abstract/gco:CharacterString
+
+
+<resourceFormat>
+        <!-- in c3 distribution Info tags are used !! - entries here are optional and not used in C3Grid -                                                                                              may be useful for publication to C3Grid external portals .. -->
+        <MD_Format>
+          <name>
+            <!-- C3 convention: grb for GRIB and nc for NetCDF -->
+            <gco:CharacterString>grb</gco:CharacterString>
+          </name>
+          <version>
+            <gco:CharacterString>WMO format Gridded Binary Data,
+            GRIB version ...</gco:CharacterString>
+          </version>
+        </MD_Format>
+      </resourceFormat>
+
+
+
+10 : data format name : //resourceFormat/MD_Format/name/gco:CharacterString
+11 : data aformat version : //resourceFormat/MD_Format/version/gco:CharacterString
+12 : additional extent info : vertical and temporal :
+		temporal extent : begin : //gmd:extent/gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/gml:TimePeriod/gml:beginPosition/gml:endPosition
+		temporal extent : end : //gmd:extent/gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/gml:TimePeriod/gml:endPosition
+		
+		vertical extent : min : //EX_VerticalExtent/minimumValue/gco:Real
+						  max : //EX_VerticalExtent/maximumValue/gco:Real
+						  unit: //EX_VerticalExtent/maximumValue/gco:Real
+						  datum: //gml:VerticalDatum/gml:identifier
+13 : spatial representation : //gmd:spatialRepresentationType/gmd:MD_SpatialRepresentationTypeCode/#codeListValue
+14 : reference system : //gmd:referenceSystemInfo/gmd:MD_ReferenceSystem /gmd:referenceSystemIdentifier/gmd:RS_Identifier/gmd:code/gco:CharacterString  
+15 : linage statement : //gmd:lineage/gmd:LI_Lineage/gmd:statement/gco:CharacterString
+16 : online resource : URL : //gmd:CI_OnlineResource/gmd:linkage/gmd:URL
+                       Protocol : //gmd:CI_OnlineResource/gmd:protocol/gco:CharacterString
+					   Name : //gmd:CI_OnlineResource/gmd:name/gco:CharacterString
+					   Description : //gmd:CI_OnlineResource/gmd:description/gco:CharacterString
+17 : metadata file identifier : id : //gmd:fileIdentifier/gco:CharacterString
+18 : Metadata standard name :  //gmd:metadataStandardName/gco:CharacterString
+19 : Metadata standard version : //gmd:metadataStandardVersion/gco:CharacterString                     
+20 : Metadata language : //gmd:MD_DataIdentification/gmd:language/gco:CharacterString   
+21 : Metadata character set : //gmd:MD_DataIdentification/gmd:characterSet/gmd:MD_CharacterSetCode
+22 : Metadata point of contact : individualName : //gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:individualName/gco:CharacterString
+								 organisationName : //gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:organisationName/gco:CharacterString
+								 positionName : //gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:positionName/gco:CharacterString
+								 role : //gmd:pointOfContact/gmd:CI_ResponsibleParty/gmd:role/gmd:CI_RoleCode
+23 : Metadata timestamp : //gmd:dateStamp/gco:DateTime
+						
+
+
+ 
